@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Habilitación REE — Control y Protecciones</title>
+<style>
+  :root {
+    --blue:#185FA5;--blue-l:#E6F1FB;--blue-m:#378ADD;
+    --green:#0F6E56;--green-l:#E1F5EE;--green-b:#1D9E75;
+    --red:#993C1D;--red-l:#FAECE7;--red-b:#D85A30;
+    --amber:#854F0B;--amber-l:#FAEEDA;
+    --gray:#5F5E5A;--gray-l:#F1EFE8;--gray-m:#D3D1C7;
+    --text:#2C2C2A;--muted:#888780;
+    --bg:#ffffff;--bg2:#F8F7F4;
+    --bd:rgba(0,0,0,0.12);--r:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Georgia',serif;background:var(--bg2);color:var(--text);min-height:100vh}
+  #app{max-width:760px;margin:0 auto;padding:2rem 1rem}
+
+  /* INICIO */
+  #s-start{text-align:center;padding:3rem 1rem}
+  #s-start h1{font-size:2rem;font-weight:normal;letter-spacing:-.5px;margin-bottom:.4rem}
+  .subtitle{color:var(--muted);font-size:.95rem;margin-bottom:2.5rem}
+  .info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
+  .ic{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:1.2rem}
+  .ic .n{font-size:2rem;font-weight:bold;color:var(--blue);font-family:monospace}
+  .ic .l{font-size:.8rem;color:var(--muted);margin-top:.25rem}
+  .rules{background:var(--amber-l);border:1px solid #FAC775;border-radius:var(--r);padding:1rem 1.25rem;text-align:left;margin-bottom:2rem;font-size:.85rem;line-height:1.7}
+  .rules strong{color:var(--amber)}
+  .btn-start{background:var(--blue);color:#fff;border:none;border-radius:var(--r);padding:.9rem 2.5rem;font-size:1rem;cursor:pointer;transition:background .2s}
+  .btn-start:hover{background:var(--blue-m)}
+
+  /* CABECERA */
+  .t-header{display:flex;justify-content:space-between;align-items:center;background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:.9rem 1.25rem;margin-bottom:1rem}
+  .t-header .lft{font-size:.85rem}
+  .t-header .lft strong{font-size:1rem;display:block}
+  #timer{font-size:1.5rem;font-weight:bold;font-family:monospace;color:var(--blue)}
+  #timer.warn{color:var(--red-b)}
+
+  /* STATS */
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1rem}
+  .stat{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:.6rem;text-align:center}
+  .stat .sn{font-size:1.4rem;font-weight:bold}
+  .stat .sl{font-size:.7rem;color:var(--muted);margin-top:1px}
+
+  /* NAV PUNTOS */
+  .q-nav{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:1rem}
+  .q-dot{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--bd);font-size:.75rem;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);background:var(--bg);transition:all .15s;font-family:monospace}
+  .q-dot:hover{border-color:var(--blue);color:var(--blue)}
+  .q-dot.current{border:2px solid var(--blue);color:var(--blue);background:var(--blue-l)}
+  .q-dot.correct{background:var(--green-b);color:#fff;border-color:var(--green-b)}
+  .q-dot.wrong{background:var(--red-b);color:#fff;border-color:var(--red-b)}
+
+  /* PREGUNTA */
+  .q-box{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:1.5rem;margin-bottom:1rem}
+  .q-label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.75rem}
+  .q-text{font-size:1rem;line-height:1.65;margin-bottom:1.25rem}
+
+  /* OPCIONES */
+  .opt{display:flex;align-items:flex-start;gap:10px;padding:.85rem 1rem;border-radius:8px;border:1.5px solid var(--bd);margin-bottom:.5rem;transition:all .2s;font-size:.9rem;background:var(--bg2);cursor:pointer;user-select:none}
+  .opt:hover:not(.locked){border-color:var(--blue-m);background:var(--blue-l)}
+  .opt.locked{cursor:default}
+  .opt.sel-correct{border-color:var(--green-b);background:var(--green-l);color:#085041}
+  .opt.sel-wrong{border-color:var(--red-b);background:var(--red-l);color:#712B13}
+  .opt.show-correct{border-color:var(--green-b);background:var(--green-l);color:#085041}
+  .opt-key{font-weight:bold;min-width:20px;font-family:monospace;font-size:1rem;flex-shrink:0;color:var(--muted)}
+  .opt.sel-correct .opt-key,.opt.show-correct .opt-key{color:var(--green-b)}
+  .opt.sel-wrong .opt-key{color:var(--red-b)}
+
+  /* FEEDBACK */
+  .feedback{border-radius:8px;padding:.9rem 1.1rem;margin-top:1rem;font-size:.88rem;line-height:1.6;display:none}
+  .feedback.show{display:block}
+  .feedback.fb-ok{background:var(--green-l);border:1px solid var(--green-b);color:#085041}
+  .feedback.fb-fail{background:var(--red-l);border:1px solid var(--red-b);color:#712B13}
+  .fb-title{font-weight:bold;margin-bottom:.35rem}
+  .fb-ref{font-size:.75rem;margin-top:.5rem;opacity:.75;font-style:italic}
+
+  /* NAVEGACIÓN */
+  .nav-row{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-top:1.25rem}
+  .btn{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:.6rem 1.2rem;font-size:.85rem;cursor:pointer;color:var(--text);transition:all .15s}
+  .btn:hover{border-color:var(--blue);color:var(--blue)}
+  .btn-finish{background:var(--green);color:#fff;border:none;border-radius:8px;padding:.75rem 1.75rem;font-size:.9rem;cursor:pointer;display:block;margin:1rem auto 0;transition:opacity .2s}
+  .btn-finish:hover{opacity:.88}
+
+  /* RESULTADOS */
+  #s-results{display:none}
+  .score-banner{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:2rem;text-align:center;margin-bottom:1rem}
+  .score-num{font-size:4rem;font-weight:bold;font-family:monospace}
+  .habilita{display:inline-block;margin:.4rem .2rem 0;padding:.35rem .9rem;border-radius:20px;font-size:.8rem;font-weight:bold}
+  .habilita.ok{background:var(--green-l);color:var(--green)}
+  .habilita.fail{background:var(--red-l);color:var(--red)}
+  .rev-section-title{font-size:.8rem;color:var(--muted);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.5px}
+  .rev-item{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:.6rem}
+  .rev-item.fail{border-left:4px solid var(--red-b)}
+  .rev-item.blank{border-left:4px solid var(--gray-m)}
+  .rev-q{font-size:.9rem;line-height:1.5;margin-bottom:.5rem}
+  .rev-ans{font-size:.82rem;margin-bottom:.4rem}
+  .rev-exp{font-size:.82rem;line-height:1.55;margin-bottom:.35rem}
+  .rev-ref{font-size:.75rem;color:var(--muted);font-style:italic}
+  .tag{font-size:.7rem;padding:2px 8px;border-radius:20px;font-weight:bold;display:inline-block;margin-bottom:.4rem}
+  .tag-fail{background:var(--red-l);color:var(--red)}
+  .tag-blank{background:var(--gray-l);color:var(--gray)}
+  .btn-restart{background:var(--blue);color:#fff;border:none;border-radius:8px;padding:.75rem 2rem;font-size:.9rem;cursor:pointer;display:block;margin:1.5rem auto 0}
+
+  /* STATS RESULTADOS */
+  .stats-res{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:1rem}
+
+  @media(max-width:500px){
+    .info-grid{grid-template-columns:repeat(2,1fr)}
+    .stats,.stats-res{grid-template-columns:repeat(2,1fr)}
+    .score-num{font-size:3rem}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- INICIO -->
+<div id="s-start">
+  <h1>Habilitación REE</h1>
+  <div class="subtitle">Especialidad Control y Protecciones — Familias 160, 476 y 425</div>
+  <div class="info-grid">
+    <div class="ic"><div class="n">35</div><div class="l">Preguntas</div></div>
+    <div class="ic"><div class="n">90'</div><div class="l">Duración</div></div>
+    <div class="ic"><div class="n">−0.5</div><div class="l">Penalización error</div></div>
+  </div>
+  <div class="rules">
+    <strong>Criterios de superación:</strong><br>
+    Familias 0160 y 0476: puntuación ≥ 5 / 10 &nbsp;|&nbsp; Familia 0425: puntuación ≥ 6 / 10<br><br>
+    <strong>Puntuación:</strong> Correcta +1 pt &nbsp;·&nbsp; Incorrecta −0,5 pt &nbsp;·&nbsp; En blanco 0 pt<br><br>
+    <strong>Feedback:</strong> Al responder, se muestra la corrección y explicación inmediatamente. La respuesta queda bloqueada.<br><br>
+    <strong>Documentación:</strong> No se permite ningún tipo de documentación
+  </div>
+  <button class="btn-start" onclick="startTest()">Comenzar test</button>
+</div>
+
+<!-- TEST -->
+<div id="s-test" style="display:none">
+  <div class="t-header">
+    <div class="lft"><strong>Control y Protecciones</strong>Habilitación REE · Familias 160, 476 y 425</div>
+    <div id="timer">90:00</div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="sn" id="s-ans" style="color:var(--blue)">0</div><div class="sl">Respondidas</div></div>
+    <div class="stat"><div class="sn" id="s-blank">40</div><div class="sl">En blanco</div></div>
+    <div class="stat"><div class="sn" id="s-rem" style="color:var(--amber)">40</div><div class="sl">Restantes</div></div>
+  </div>
+  <div class="q-nav" id="q-nav"></div>
+  <div class="q-box">
+    <div class="q-label" id="q-label">Pregunta 1 de 35</div>
+    <div class="q-text" id="q-text"></div>
+    <div id="options"></div>
+    <div class="feedback" id="feedback">
+      <div class="fb-title" id="fb-title"></div>
+      <div id="fb-body"></div>
+      <div class="fb-ref" id="fb-ref"></div>
+    </div>
+    <div class="nav-row">
+      <button class="btn" onclick="navigate(-1)">← Anterior</button>
+      <button class="btn" onclick="navigate(1)">Siguiente →</button>
+    </div>
+  </div>
+  <button class="btn-finish" onclick="finish()">Finalizar y ver resultados</button>
+</div>
+
+<!-- RESULTADOS -->
+<div id="s-results">
+  <div class="score-banner">
+    <div style="font-size:.85rem;color:var(--muted);margin-bottom:.5rem">Puntuación final (escala 0–10)</div>
+    <div class="score-num" id="score-num">—</div>
+    <div style="font-size:.8rem;color:var(--muted);margin-top:.25rem" id="score-detail"></div>
+    <div id="habilita-badges" style="margin-top:.75rem"></div>
+  </div>
+  <div class="stats-res" style="margin-bottom:1.5rem">
+    <div class="stat"><div class="sn" id="r-ok" style="color:var(--green-b)"></div><div class="sl">Correctas</div></div>
+    <div class="stat"><div class="sn" id="r-fail" style="color:var(--red-b)"></div><div class="sl">Incorrectas</div></div>
+    <div class="stat"><div class="sn" id="r-blank"></div><div class="sl">En blanco</div></div>
+    <div class="stat"><div class="sn" id="r-pena" style="color:var(--red-b)"></div><div class="sl">Penalización</div></div>
+  </div>
+  <div class="rev-section-title" id="rev-title"></div>
+  <div id="review-list"></div>
+  <button class="btn-restart" onclick="restart()">Reiniciar test</button>
+</div>
+
+</div>
+<script>
+const QS=[
+  {p:"En un sistema de transporte con neutro rígidamente unido a tierra, se produce un defecto monofásico. ¿Cómo se define técnicamente el 'Factor de defecto a tierra' en el punto de falta?",o:{a:"Cociente entre la corriente de falta monofásica y la corriente de cortocircuito trifásica.",b:"Relación entre la tensión eficaz de la fase sana durante la falta y la tensión fase-tierra en ausencia de defecto.",c:"Diferencia vectorial entre la tensión de secuencia directa y la tensión de secuencia homopolar.",d:"Producto de la impedancia de secuencia cero por la intensidad de retorno por el neutro."},c:"b",ref:"Electrotecnia / Terminología",exp:"La respuesta (b) define físicamente la elevación de potencial en las fases sanas por el desplazamiento del neutro. La opción (a) es una relación de corrientes; (c) y (d) son parámetros de cálculo de componentes simétricas, pero no representan la definición normativa del factor de defecto."},
+  {p:"Al dimensionar el cableado secundario de un transformador de tensión (TT) para medida oficial en una frontera de 400 kV, ¿cuál es el límite máximo de caída de tensión permitido desde el borne del TT hasta el contador?",o:{a:"0,5% de la tensión nominal secundaria.",b:"1 por 1.000 de la tensión nominal secundaria.",c:"1,5 V de caída máxima absoluta por fase.",d:"3% para circuitos de protección y 1% para medida."},c:"b",ref:"Electrotecnia / Transformadores de medida",exp:"La normativa exige una precisión de 1/1.000 (b) para evitar errores de facturación. La opción (a) es un valor típico industrial insuficiente para puntos frontera; (c) es un valor fijo que no considera la tensión nominal; y (d) confunde límites de caída de tensión con márgenes de error de clase de precisión."},
+  {p:"En el análisis de una falta bifásica franca (fase a fase sin contacto a tierra), ¿cuál es el comportamiento de la componente de secuencia homopolar (I0) en el punto de defecto?",o:{a:"Es igual a la raíz de 3 veces la secuencia directa.",b:"Es nula, ya que no existe camino de retorno por el neutro o tierra.",c:"Es idéntica en módulo a la secuencia inversa pero con desfase de 180°.",d:"Depende exclusivamente de la impedancia de magnetización del transformador de potencia."},c:"b",ref:"Electrotecnia / Componentes simétricas",exp:"La secuencia homopolar (b) solo aparece cuando hay una conexión a tierra que permita el retorno de corriente. La opción (a) es una relación de tensiones de línea; (c) describe la relación entre secuencia directa e inversa en una falta bifásica pero no aplica a la homopolar; y (d) solo influiría en el régimen transitorio, no en la falta establecida."},
+  {p:"Se requiere seleccionar la relación de transformación de un TT para una posición de 220 kV. ¿Dentro de qué rango debe situarse la tensión asignada del primario respecto a la tensión nominal del circuito?",o:{a:"Entre el 80% y el 100%.",b:"Entre el 100% y el 120%.",c:"Exactamente al 100% en todos los casos para medida fiscal.",d:"Entre el 90% y el 110% para evitar ferrorresonancia."},c:"b",ref:"Electrotecnia / Transformadores de medida",exp:"El diseño debe garantizar que el TT trabaje en su zona lineal incluso con ligeras sobretensiones permanentes (b). La opción (a) implicaría trabajo saturado; (c) es demasiado rígido; y (d) es una medida operativa, no el criterio de selección de la relación de transformación."},
+  {p:"En una subestación con neutro aislado, se produce un defecto monofásico a tierra. ¿Qué situación de falta se considera la más exigente para el dimensionado térmico de los conductores de tierra?",o:{a:"La falta monofásica a tierra persistente por más de 2 horas.",b:"La doble falta a tierra (cortocircuito bifásico a través de tierra).",c:"El cortocircuito trifásico equilibrado en barras.",d:"La descarga de un rayo de 100 kA sobre el pararrayos de la posición."},c:"b",ref:"Electrotecnia / Cortocircuito asimétrico",exp:"Una segunda falta en otra fase (b) cierra un circuito de gran intensidad a través de la red de tierras. La opción (a) tiene baja intensidad; (c) es una falta entre conductores que no circula mayoritariamente por tierra; y (d) es un transitorio que afecta más al aislamiento que a la estabilidad térmica."},
+  {p:"La función de protección diferencial de transformador (ANSI 87T) dispone de una unidad de 'bloqueo por armónicos'. ¿Cuál es el fenómeno físico que se pretende identificar para evitar un disparo erróneo?",o:{a:"La saturación de los TI ante una falta externa violenta.",b:"La corriente de magnetización (inrush) durante la energización del transformador.",c:"La presencia de armónicos de tercer orden debidos a cargas no lineales.",d:"El desequilibrio de impedancias en las fases del devanado terciario."},c:"b",ref:"Función ANSI 87T / Protección",exp:"La energización genera una corriente diferencial ficticia rica en segundo armónico (b), que el relé usa para bloquear el disparo. La opción (a) se gestiona mediante el frenado porcentual; (c) es filtrada por la conexión en triángulo; y (d) es un problema de diseño que no bloquea la diferencial."},
+  {p:"En un relé de distancia (ANSI 21), ¿cuál es la función primordial de la denominada 'Zona de Extensión' o 'Zona 1 Extendida'?",o:{a:"Proteger el transformador de potencia del extremo remoto.",b:"Garantizar el disparo instantáneo en el 100% de la línea ante fallos de teleprotección.",c:"Actuar como respaldo de la protección diferencial de barras.",d:"Compensar el error de medida provocado por el efecto Ferranti."},c:"b",ref:"Función ANSI 21 / Lógicas de disparo",exp:"Se utiliza (b) para cubrir toda la línea instantáneamente antes de que el reenganchador actúe. La opción (a) invadiría zonas de otra subestación sin coordinación; (c) es función de zona 2 o 3 con retardo; y (d) es un fenómeno de tensión que no se corrige con el alcance de la impedancia."},
+  {p:"Para la protección de un autotransformador, se instala una función diferencial de tierra restringida (ANSI 87N). ¿Qué tipo de faltas detecta que podrían pasar inadvertidas para la diferencial de fases (87T)?",o:{a:"Sobrecargas simétricas en el devanado secundario.",b:"Faltas a tierra internas muy próximas al punto neutro.",c:"Cortocircuitos entre espiras de la misma fase.",d:"Sobreexcitación por aumento de la frecuencia de red."},c:"b",ref:"Protecciones / Autotransformadores",exp:"Cerca del neutro la tensión es baja y la corriente de falta es pequeña, siendo la 87N (b) mucho más sensible. La opción (a) es detectada por la función 49; (c) no genera corriente de neutro; y (d) es una condición de flujo magnético que no ve la diferencial."},
+  {p:"En un sistema de protección diferencial de línea (87L), se pierde la señal de sincronización horaria por GPS en un extremo. ¿Qué automatismo suele activar el relé para mantener la estabilidad?",o:{a:"Paso automático a protección de sobreintensidad instantánea.",b:"Conmutación al método de medida de tiempo 'Eco' (Ping-pong) si el canal es simétrico.",c:"Bloqueo total de la posición y apertura del interruptor por seguridad.",d:"Aumento del umbral de disparo de la 87L al 300% de la nominal."},c:"b",ref:"Función ANSI 87L / Control",exp:"El método Eco (b) permite calcular el retardo del canal sin GPS. La opción (a) dejaría la línea sin protección selectiva; (c) afectaría a la disponibilidad de la red; y (d) reduciría drásticamente la sensibilidad ante faltas resistivas."},
+  {p:"En una lógica de disparo, el uso de 'Relés de Enclavamiento' (Lockout Relays - ANSI 86) tiene como objetivo principal:",o:{a:"Acelerar mecánicamente la velocidad de los contactos del interruptor.",b:"Impedir el reenganche y cierre del interruptor hasta que un operario verifique la causa del defecto.",c:"Multiplicar el número de señales de alarma hacia el telemando.",d:"Sustituir a las bobinas de disparo TC1 y TC2 en caso de fallo de batería."},c:"b",ref:"Protecciones / Lógicas de disparo",exp:"El relé 86 (b) requiere un rearme manual o eléctrico tras faltas graves para evitar daños mayores. La opción (a) es una característica del interruptor; (c) es una consecuencia, no el objetivo; y (d) es imposible ya que el relé 86 consume energía, no la genera."},
+  {p:"Un interruptor automático dispone de dos bobinas de disparo (TC1 y TC2). ¿Cuál es el criterio de diseño de REE respecto a su alimentación en corriente continua?",o:{a:"Deben alimentarse de la misma batería para asegurar simultaneidad.",b:"Deben alimentarse de grupos de baterías y circuitos de distribución totalmente independientes.",c:"TC1 se alimenta en alterna y TC2 en continua como respaldo.",d:"Una bobina se reserva exclusivamente para mando manual y la otra para protecciones."},c:"b",ref:"Control de maniobra / Redundancia",exp:"La redundancia total (b) garantiza que el interruptor dispare incluso si falla un sistema de baterías completo. La opción (a) crea un punto común de fallo; (c) la alterna no es fiable para servicios críticos; y (d) ambas bobinas deben poder ser activadas por protecciones redundantes."},
+  {p:"La supervisión de la bobina de disparo (ANSI 74TC) en posición 'Cerrado' del interruptor verifica la integridad de:",o:{a:"Solo la resistencia óhmica interna de la bobina.",b:"Toda la cadena: cableado de control, contactos auxiliares 52a/b y la propia bobina de disparo.",c:"La presión del gas SF6 del polo central.",d:"El estado de carga del muelle de cierre únicamente."},c:"b",ref:"Control de maniobra / Supervisión",exp:"El 74TC (b) inyecta una pequeña corriente por todo el lazo para asegurar que, cuando el relé cierre el contacto, el disparo sea efectivo. La opción (a) es incompleta; (c) es una supervisión de densidad; y (d) es una supervisión mecánica del sistema de energía del interruptor."},
+  {p:"En un esquema de reenganche automático (ANSI 79), ¿qué indica el concepto de 'Tiempo de Calma' o 'Dead Time'?",o:{a:"El tiempo que tarda el operador en autorizar el cierre remoto.",b:"El intervalo entre la apertura de los tres polos y el primer intento de cierre para permitir la desionización del aire.",c:"El tiempo de espera para que el muelle del interruptor se cargue tras un disparo.",d:"La duración máxima de la falta antes de que la protección bloquee el reenganche."},c:"b",ref:"Control de maniobra / Automatismos",exp:"Es esencial (b) para que el arco del defecto se extinga totalmente antes de volver a dar tensión. La opción (a) es parte del telemando, no del ciclo automático; (c) es una restricción mecánica; y (d) es el tiempo de actuación de la protección."},
+  {p:"Durante una maniobra de cambio de barras en una subestación de doble barra, se utiliza el interruptor de enlace. ¿Qué condición de sincronismo se exige para cerrar el paralelo?",o:{a:"Diferencia de frecuencias inferior a 0,01 Hz.",b:"Verificación de que ambas barras están bajo tensión y en fase (diferencia de ángulos próxima a 0°).",c:"Diferencia de tensiones superior al 20% para asegurar el flujo de potencia.",d:"Ninguna, el enlace de barras no requiere supervisión eléctrica."},c:"b",ref:"Control de maniobra / Sincronismo",exp:"Al unir dos barras de la misma subestación (b), se debe asegurar que no haya desfase accidental que provoque un cortocircuito. La opción (a) es para unir sistemas distintos (islas); (c) provocaría una circulación masiva de reactiva; y (d) es una práctica prohibida en subestaciones de transporte."},
+  {p:"En el contexto de la cesión de mando al Agente (CIA), ¿qué posición de la maneta local en el bastidor de RE impide el control remoto desde el Despacho de Control de RE?",o:{a:"Posición 'LOCAL'.",b:"Posición 'CIA'.",c:"Posición 'REMOTO'.",d:"Tanto la posición 'LOCAL' como la 'CIA' impiden el mando directo desde el despacho de RE."},c:"d",ref:"Control / Operación",exp:"Por seguridad, cualquier posición distinta de 'REMOTO' bloquea el mando del despacho. La opción (a) y (b) son exclusivas para mando a pie de equipo o por el Agente respectivamente, invalidando la prioridad del centro de control de RE."},
+  {p:"En un transformador de intensidad (TI) con varios núcleos secundarios, se identifica uno marcado como 'Clase 5P20'. ¿Qué significa este marcado?",o:{a:"Precisión del 0,5% con 20 VA de carga.",b:"Error del 5% cuando la corriente primaria es 20 veces la nominal (Límite de precisión).",c:"Capacidad de soportar 20 kV de tensión de aislamiento industrial.",d:"Núcleo de medida con 5 devanados en paralelo para 20 A."},c:"b",ref:"Electrotecnia / Transformadores de medida",exp:"Es el marcado estándar para núcleos de protección (b), donde 5P indica el error compuesto y 20 el factor de límite de precisión. La opción (a) describe un núcleo de medida; (c) es una característica de aislamiento no relacionada con el marcado; y (d) es una interpretación errónea."},
+  {p:"¿Qué magnitud física mide el relé de imagen térmica (ANSI 49) para proteger un transformador de potencia?",o:{a:"La temperatura directa de las bornas de AT mediante infrarrojos.",b:"Una estimación de la temperatura del punto más caliente (Hot Spot) basada en la corriente de carga y la temperatura del aceite.",c:"La conductividad eléctrica del aceite aislante.",d:"La presión diferencial entre la cuba y el conservador."},c:"b",ref:"Función ANSI 49 / Protecciones",exp:"El relé (b) simula matemáticamente el calentamiento del cobre para evitar el envejecimiento prematuro del aislamiento. La opción (a) no mide el interior del bobinado; (c) es un ensayo químico; y (d) corresponde al funcionamiento del relé Buchholz."},
+  {p:"En una subestación blindada (GIS), el 'Enclavamiento de Mantenimiento' impide el cierre de un seccionador de puesta a tierra si:",o:{a:"El interruptor asociado está en posición abierto.",b:"El seccionador de línea o barras correspondiente está cerrado.",c:"La presión del gas SF6 es superior a la nominal.",d:"El operario no ha accionado el pulsador de 'Emergencia'."},c:"b",ref:"Control de maniobra / Enclavamientos",exp:"Se debe evitar (b) crear un cortocircuito franco al poner a tierra un tramo que aún tiene conexión con las barras o línea en tensión. La opción (a) es condición necesaria pero insuficiente; (c) es una condición de servicio normal; y (d) bloquearía la maniobra en lugar de permitirla."},
+  {p:"¿Qué efecto tiene sobre una protección de sobreintensidad temporizada (ANSI 51) la selección de una curva de tipo 'Extremadamente Inversa'?",o:{a:"El tiempo de disparo es constante independientemente de la corriente.",b:"El tiempo de disparo disminuye de forma muy acusada ante pequeños incrementos de la corriente de falta.",c:"El relé solo actúa si la falta dura más de 10 segundos.",d:"Aumenta la sensibilidad del relé ante corrientes de baja frecuencia."},c:"b",ref:"Electrotecnia / Protecciones",exp:"Estas curvas (b) se usan para coordinar con fusibles o proteger equipos con curvas de daño muy críticas. La opción (a) define una curva de tiempo definido; (c) es un ajuste de tiempo, no un tipo de curva; y (d) los relés operan a frecuencia industrial."},
+  {p:"En un sistema de 400 kV, ¿cuál es la tensión nominal fase-fase (Un) y la tensión más elevada para el material (Um) típicamente asignadas?",o:{a:"Un = 400 kV / Um = 400 kV.",b:"Un = 400 kV / Um = 420 kV.",c:"Un = 380 kV / Um = 400 kV.",d:"Un = 420 kV / Um = 420 kV."},c:"b",ref:"Electrotecnia / Tensiones",exp:"La tensión nominal (b) identifica la red y la Um es el límite de diseño del aislamiento. La opción (a) no deja margen operativo; (c) usa valores de otros países; y (d) confunde el valor de servicio máximo con el nominal."},
+  {p:"La función ANSI 50BF (Fallo de Interruptor) realiza un 'Disparo de Cercanía' (Retrip) sobre el propio interruptor antes de disparar las barras. ¿Por qué?",o:{a:"Para intentar abrir la segunda bobina de disparo (TC2) por si el fallo fue solo de la primera (TC1).",b:"Para resetear el contador de maniobras del interruptor.",c:"Para informar al telemando de que el interruptor está bloqueado mecánicamente.",d:"Para dar tiempo a que los seccionadores de barras abran en carga."},c:"a",ref:"Protecciones / ANSI 50BF",exp:"Es un intento rápido (a) de salvar la barra disparando por un camino de control alternativo si el principal falló. La opción (b) es irrelevante para la falta; (c) el 50BF es un automatismo de actuación, no solo de alarma; y (d) abrir seccionadores en carga es destructivo."},
+  {p:"En la medida de potencia reactiva (Q) en un sistema trifásico, ¿qué desfase angular debe introducirse artificialmente en la señal de tensión respecto a la intensidad?",o:{a:"0° (deben estar en fase).",b:"90° eléctricos.",c:"120° debido al sistema polifásico.",d:"180° para indicar que la energía es consumida."},c:"b",ref:"Electrotecnia / Medida",exp:"La potencia reactiva (b) se basa en la componente de la corriente en cuadratura con la tensión. La opción (a) mediría potencia activa; (c) es el desfase entre fases, no entre magnitudes de la misma fase; y (d) indicaría inversión de flujo de potencia activa."},
+  {p:"La protección de 'Inversión de Potencia' (ANSI 32) en un grupo generador conectado a la red de transporte actúa cuando:",o:{a:"El generador entrega demasiada potencia reactiva capacitiva.",b:"El generador absorbe potencia activa de la red, pasando a funcionar como motor.",c:"Se produce un cortocircuito en los bornes del alternador.",d:"La tensión de barras cae por debajo del 50% de la nominal."},c:"b",ref:"Protecciones / Generadores",exp:"Evita (b) daños mecánicos en la turbina al ser arrastrada por la red. La opción (a) es una condición de subexcitación (ANSI 40); (c) es una falta grave que detecta la diferencial; y (d) es una mínima tensión (ANSI 27)."},
+  {p:"En un sistema de servicios auxiliares de CC aislado de tierra, se detecta una alarma de 'Primer Defecto a Tierra'. ¿Cuál es la consecuencia operativa inmediata?",o:{a:"Disparo instantáneo de todos los interruptores de la subestación.",b:"Ninguna sobre el funcionamiento, pero se debe localizar y reparar antes de que aparezca un segundo defecto.",c:"Fallo total de la alimentación de los relés de protección.",d:"Aparición de un cortocircuito franco que quema los fusibles de batería."},c:"b",ref:"Control / Servicios Auxiliares",exp:"Al ser un sistema aislado (b), un solo contacto con tierra no cierra el lazo de corriente. La opción (a) es falsa, no hay cortocircuito; (c) el sistema sigue alimentado; y (d) solo ocurriría si apareciera un fallo en el polo opuesto simultáneamente."},
+  {p:"Un contador de energía oficial RUPM debe ser alimentado por un TT inductivo. ¿Qué restricción existe sobre la carga (Burden) conectada a este TT?",o:{a:"La carga real debe ser superior al 120% de su potencia de precisión.",b:"La carga real debe estar comprendida entre el 25% y el 100% de su potencia de precisión.",c:"No puede haber ninguna carga, el contador debe estar en vacío.",d:"La carga debe ser puramente capacitiva para compensar errores."},c:"b",ref:"Electrotecnia / Medida oficial",exp:"Fuera de este rango (b), el TT no garantiza la clase de precisión exigida para facturación. La opción (a) saturaría el transformador; (c) el propio contador y cableado ya suponen una carga; y (d) el factor de potencia debe ser cercano a 1."},
+  {p:"La función ANSI 67N (Sobreintensidad de Tierra Direccional) requiere comparar la corriente de neutro con una referencia de tensión. ¿Cómo se obtiene normalmente esta tensión?",o:{a:"Midiendo la tensión entre una fase y la pantalla del cable.",b:"Mediante la suma vectorial de las tres tensiones de fase (Tensión residual o 3V0).",c:"A través de un sensor de temperatura en la cuba del transformador.",d:"Usando la tensión continua de las baterías de control."},c:"b",ref:"Protecciones / ANSI 67N",exp:"La tensión residual (b) representa el desplazamiento del neutro durante la falta, sirviendo de referencia polarizadora. La opción (a) es una medida de aislamiento local; (c) es una magnitud térmica; y (d) no tiene relación con el fasor de tensión de alterna."},
+  {p:"En la lógica de un automatismo de reenganche monofásico, tras el disparo de la fase A por un rayo, el interruptor permanece con las fases B y C cerradas. ¿Qué función ANSI supervisa este estado de asimetría para evitar daños?",o:{a:"ANSI 27 (Mínima tensión).",b:"ANSI 46 (Desequilibrio de intensidades / Secuencia inversa).",c:"ANSI 59 (Sobreintensidad).",d:"ANSI 81 (Frecuencia)."},c:"b",ref:"Protecciones / ANSI 46",exp:"La apertura de una sola fase (b) genera una gran componente de secuencia inversa que calienta rotores y desequilibra cargas. La opción (a) vería una caída de tensión pero no es la protección específica para asimetría; (c) es de valor absoluto; y (d) no se ve afectada por una asimetría de fases local."},
+  {p:"Para la integración de una subestación en el sistema de telemando de RE, se utiliza el protocolo IEC 61850. ¿Qué ventaja aporta el uso de mensajes 'GOOSE'?",o:{a:"Permiten el envío de facturas de energía en tiempo real.",b:"Facilitan el intercambio de señales críticas entre relés (intertrips, enclavamientos) a través de la red Ethernet sin cables físicos.",c:"Reducen el consumo de SF6 en los interruptores blindados.",d:"Sincronizan los relojes de los ordenadores de oficina de la planta."},c:"b",ref:"Control / Digitalización",exp:"Los mensajes GOOSE (b) son de alta prioridad y sustituyen el cableado de cobre entre equipos de control. La opción (a) es una función administrativa; (c) es un beneficio físico ajeno a las comunicaciones; y (d) usa protocolos como PTP o NTP."},
+  {p:"En una subestación de 220 kV, se detecta que el interruptor tiene 'Baja Presión de SF6' (Nivel de Bloqueo). ¿Qué acción automática debe realizar la lógica de control?",o:{a:"Cerrar inmediatamente el interruptor para evitar arcos.",b:"Bloquear cualquier maniobra de apertura o cierre y desactivar el disparo por protecciones para evitar un fallo catastrófico del equipo.",c:"Aumentar la tensión de la bobina de disparo para compensar la falta de gas.",d:"Poner la posición en paralelo con el enlace de barras automáticamente."},c:"b",ref:"Control de maniobra / Seguridad",exp:"Sin presión de gas (b), el interruptor no puede extinguir el arco y explotaría al intentar abrir una falta. La opción (a) es peligrosa si la orden era de apertura; (c) es físicamente imposible influir en la extinción del arco con la tensión de mando; y (d) no resuelve el riesgo."},
+  {p:"En un circuito trifásico equilibrado con una carga de 100 MW y factor de potencia 0,8 inductivo, ¿cuál es el valor aproximado de la potencia reactiva (Q)?",o:{a:"60 MVAr.",b:"75 MVAr.",c:"80 MVAr.",d:"125 MVAr."},c:"b",ref:"Electrotecnia / Potencias",exp:"S = P/cos φ = 100/0,8 = 125 MVA. Q = √(S²−P²) = √(125²−100²) = 75 MVAr (b). La opción (a) sería para un fp de 0,85; (c) confunde Q con el propio factor de potencia; y (d) es el valor de la potencia aparente (S)."},
+  {p:"La función de protección ANSI 81 (Frecuencia) detecta una derivada negativa de frecuencia (df/dt) muy elevada. ¿A qué situación de red suele asociarse?",o:{a:"Aparición de una sobretensión atmosférica.",b:"Pérdida súbita de una gran cantidad de generación, provocando un desequilibrio carga-generación grave.",c:"Desconexión de una batería de condensadores de 50 MVAr.",d:"Funcionamiento en vacío de un transformador de 400 MVA."},c:"b",ref:"Protecciones / Estabilidad",exp:"La inercia del sistema cae cuando falta generación (b), traduciéndose en una caída rápida de la frecuencia. La opción (a) afecta al aislamiento dieléctrico; (c) afecta principalmente al perfil de tensiones; y (d) es una carga despreciable para la frecuencia del sistema."},
+  {p:"Al realizar pruebas de inyección secundaria en un relé de protección, se observa que el tiempo de actuación es el doble del esperado. ¿Cuál podría ser la causa técnica?",o:{a:"El relé está configurado en lógica de 'Fase a Fase' pero se está inyectando solo una fase.",b:"Se ha cruzado la polaridad de la señal de tensión homopolar.",c:"El relé está recibiendo una señal de 'Bloqueo de Protección' (ANSI 68) por oscilación de potencia.",d:"El inversor de la maleta de pruebas está funcionando a 60 Hz en lugar de 50 Hz."},c:"c",ref:"Control / Pruebas",exp:"El bloqueo (c) por oscilación de potencia está diseñado para retrasar o impedir el disparo ante variaciones lentas de impedancia. La opción (a) daría un error de medida de corriente; (b) afectaría a la direccionalidad, no al tiempo; y (d) provocaría un error de frecuencia invalidando la prueba."},
+  {p:"En un sistema de transporte, ¿cuál es el enclavamiento reglamentario para operar un seccionador de puesta a tierra de línea?",o:{a:"Solo que el interruptor de la posición esté abierto.",b:"Interruptor abierto, seccionador de línea abierto y ausencia de tensión verificada en la línea.",c:"Que el seccionador de barras esté en posición de 'Toma de Datos'.",d:"No requiere enclavamiento si se dispone de pértiga aislante certificada."},c:"b",ref:"Control de maniobra / Seguridad",exp:"Es vital asegurar (b) que la línea no está alimentada desde el extremo remoto antes de ponerla a tierra. La opción (a) es insuficiente; (c) es una posición inexistente; y (d) la seguridad reglamentaria se basa en el equipo, no solo en los EPIs del operario."},
+  {p:"La función ANSI 27 (Mínima Tensión) se utiliza habitualmente para proteger motores de alta tensión. ¿Cuál es el riesgo de mantener un motor conectado ante una caída de tensión profunda y prolongada?",o:{a:"Que el motor se convierta en generador y sobrecargue la red.",b:"Aumento excesivo de la intensidad absorbida para mantener el par, provocando el calentamiento destructivo del estator.",c:"Disminución de la velocidad hasta que el ventilador de refrigeración se detenga.",d:"Que el factor de potencia del motor pase a ser capacitivo."},c:"b",ref:"Protecciones / Motores",exp:"Al caer la tensión, la corriente sube proporcionalmente (b) para entregar la misma potencia mecánica, superando el límite térmico del cobre. La opción (a) solo ocurre en máquinas síncronas bajo condiciones específicas; (c) es consecuencia secundaria; y (d) el comportamiento de la reactiva depende del deslizamiento."},
+  {p:"¿Qué indica el término 'Tensión de Contacto Aplicada' (Uca) en el diseño de puestas a tierra?",o:{a:"La tensión total del electrodo de tierra respecto al infinito.",b:"La fracción de la tensión de defecto que incide directamente sobre el cuerpo humano, considerando la resistencia de los pies y del calzado.",c:"La tensión máxima que soporta el aislamiento de los cables de control.",d:"La tensión entre dos electrodos de tierra situados a más de 20 metros."},c:"b",ref:"Electrotecnia / Tierras",exp:"Es el valor real de seguridad (b) que fluye por la persona, asumiendo 1.000 ohmios de resistencia corporal. La opción (a) es la tensión de puesta a tierra total; (c) es una tensión soportada dieléctrica; y (d) es una medida de independencia de tierras."},
+  {p:"En un circuito de mando de un seccionador motorizado, se detecta que el motor no arranca a pesar de tener orden de cierre. ¿Qué elemento de la cadena de control es el más probable que esté bloqueando la maniobra por seguridad?",o:{a:"El relé de supervisión de sincronismo.",b:"El contacto auxiliar del interruptor asociado (enclavamiento eléctrico).",c:"El termostato de la caseta de control.",d:"El registrador de eventos de la subestación."},c:"b",ref:"Control de maniobra / Lógicas",exp:"Los seccionadores están enclavados con el interruptor (b) para impedir que abran o cierren en carga. La opción (a) solo aplica al cierre de interruptores; (c) no participa en la lógica de maniobra de potencia; y (d) es un equipo de monitorización pasiva."},
+  {p:"Para la protección de barras (ANSI 87B) en subestaciones de 400 kV de REE, ¿qué arquitectura se exige normalmente para garantizar la fiabilidad?",o:{a:"Un relé de sobreintensidad de neutro temporizado.",b:"Doble protección diferencial de barras (Sistema 1 y Sistema 2) totalmente independientes.",c:"Un único relé diferencial y un fusible de expulsión en cada tramo.",d:"La protección se confía exclusivamente a las zonas de distancia remotas (Z2/Z3)."},c:"b",ref:"Control y Protecciones / REE",exp:"En la red de transporte (b) se exige redundancia total para asegurar el despeje de faltas en barras en menos de 100ms. La opción (a) es muy lenta; (c) los fusibles no se usan en estos niveles; y (d) causaría un apagón masivo por el tiempo de despeje."},
+  {p:"¿Cuál es la función de la denominada 'Resistencia de Estabilización' en un esquema de protección diferencial de barras de alta impedancia?",o:{a:"Reducir la corriente de cortocircuito de la subestación.",b:"Asegurar que el relé no dispare ante faltas externas si uno de los TI se satura totalmente.",c:"Calentar el relé para evitar la condensación en climas fríos.",d:"Servir de carga para el sistema de servicios auxiliares de alterna."},c:"b",ref:"Protecciones / ANSI 87B",exp:"La resistencia (b) crea una caída de tensión que obliga a la corriente del TI saturado a circular por su propia rama interna en lugar de por el relé. La opción (a) es una reactancia de red; (c) es una resistencia calefactora de cuadro; y (d) no tiene sentido en el lazo de medida de TI."},
+  {p:"En un sistema con compensación mediante Bobina Petersen, ¿cuál es el objetivo de este equipo frente a las faltas a tierra?",o:{a:"Aumentar la corriente de falta para que los fusibles fundan rápido.",b:"Compensar la corriente capacitiva de la red en el punto de falta para que el arco sea autoextinguible.",c:"Reducir la frecuencia del sistema a 25 Hz durante la avería.",d:"Eliminar todos los armónicos de la tensión de barras."},c:"b",ref:"Electrotecnia / Sistemas de neutro",exp:"La bobina (b) inyecta una corriente inductiva que cancela la capacitiva de los cables, reduciendo el defecto a un valor residual ínfimo. La opción (a) es lo opuesto a su función; (c) es físicamente imposible; y (d) es una función de filtrado activo de potencia."}
+];
+
+let cur=0, answers=new Array(QS.length).fill(null), iv=null, secs=90*60;
+
+function startTest(){
+  document.getElementById('s-start').style.display='none';
+  document.getElementById('s-test').style.display='block';
+  buildNav(); renderQ(); startTimer();
+}
+
+function buildNav(){
+  const nav=document.getElementById('q-nav'); nav.innerHTML='';
+  QS.forEach((_,i)=>{
+    const d=document.createElement('div');
+    let cls='q-dot';
+    if(i===cur) cls+=' current';
+    else if(answers[i]!==null) cls+=(answers[i]===QS[i].c?' correct':' wrong');
+    d.className=cls;
+    d.textContent=i+1;
+    d.onclick=()=>goTo(i);
+    nav.appendChild(d);
+  });
+}
+
+function renderQ(){
+  const q=QS[cur];
+  const answered=answers[cur]!==null;
+  document.getElementById('q-label').textContent=`Pregunta ${cur+1} de ${QS.length}`;
+  document.getElementById('q-text').textContent=q.p;
+
+  const opts=document.getElementById('options'); opts.innerHTML='';
+  Object.entries(q.o).forEach(([k,v])=>{
+    const d=document.createElement('div');
+    let cls='opt';
+    if(answered){
+      cls+=' locked';
+      if(k===q.c) cls+=' show-correct';
+      if(k===answers[cur] && answers[cur]!==q.c) cls+=' sel-wrong';
+    }
+    d.className=cls;
+    d.innerHTML=`<span class="opt-key">${k.toUpperCase()})</span><span>${v}</span>`;
+    if(!answered) d.onclick=()=>selectAnswer(k);
+    opts.appendChild(d);
+  });
+
+  const fb=document.getElementById('feedback');
+  if(answered){
+    const isOk=answers[cur]===q.c;
+    fb.className='feedback show '+(isOk?'fb-ok':'fb-fail');
+    document.getElementById('fb-title').textContent=isOk?'✓ Respuesta correcta':'✗ Respuesta incorrecta';
+    document.getElementById('fb-body').textContent=q.exp;
+    document.getElementById('fb-ref').textContent='📖 Referencia: '+q.ref;
+  } else {
+    fb.className='feedback';
+  }
+  buildNav(); updateStats();
+}
+
+function selectAnswer(k){
+  answers[cur]=k;
+  renderQ();
+}
+
+function navigate(d){
+  const n=cur+d;
+  if(n>=0&&n<QS.length){cur=n; renderQ();}
+}
+
+function goTo(i){cur=i; renderQ();}
+
+function updateStats(){
+  const ans=answers.filter(a=>a!==null).length;
+  document.getElementById('s-ans').textContent=ans;
+  document.getElementById('s-blank').textContent=QS.length-ans;
+  document.getElementById('s-rem').textContent=QS.length-ans;
+}
+
+function startTimer(){
+  const el=document.getElementById('timer');
+  iv=setInterval(()=>{
+    secs--;
+    const m=Math.floor(secs/60),s=secs%60;
+    el.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    if(secs<=300) el.classList.add('warn');
+    if(secs<=0){clearInterval(iv); finish();}
+  },1000);
+}
+
+function finish(){
+  if(iv) clearInterval(iv);
+  document.getElementById('s-test').style.display='none';
+  document.getElementById('s-results').style.display='block';
+
+  let ok=0,fail=0,blank=0;
+  answers.forEach((a,i)=>{
+    if(a===null) blank++;
+    else if(a===QS[i].c) ok++;
+    else fail++;
+  });
+  const pena=fail*0.5, raw=ok-pena;
+  const s10=Math.max(0,(raw/QS.length)*10).toFixed(2);
+
+  document.getElementById('score-num').textContent=s10;
+  document.getElementById('score-detail').textContent=`${ok} correctas · ${fail} incorrectas · ${blank} en blanco · Penalización: −${pena.toFixed(1)} pts`;
+
+  const h160=parseFloat(s10)>=5, h476=parseFloat(s10)>=5, h425=parseFloat(s10)>=6;
+  document.getElementById('habilita-badges').innerHTML=
+    `<span class="habilita ${h160?'ok':'fail'}">Familia 0160: ${h160?'HABILITADO ✓':'NO HABILITADO ✗'}</span> `+
+    `<span class="habilita ${h476?'ok':'fail'}">Familia 0476: ${h476?'HABILITADO ✓':'NO HABILITADO ✗'}</span> `+
+    `<span class="habilita ${h425?'ok':'fail'}">Familia 0425: ${h425?'HABILITADO ✓':'NO HABILITADO ✗'}</span>`;
+
+  document.getElementById('r-ok').textContent=ok;
+  document.getElementById('r-fail').textContent=fail;
+  document.getElementById('r-blank').textContent=blank;
+  document.getElementById('r-pena').textContent='−'+pena.toFixed(1);
+
+  const list=document.getElementById('review-list');
+  list.innerHTML='';
+  const toReview=QS.map((q,i)=>({q,i,a:answers[i]})).filter(({a,q})=>a===null||a!==q.c);
+
+  if(toReview.length===0){
+    document.getElementById('rev-title').textContent='¡Enhorabuena! Todas las respuestas son correctas.';
+  } else {
+    document.getElementById('rev-title').textContent=`Revisión — ${toReview.length} pregunta${toReview.length>1?'s':''} para repasar:`;
+    toReview.forEach(({q,i,a})=>{
+      const isBlank=a===null;
+      const cls=isBlank?'blank':'fail';
+      const tag=isBlank?'<span class="tag tag-blank">En blanco</span>':'<span class="tag tag-fail">Incorrecta ✗</span>';
+      const ua=a?`Tu respuesta: <strong>${a.toUpperCase()}) ${q.o[a]}</strong>`:'No respondida.';
+      list.innerHTML+=`
+        <div class="rev-item ${cls}">
+          ${tag}
+          <div class="rev-q"><strong>${i+1}.</strong> ${q.p}</div>
+          <div class="rev-ans">${ua}<br>Respuesta correcta: <strong>${q.c.toUpperCase()}) ${q.o[q.c]}</strong></div>
+          <div class="rev-exp">${q.exp}</div>
+          <div class="rev-ref">📖 ${q.ref}</div>
+        </div>`;
+    });
+  }
+  window.scrollTo(0,0);
+}
+
+function restart(){
+  answers=new Array(QS.length).fill(null); cur=0; secs=90*60;
+  document.getElementById('s-results').style.display='none';
+  document.getElementById('s-test').style.display='block';
+  document.getElementById('timer').classList.remove('warn');
+  buildNav(); renderQ(); startTimer();
+}
+</script>
+</body>
+</html>

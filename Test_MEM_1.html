@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Habilitación REE — Montaje Electromecánico</title>
+<style>
+  :root {
+    --blue:#185FA5;--blue-l:#E6F1FB;--blue-m:#378ADD;
+    --green:#0F6E56;--green-l:#E1F5EE;--green-b:#1D9E75;
+    --red:#993C1D;--red-l:#FAECE7;--red-b:#D85A30;
+    --amber:#854F0B;--amber-l:#FAEEDA;
+    --gray:#5F5E5A;--gray-l:#F1EFE8;--gray-m:#D3D1C7;
+    --text:#2C2C2A;--muted:#888780;
+    --bg:#ffffff;--bg2:#F8F7F4;
+    --bd:rgba(0,0,0,0.12);--r:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Georgia',serif;background:var(--bg2);color:var(--text);min-height:100vh}
+  #app{max-width:760px;margin:0 auto;padding:2rem 1rem}
+
+  /* INICIO */
+  #s-start{text-align:center;padding:3rem 1rem}
+  #s-start h1{font-size:2rem;font-weight:normal;letter-spacing:-.5px;margin-bottom:.4rem}
+  .subtitle{color:var(--muted);font-size:.95rem;margin-bottom:2.5rem}
+  .info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
+  .ic{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:1.2rem}
+  .ic .n{font-size:2rem;font-weight:bold;color:var(--blue);font-family:monospace}
+  .ic .l{font-size:.8rem;color:var(--muted);margin-top:.25rem}
+  .rules{background:var(--amber-l);border:1px solid #FAC775;border-radius:var(--r);padding:1rem 1.25rem;text-align:left;margin-bottom:2rem;font-size:.85rem;line-height:1.7}
+  .rules strong{color:var(--amber)}
+  .btn-start{background:var(--blue);color:#fff;border:none;border-radius:var(--r);padding:.9rem 2.5rem;font-size:1rem;cursor:pointer;transition:background .2s}
+  .btn-start:hover{background:var(--blue-m)}
+
+  /* CABECERA */
+  .t-header{display:flex;justify-content:space-between;align-items:center;background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:.9rem 1.25rem;margin-bottom:1rem}
+  .t-header .lft{font-size:.85rem}
+  .t-header .lft strong{font-size:1rem;display:block}
+  #timer{font-size:1.5rem;font-weight:bold;font-family:monospace;color:var(--blue)}
+  #timer.warn{color:var(--red-b)}
+
+  /* STATS */
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1rem}
+  .stat{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:.6rem;text-align:center}
+  .stat .sn{font-size:1.4rem;font-weight:bold}
+  .stat .sl{font-size:.7rem;color:var(--muted);margin-top:1px}
+
+  /* NAV PUNTOS */
+  .q-nav{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:1rem}
+  .q-dot{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--bd);font-size:.75rem;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);background:var(--bg);transition:all .15s;font-family:monospace}
+  .q-dot:hover{border-color:var(--blue);color:var(--blue)}
+  .q-dot.current{border:2px solid var(--blue);color:var(--blue);background:var(--blue-l)}
+  .q-dot.correct{background:var(--green-b);color:#fff;border-color:var(--green-b)}
+  .q-dot.wrong{background:var(--red-b);color:#fff;border-color:var(--red-b)}
+
+  /* PREGUNTA */
+  .q-box{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:1.5rem;margin-bottom:1rem}
+  .q-label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.75rem}
+  .q-text{font-size:1rem;line-height:1.65;margin-bottom:1.25rem}
+
+  /* OPCIONES */
+  .opt{display:flex;align-items:flex-start;gap:10px;padding:.85rem 1rem;border-radius:8px;border:1.5px solid var(--bd);margin-bottom:.5rem;transition:all .2s;font-size:.9rem;background:var(--bg2);cursor:pointer;user-select:none}
+  .opt:hover:not(.locked){border-color:var(--blue-m);background:var(--blue-l)}
+  .opt.locked{cursor:default}
+  .opt.sel-correct{border-color:var(--green-b);background:var(--green-l);color:#085041}
+  .opt.sel-wrong{border-color:var(--red-b);background:var(--red-l);color:#712B13}
+  .opt.show-correct{border-color:var(--green-b);background:var(--green-l);color:#085041}
+  .opt-key{font-weight:bold;min-width:20px;font-family:monospace;font-size:1rem;flex-shrink:0;color:var(--muted)}
+  .opt.sel-correct .opt-key,.opt.show-correct .opt-key{color:var(--green-b)}
+  .opt.sel-wrong .opt-key{color:var(--red-b)}
+
+  /* FEEDBACK */
+  .feedback{border-radius:8px;padding:.9rem 1.1rem;margin-top:1rem;font-size:.88rem;line-height:1.6;display:none}
+  .feedback.show{display:block}
+  .feedback.fb-ok{background:var(--green-l);border:1px solid var(--green-b);color:#085041}
+  .feedback.fb-fail{background:var(--red-l);border:1px solid var(--red-b);color:#712B13}
+  .fb-title{font-weight:bold;margin-bottom:.35rem}
+  .fb-ref{font-size:.75rem;margin-top:.5rem;opacity:.75;font-style:italic}
+
+  /* NAVEGACIÓN */
+  .nav-row{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-top:1.25rem}
+  .btn{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:.6rem 1.2rem;font-size:.85rem;cursor:pointer;color:var(--text);transition:all .15s}
+  .btn:hover{border-color:var(--blue);color:var(--blue)}
+  .btn-finish{background:var(--green);color:#fff;border:none;border-radius:8px;padding:.75rem 1.75rem;font-size:.9rem;cursor:pointer;display:block;margin:1rem auto 0;transition:opacity .2s}
+  .btn-finish:hover{opacity:.88}
+
+  /* RESULTADOS */
+  #s-results{display:none}
+  .score-banner{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:2rem;text-align:center;margin-bottom:1rem}
+  .score-num{font-size:4rem;font-weight:bold;font-family:monospace}
+  .habilita{display:inline-block;margin:.4rem .2rem 0;padding:.35rem .9rem;border-radius:20px;font-size:.8rem;font-weight:bold}
+  .habilita.ok{background:var(--green-l);color:var(--green)}
+  .habilita.fail{background:var(--red-l);color:var(--red)}
+  .rev-section-title{font-size:.8rem;color:var(--muted);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.5px}
+  .rev-item{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:.6rem}
+  .rev-item.fail{border-left:4px solid var(--red-b)}
+  .rev-item.blank{border-left:4px solid var(--gray-m)}
+  .rev-q{font-size:.9rem;line-height:1.5;margin-bottom:.5rem}
+  .rev-ans{font-size:.82rem;margin-bottom:.4rem}
+  .rev-exp{font-size:.82rem;line-height:1.55;margin-bottom:.35rem}
+  .rev-ref{font-size:.75rem;color:var(--muted);font-style:italic}
+  .tag{font-size:.7rem;padding:2px 8px;border-radius:20px;font-weight:bold;display:inline-block;margin-bottom:.4rem}
+  .tag-fail{background:var(--red-l);color:var(--red)}
+  .tag-blank{background:var(--gray-l);color:var(--gray)}
+  .btn-restart{background:var(--blue);color:#fff;border:none;border-radius:8px;padding:.75rem 2rem;font-size:.9rem;cursor:pointer;display:block;margin:1.5rem auto 0}
+
+  /* STATS RESULTADOS */
+  .stats-res{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:1rem}
+
+  @media(max-width:500px){
+    .info-grid{grid-template-columns:repeat(2,1fr)}
+    .stats,.stats-res{grid-template-columns:repeat(2,1fr)}
+    .score-num{font-size:3rem}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- INICIO -->
+<div id="s-start">
+  <h1>Habilitación REE</h1>
+  <div class="subtitle">Especialidad Montaje Electromecánico — Familias 160 y 426</div>
+  <div class="info-grid">
+    <div class="ic"><div class="n">35</div><div class="l">Preguntas</div></div>
+    <div class="ic"><div class="n">90'</div><div class="l">Duración</div></div>
+    <div class="ic"><div class="n">−0.5</div><div class="l">Penalización error</div></div>
+  </div>
+  <div class="rules">
+    <strong>Criterios de superación:</strong><br>
+    Familia 0160: puntuación ≥ 5 / 10 &nbsp;|&nbsp; Familia 0426: puntuación ≥ 6 / 10<br><br>
+    <strong>Puntuación:</strong> Correcta +1 pt &nbsp;·&nbsp; Incorrecta −0,5 pt &nbsp;·&nbsp; En blanco 0 pt<br><br>
+    <strong>Feedback:</strong> Al responder, se muestra la corrección y explicación inmediatamente. La respuesta queda bloqueada.<br><br>
+    <strong>Material permitido (formato físico):</strong> RAT (ITC-RAT 01-23), RLAT (ITC-LAT-07), RD 614/2001, IEEE Std 80, UNE-EN IEC 61936-1, RUPM
+  </div>
+  <button class="btn-start" onclick="startTest()">Comenzar test</button>
+</div>
+
+<!-- TEST -->
+<div id="s-test" style="display:none">
+  <div class="t-header">
+    <div class="lft"><strong>Montaje Electromecánico</strong>Habilitación REE · Familias 160 y 426</div>
+    <div id="timer">90:00</div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="sn" id="s-ans" style="color:var(--blue)">0</div><div class="sl">Respondidas</div></div>
+    <div class="stat"><div class="sn" id="s-blank">35</div><div class="sl">En blanco</div></div>
+    <div class="stat"><div class="sn" id="s-rem" style="color:var(--amber)">35</div><div class="sl">Restantes</div></div>
+  </div>
+  <div class="q-nav" id="q-nav"></div>
+  <div class="q-box">
+    <div class="q-label" id="q-label">Pregunta 1 de 35</div>
+    <div class="q-text" id="q-text"></div>
+    <div id="options"></div>
+    <div class="feedback" id="feedback">
+      <div class="fb-title" id="fb-title"></div>
+      <div id="fb-body"></div>
+      <div class="fb-ref" id="fb-ref"></div>
+    </div>
+    <div class="nav-row">
+      <button class="btn" onclick="navigate(-1)">← Anterior</button>
+      <button class="btn" onclick="navigate(1)">Siguiente →</button>
+    </div>
+  </div>
+  <button class="btn-finish" onclick="finish()">Finalizar y ver resultados</button>
+</div>
+
+<!-- RESULTADOS -->
+<div id="s-results">
+  <div class="score-banner">
+    <div style="font-size:.85rem;color:var(--muted);margin-bottom:.5rem">Puntuación final (escala 0–10)</div>
+    <div class="score-num" id="score-num">—</div>
+    <div style="font-size:.8rem;color:var(--muted);margin-top:.25rem" id="score-detail"></div>
+    <div id="habilita-badges" style="margin-top:.75rem"></div>
+  </div>
+  <div class="stats-res" style="margin-bottom:1.5rem">
+    <div class="stat"><div class="sn" id="r-ok" style="color:var(--green-b)"></div><div class="sl">Correctas</div></div>
+    <div class="stat"><div class="sn" id="r-fail" style="color:var(--red-b)"></div><div class="sl">Incorrectas</div></div>
+    <div class="stat"><div class="sn" id="r-blank"></div><div class="sl">En blanco</div></div>
+    <div class="stat"><div class="sn" id="r-pena" style="color:var(--red-b)"></div><div class="sl">Penalización</div></div>
+  </div>
+  <div class="rev-section-title" id="rev-title"></div>
+  <div id="review-list"></div>
+  <button class="btn-restart" onclick="restart()">Reiniciar test</button>
+</div>
+
+</div>
+<script>
+const QS=[
+  {p:"Una subestación de transformación con una tensión nominal de 132 kV que no forma parte de la Red de Transporte se clasifica, según el Reglamento de Alta Tensión, en la categoría:",o:{a:"Categoría Especial.",b:"Primera Categoría.",c:"Segunda Categoría.",d:"Tercera Categoría."},c:"b",ref:"ITC-RAT-04",exp:"La Primera Categoría abarca instalaciones de 66 a 220 kV que no sean de transporte. La opción (a) es incorrecta porque requiere ≥ 220 kV o ser Red de Transporte; (c) es errónea pues se limita al rango 30-66 kV y (d) es falsa ya que la Tercera Categoría llega solo hasta 30 kV. Por tanto, 132 kV se sitúa correctamente en (b)."},
+  {p:"Según la definición de la ITC-RAT 01, un 'Aparato Mecánico de Conexión con Disparo Libre' es aquel que:",o:{a:"Permite el cierre automático tras una falta si se mantiene la orden de tensión.",b:"Abre el circuito automáticamente cuando este se queda sin tensión de servicio.",c:"Sus contactos móviles vuelven a la posición abierta al ordenarse la apertura, incluso si se mantiene la orden de cierre.",d:"Posee un dispositivo que impide un nuevo cierre inmediatamente después de una maniobra de cierre-apertura."},c:"c",ref:"ITC-RAT-01",exp:"El disparo libre garantiza que la apertura siempre sea prioritaria sobre el cierre por seguridad. La opción (a) describe un reenganche; (b) es una protección de mínima tensión y (d) corresponde al dispositivo antibombeo. Solo (c) asegura que, ante una orden de apertura, el aparato se abra aunque persista la señal de cierre."},
+  {p:"De acuerdo con el procedimiento de diseño de una red de tierras descrito en la ITC-RAT 13, ¿cuál es el primer paso obligatorio a realizar?",o:{a:"Cálculo de la resistencia del sistema de tierra.",b:"Investigación de las características del suelo.",c:"Diseño preliminar de la geometría de la malla.",d:"Determinación de las corrientes máximas de puesta a tierra."},c:"b",ref:"ITC-RAT-13",exp:"Investigar el suelo es el punto de partida esencial para obtener la resistividad, dato base de todo el diseño. Las opciones (a), (c) y (d) son pasos posteriores que dependen totalmente del modelo de terreno obtenido en (b). Sin conocer las características geológicas, no se pueden realizar cálculos de seguridad ni dimensionar materiales."},
+  {p:"En el cálculo de tensiones de seguridad según IEEE Std 80, para una persona de 70 kg, la fórmula de la tensión de contacto tolerable considera una resistencia del cuerpo humano de:",o:{a:"500 Ω",b:"1.000 Ω",c:"2.000 Ω",d:"3.000 Ω"},c:"b",ref:"IEEE Std 80 / ITC-RAT-01",exp:"La normativa estandariza la resistencia del cuerpo humano en 1.000 ohmios para uniformizar los cálculos de seguridad. Las opciones (a), (c) y (d) son valores fuera del criterio técnico legal establecido. Se utiliza (b) para asegurar que el diseño de las puestas a tierra ofrezca una protección realista y conservadora frente al choque eléctrico."},
+  {p:"Según la ITC-RAT 15, el vallado perimetral de una instalación de exterior debe tener una altura mínima medida desde el exterior de:",o:{a:"2,00 metros.",b:"2,20 metros.",c:"2,50 metros.",d:"3,00 metros."},c:"b",ref:"ITC-RAT-15",exp:"La altura mínima legal para vallas de instalaciones de exterior es de 2,20 metros. La opción (a) incumple el mínimo reglamentario; (c) y (d) son alturas superiores que no representan el valor base exigido para el diseño estándar. La respuesta (b) es el requisito exacto para disuadir e impedir el acceso a personas ajenas."},
+  {p:"Al diseñar un sistema de medida oficial en un punto frontera tipo 1, los transformadores de intensidad deben tener una clase de precisión mínima de:",o:{a:"0,2",b:"0,2S",c:"0,5",d:"0,5S"},c:"b",ref:"RUPM / Fronteras",exp:"Para medidas fiscales de gran potencia (Tipo 1) se exige clase 0,2S, que asegura precisión incluso con cargas muy bajas (1%). La opción (a) es común para tensión; (c) y (d) son clases menos rigurosas permitidas solo en puntos de medida de menor importancia. Solo (b) cumple con el rigor exigido en fronteras con la red de transporte."},
+  {p:"En una subestación blindada (GIS), si se requiere instalar un TI toroidal para el cumplimiento del RUPM, ¿qué requisito debe cumplir el diámetro interior libre del toroidal?",o:{a:"Debe ser igual al diámetro exterior de la envolvente de la GIS.",b:"Debe permitir el paso del cable de AT y de su cable de puesta a tierra de pantalla.",c:"Debe ser estanco y estar relleno de gas SF6.",d:"Debe ser como mínimo de 500 mm para facilitar la ventilación."},c:"b",ref:"Criterios Fronteras RDT/RNDT",exp:"El retorno de la pantalla por el interior del TI es crítico para cancelar magnéticamente su corriente y medir solo la del conductor. La opción (a) imposibilitaría el montaje; (c) es una característica de la GIS, no del TI toroidal externo; y (d) es una dimensión arbitraria. La técnica correcta para asegurar una medida precisa es la descrita en (b)."},
+  {p:"Según el RD 614/2001, la zona de peligro para una instalación de tensión nominal Un se define como el espacio alrededor de los elementos en tensión en el que:",o:{a:"La presencia de un trabajador no formado supone un riesgo inminente.",b:"La distancia es tal que no se puede garantizar el aislamiento del aire ante sobretensiones por rayo.",c:"Un trabajador sin protección puede sufrir un choque eléctrico o arco, incluso sin contacto directo.",d:"Se deben señalizar obligatoriamente las vías de circulación de vehículos pesados."},c:"c",ref:"RD 614/2001",exp:"La zona de peligro es el volumen donde el riesgo de arco o contacto es grave e inmediato. La opción (a) se refiere a la formación, no al espacio físico; (b) es un criterio de diseño dieléctrico; y (d) es una medida de tráfico. Se elige (c) porque define el riesgo físico inminente que fundamenta las distancias de seguridad laboral."},
+  {p:"La ITC-RAT 13 establece que las mediciones de tensión de paso y contacto aplicadas deben realizarse utilizando un voltímetro que presente una resistencia interna de:",o:{a:"500 Ω",b:"1.000 Ω",c:"2.500 Ω",d:"Superior a 10 MΩ"},c:"b",ref:"ITC-RAT-13 / ITC-RAT-01",exp:"Se utiliza una resistencia de 1.000 ohmios para simular la carga que el cuerpo humano ejercería sobre el circuito. Las opciones (a) y (c) darían tensiones irreales por defecto o exceso; (d) es el error común de usar un multímetro estándar, que sobrestima el peligro al no cerrar el circuito. La respuesta (b) es el estándar técnico normativo."},
+  {p:"Según el RAT, la inspección periódica de las instalaciones de alta tensión por un organismo de control debe realizarse como mínimo cada:",o:{a:"Año.",b:"Dos años.",c:"Tres años.",d:"Cinco años."},c:"c",ref:"RAT Artículo 15",exp:"El Reglamento obliga a inspecciones técnicas externas cada tres años. Las opciones (a) y (b) plantean plazos más cortos no exigidos por ley; (d) excedería el límite legal de seguridad. La periodicidad trienal (c) es el compromiso normativo para garantizar el mantenimiento y la seguridad sin sobrecargar la explotación."},
+  {p:"En el diseño de puestas a tierra, el factor de reducción 'r' se utiliza para:",o:{a:"Reducir la resistividad aparente del terreno mediante el uso de grava.",b:"Calcular la fracción de la corriente de defecto que retorna por los cables de guarda.",c:"Minimizar el valor de la impedancia del electrodo en terrenos graníticos.",d:"Corregir el valor de la tensión de paso en función del espesor de la capa superficial."},c:"b",ref:"ITC-RAT-13 / IEEE 80",exp:"El factor r descuenta la parte de la corriente de falta que regresa por caminos paralelos (cables de guarda). La opción (a) es una mejora del suelo; (c) es una reducción de resistencia local; y (d) usa otros factores como Cs. Solo (b) ajusta la corriente total a la corriente real que drena por la malla y eleva su potencial."},
+  {p:"Para instalaciones de interior situadas en núcleos urbanos, la resistencia al fuego de los sectores de incendio independientes para transformadores de potencia debe ser de al menos:",o:{a:"60 minutos.",b:"90 minutos.",c:"120 minutos.",d:"180 minutos."},c:"c",ref:"ITC-RAT-14",exp:"La sectorización de incendios en zonas urbanas exige una resistencia mínima de 120 minutos (EI 120). Las opciones (a) y (b) ofrecen una protección insuficiente ante un incendio de aceite; (d) es un requisito extremo no solicitado para esta casuística. La opción (c) es el estándar reglamentario para limitar la propagación del fuego en edificios habitados."},
+  {p:"Según la ITC-RAT 08, los secundarios de los transformadores de medida destinados a facturación eléctrica (medida fiscal):",o:{a:"Pueden compartirse con relés de protección de distancia si la carga lo permite.",b:"Deben ser exclusivos para los equipos de medida fiscal.",c:"Deben conectarse en serie con los circuitos de control para evitar sobretensiones.",d:"No requieren estar conectados a tierra en ningún punto."},c:"b",ref:"ITC-RAT-08 / RUPM",exp:"La exclusividad de los núcleos para medida fiscal es obligatoria para evitar errores por cargas externas o manipulaciones. La opción (a) está prohibida por normativa; (c) comprometería la precisión; y (d) es falsa, ya que siempre debe haber un punto a tierra por seguridad. La independencia total (b) es el único criterio válido."},
+  {p:"En el contexto de la IEEE Std 80, ¿qué representa el factor Cs?",o:{a:"La capacidad específica del terreno para almacenar carga estática.",b:"Un factor reductor de la resistividad de la capa superficial (grava).",c:"La constante de tiempo del circuito de defecto para el cálculo térmico.",d:"La conductancia del calzado de seguridad en condiciones de humedad."},c:"b",ref:"IEEE Std 80",exp:"Cs es un factor que ajusta la resistividad teórica de la grava en función de su espesor y la del suelo natural inferior. La opción (a) es una constante física; (c) es un parámetro térmico y (d) es una resistencia de contacto. Se emplea (b) para calcular con precisión las tensiones tolerables según las condiciones reales de la subestación."},
+  {p:"De acuerdo con la ITC-RAT 12, las distancias mínimas en el aire para el Grupo B (36 kV < Un ≤ 245 kV) se basan en:",o:{a:"La tensión soportada nominal a los impulsos tipo rayo.",b:"La tensión soportada nominal a frecuencia industrial de corta duración.",c:"La tensión de servicio máxima entre fases.",d:"La altura sobre el nivel del mar exclusivamente."},c:"a",ref:"ITC-RAT-12",exp:"Para instalaciones del Grupo B, el aislamiento se dimensiona principalmente según la tensión soportada ante impulsos tipo rayo. La opción (b) aplica para tensiones menores; (c) es un parámetro operativo; y (d) es solo un factor de corrección. La respuesta (a) define los niveles de aislamiento y las distancias dieléctricas críticas."},
+  {p:"Al realizar una verificación previa a la puesta en servicio según la ITC-RAT 23, ¿cuál de estos ensayos funcionales es obligatorio?",o:{a:"Ensayo de calentamiento a plena carga de las barras.",b:"Pruebas funcionales de los relés de protección y enclavamientos.",c:"Medida de la potencia acústica de los transformadores en vacío.",d:"Verificación del factor de potencia de los aisladores de apoyo."},c:"b",ref:"ITC-RAT-23",exp:"Es reglamentario verificar el correcto funcionamiento de protecciones y sistemas de enclavamiento antes de energizar. La opción (a) es una prueba de carga posterior; (c) y (d) son ensayos de tipo o de estado del material, no funcionales de la posición. Se elige (b) por ser vital para la seguridad operativa inmediata de la instalación."},
+  {p:"Según el RUPM, en instalaciones con tensiones superiores a 132 kV, los transformadores de tensión para medida fiscal deben ubicarse a una distancia de la frontera inferior a:",o:{a:"50 metros.",b:"150 metros.",c:"500 metros.",d:"1.000 metros."},c:"c",ref:"Criterios Fronteras / RUPM",exp:"Para niveles superiores a 132 kV, la distancia máxima reglamentaria a la frontera es de 500 metros. La opción (a) aplica para < 66 kV; (b) es el límite para el rango 66-132 kV; y (d) excede cualquier margen legal. La respuesta (c) garantiza que las pérdidas en el tramo sean mínimas para la facturación."},
+  {p:"En un sistema con neutro a tierra a través de impedancia, el 'Factor de defecto a tierra' se define como el cociente entre:",o:{a:"La corriente de defecto y la corriente de servicio máxima.",b:"La tensión eficaz entre una fase sana y tierra durante una falta, y la tensión fase-tierra en ausencia de falta.",c:"La resistencia del electrodo de tierra y la resistividad del terreno.",d:"La impedancia homopolar y la impedancia directa de la red."},c:"b",ref:"ITC-RAT-01",exp:"Este factor indica cuánto se desplaza el neutro y cuánto aumenta la tensión en fases sanas durante una falta monofásica. La opción (a) es una relación de corrientes; (c) mide la efectividad del electrodo; y (d) es un parámetro para calcular cortocircuitos. Solo (b) define técnicamente la calidad de la puesta a tierra del neutro."},
+  {p:"Para la protección contra el riesgo eléctrico según el RD 614/2001, las cinco reglas de oro para trabajar sin tensión deben aplicarse en el siguiente orden:",o:{a:"Desconectar, enclavar, verificar ausencia de tensión, poner a tierra/cortocircuito y señalizar.",b:"Desconectar, poner a tierra, verificar ausencia de tensión, enclavar y señalizar.",c:"Verificar ausencia de tensión, desconectar, enclavar, poner a tierra y señalizar.",d:"Desconectar, verificar ausencia de tensión, poner a tierra, enclavar y señalizar."},c:"a",ref:"RD 614/2001",exp:"El orden es estricto por seguridad: 1. Abrir; 2. Bloquear; 3. Comprobar; 4. Tierras; 5. Señalizar. Las opciones (b), (c) y (d) alteran esta secuencia lógica, lo que pondría en grave riesgo al operario. Solo (a) garantiza que cada paso proteja al siguiente."},
+  {p:"Según la ITC-RAT 08, en caso de que un transformador de tensión no disponga de protección en el lado de baja tensión, el proyectista debe:",o:{a:"Anular la garantía del fabricante automáticamente.",b:"Justificarlo en el proyecto e incluir medidas de protección adicionales para evitar daños.",c:"Aumentar la sección del conductor primario en un 50%.",d:"Instalar obligatoriamente un seccionador de puesta a tierra rápido."},c:"b",ref:"ITC-RAT-08",exp:"El Reglamento permite excepciones si el proyectista justifica técnicamente la seguridad del diseño ante fallos. La opción (a) es una consecuencia comercial ajena al RAT; (c) y (d) son soluciones técnicas no exigidas por esta omisión. Solo (b) cumple el procedimiento administrativo y técnico de diseño para legalizar la instalación."},
+  {p:"La norma UNE-EN IEC 61936-1 define 'Tensión más elevada para la instalación (Um)' como:",o:{a:"La tensión máxima que puede aparecer entre fases ante una falta de rayo.",b:"La mayor tensión eficaz entre fases para la cual se ha diseñado la instalación en lo que se refiere al aislamiento.",c:"La tensión nominal de la red incrementada en un factor de 1,2.",d:"El valor de cresta de la tensión fase-tierra en condiciones de sobrecarga máxima."},c:"b",ref:"UNE-EN IEC 61936-1",exp:"Um es el parámetro de diseño que fija el límite de aislamiento del equipo. La opción (a) describe una sobretensión transitoria; (c) es una aproximación comercial arbitraria; y (d) es un valor de servicio en cresta. Se utiliza (b) como referencia eficaz máxima para asegurar que la instalación soporte las condiciones de red."},
+  {p:"En instalaciones de exterior, el terreno debe protegerse para evitar la emanación de polvo. Según la ITC-RAT 15, ¿cuál de estos medios se considera conveniente?",o:{a:"Tierra vegetal compactada.",b:"Suelo de grava o asfáltico.",c:"Recubrimiento de sales químicas higroscópicas.",d:"Mallas plásticas de alta densidad."},c:"b",ref:"ITC-RAT-15",exp:"La grava y el asfalto son materiales recomendados por evitar el polvo y aumentar la seguridad de paso. La opción (a) genera fango y polvo; (c) es una solución temporal e inusual; y (d) no ofrece la resistencia mecánica necesaria. Se elige (b) por su durabilidad y por cumplir la doble función de protección y drenaje."},
+  {p:"Para el dimensionamiento térmico de los conductores de tierra en sistemas con neutro aislado, se debe considerar como corriente de diseño:",o:{a:"La corriente máxima de cortocircuito trifásico.",b:"La suma de las corrientes de cortocircuito de todas las fases.",c:"La corriente resultante de una doble falta a tierra.",d:"La intensidad nominal de carga máxima del transformador."},c:"c",ref:"UNE-EN 50522 / RAT",exp:"En sistemas con neutro aislado, la doble falta a tierra es la situación térmica más crítica para el conductor de protección. La opción (a) es una falta entre fases; (b) no tiene sentido físico; y (d) es un valor de servicio. La respuesta (c) es el criterio de diseño conservador exigido para garantizar la integridad de la red de tierras."},
+  {p:"Según la ITC-RAT 16, para compartimentos de aparamenta rellenos de gas (como SF6), la presión relativa queda limitada a un máximo de:",o:{a:"1,2 bares.",b:"3 bares.",c:"5 bares.",d:"10 bares."},c:"b",ref:"ITC-RAT-16",exp:"La ITC-RAT 16 se aplica a celdas prefabricadas con presión de gas de hasta 3 bares relativos. La opción (a) es un valor arbitrario por debajo del límite; (c) y (d) desplazarían la instalación a normativas de equipos a presión más estrictas. El valor (b) es el límite reglamentario que define el ámbito de aplicación de esta instrucción técnica."},
+  {p:"En la ejecución de puestas a tierra, ¿qué elemento debe conectarse obligatoriamente a la malla de tierra por motivos de protección?",o:{a:"Los conductores activos de los circuitos de control.",b:"Las pantallas de separación de los circuitos primario y secundario de los transformadores de medida.",c:"Los bornes de salida de los contadores de energía.",d:"La carcasa de madera de los muebles de oficina de la subestación."},c:"b",ref:"ITC-RAT-13",exp:"Toda masa metálica que pueda quedar bajo tensión accidental por fallo de aislamiento debe conectarse a tierra. La opción (a) son partes activas que deben estar aisladas; (c) son bornes de circuito; y (d) son materiales no conductores. La pantalla (b) es un elemento crítico de seguridad en transformadores para evitar tensiones peligrosas en BT."},
+  {p:"De acuerdo con el RUPM, el error de medida de un equipo se considera 'Avería de equipo de medida' cuando:",o:{a:"Supera el 1% del valor medido en cualquier circunstancia.",b:"Realiza sus funciones con un grado de precisión inferior al que le correspondería.",c:"El módem de comunicaciones pierde la señal por más de 24 horas.",d:"Se rompe el precinto de la caja de centralización."},c:"b",ref:"RUPM (PO 10.1)",exp:"Cualquier funcionamiento con precisión inferior a la asignada se clasifica legalmente como avería. La opción (a) es una tolerancia puntual; (c) es un fallo de comunicaciones; y (d) es una anomalía de seguridad física. Solo (b) describe la pérdida de la capacidad técnica base del equipo para su función de facturación."},
+  {p:"En el diseño de la Red de Transporte, ¿cuál es el criterio general para la ubicación de los TI de medida oficial en instalaciones blindadas?",o:{a:"En la parte superior del edificio, cerca de los pararrayos.",b:"En el sótano del edificio.",c:"En un edificio independiente dedicado exclusivamente a medida.",d:"Integrados en el mismo compartimento que el interruptor automático."},c:"b",ref:"Criterios Fronteras RDT/RNDT",exp:"Por estandarización de REE en GIS, los TI de medida fiscal se ubican preferentemente en el sótano para facilitar su acceso y cableado. La opción (a) dificulta el mantenimiento; (c) rompe la compacidad de la GIS; y (d) suele usarse para TI de protección. La solución (b) es la práctica de ingeniería normalizada por el operador."},
+  {p:"Según la ITC-RAT 13, ¿cuál es la resistividad típica estimada para un terreno de naturaleza 'Calizas compactas'?",o:{a:"50 a 300 Ω·m",b:"300 a 500 Ω·m",c:"1.000 a 5.000 Ω·m",d:"3.000 a 5.000 Ω·m"},c:"c",ref:"ITC-RAT-13",exp:"Las calizas compactas son terrenos de alta resistividad, típicamente de 1.000 a 5.000 ohmios·metro. La opción (a) corresponde a terrenos pantanosos; (b) a gravas húmedas; y (d) es un subrango que no cubre la variabilidad total. Se elige (c) por ser el rango físico coherente con la naturaleza geológica descrita en la normativa."},
+  {p:"Para habilitarse como empresa instaladora de alta tensión en la categoría AT2 (superior a 30 kV), es necesario poseer, además de los medios de AT1:",o:{a:"Un equipo de soldadura aluminotérmica de alta capacidad.",b:"Un medidor de tiempos de cierre y apertura de interruptores automáticos.",c:"Un camión grúa con cesta aislada para trabajos en tensión.",d:"Un sistema de monitorización de gas SF6 en tiempo real."},c:"b",ref:"ITC-RAT-21",exp:"La categoría AT2 exige instrumentación avanzada para verificar la coordinación de maniobras. La opción (a) es un medio de ejecución, no de medida; (c) es para trabajos específicos en tensión; y (d) no es obligatorio por reglamento. La respuesta (b) es el requisito técnico diferencial para empresas que operan en alta tensión sin límite de nivel."},
+  {p:"La ITC-RAT 06 recomienda el uso de enclavamientos para evitar:",o:{a:"La apertura de un interruptor automático bajo carga.",b:"La apertura o cierre indebido de un seccionador o de un seccionador de puesta a tierra.",c:"El disparo de las protecciones ante sobrecargas transitorias.",d:"La entrada en funcionamiento de los servicios auxiliares de corriente continua."},c:"b",ref:"ITC-RAT-06",exp:"Los enclavamientos previenen arcos destructivos al intentar maniobrar seccionadores con carga. La opción (a) es precisamente la función del interruptor, no un error a evitar; (c) es función de los ajustes de relés; y (d) depende del diseño del control. Solo la opción (b) describe la función de seguridad física inherente a la lógica de maniobra."},
+  {p:"Al calcular la tensión de paso aplicada, la ITC-RAT 13 considera que los pies de una persona actúan como electrodos de placa de superficie:",o:{a:"100 cm²",b:"200 cm²",c:"500 cm²",d:"1.000 cm²"},c:"b",ref:"ITC-RAT-13",exp:"La normativa modela el pie como una placa de 200 cm² para calcular la resistencia de contacto pie-suelo. La opción (a) subestimaría la superficie; (c) y (d) la sobreestimarían, reduciendo artificialmente el riesgo calculado. Se utiliza el valor (b) para estandarizar los cálculos de seguridad humana bajo criterios realistas."},
+  {p:"En una subestación de exterior, si existe el riesgo de que personas ajenas puedan escalar el vallado, la construcción del mismo debe:",o:{a:"Tener una inclinación de 45 grados hacia el exterior.",b:"Ser adecuada para disuadir de su escalada.",c:"Disponer de una barrera de espino a partir de 1,50 metros.",d:"Ser de hormigón armado macizo sin salientes."},c:"b",ref:"ITC-RAT-15",exp:"El vallado debe ser disuasorio por diseño para evitar intrusiones accidentales o intencionadas. La opción (a) puede ser una solución técnica pero no es el requisito general; (c) está limitado por normativas de seguridad ciudadana; y (d) es una opción de obra civil excesiva. La opción (b) es el criterio reglamentario centrado en la prevención física de accidentes."},
+  {p:"Según la ITC-RAT 03, los equipos destinados a 'Pruebas Piloto' para innovación tecnológica:",o:{a:"No pueden conectarse a la red hasta obtener la certificación definitiva.",b:"Están exentos de presentar expediente técnico o declaración de conformidad durante la prueba.",c:"Deben ser custodiados permanentemente por un Organismo de Control.",d:"Solo pueden instalarse en laboratorios universitarios."},c:"b",ref:"ITC-RAT-03",exp:"Las pruebas piloto permiten la innovación técnica bajo control del titular sin los trámites habituales de conformidad. La opción (a) impediría probar equipos en carga; (c) no es obligatorio aunque sí lo es la vigilancia del titular; y (d) limitaría el desarrollo industrial. Se elige (b) por ser la vía legal para caracterizar nuevos materiales en condiciones reales."},
+  {p:"En el proyecto de una instalación, la descripción de las pruebas y verificaciones a realizar para la puesta en servicio debe incluirse en:",o:{a:"La Memoria.",b:"El Pliego de condiciones técnicas.",c:"El Presupuesto.",d:"El Estudio de Impacto Ambiental."},c:"b",ref:"ITC-RAT-20",exp:"El Pliego es el documento donde se definen los protocolos de calidad y ensayos obligatorios. La opción (a) contiene explicaciones generales; (c) detalla costes económicos; y (d) trata sobre el entorno natural. La respuesta (b) es el lugar correcto porque establece las exigencias contractuales y legales que deben cumplirse antes de la entrega."},
+  {p:"La tensión nominal de una instalación (Un), según el RAT, se designa en kilovoltios y representa:",o:{a:"El valor máximo de cresta de la onda senoidal fase-tierra.",b:"El valor convencional de la tensión con la que se denomina un sistema y para el que se ha previsto su funcionamiento.",c:"La media aritmética de las tensiones medidas en los bornes de los transformadores.",d:"La tensión que el material puede soportar durante 1 minuto a frecuencia industrial."},c:"b",ref:"ITC-RAT-01",exp:"La tensión nominal es el valor de referencia que identifica el sistema y sirve para fijar sus características base. La opción (a) describe la tensión de aislamiento en cresta; (c) es un dato operativo variable; y (d) es la tensión soportada de ensayo. Se utiliza (b) para unificar criterios de diseño, aislamiento y operación en toda la industria."}
+];
+
+let cur=0, answers=new Array(QS.length).fill(null), iv=null, secs=90*60;
+
+function startTest(){
+  document.getElementById('s-start').style.display='none';
+  document.getElementById('s-test').style.display='block';
+  buildNav(); renderQ(); startTimer();
+}
+
+function buildNav(){
+  const nav=document.getElementById('q-nav'); nav.innerHTML='';
+  QS.forEach((_,i)=>{
+    const d=document.createElement('div');
+    let cls='q-dot';
+    if(i===cur) cls+=' current';
+    else if(answers[i]!==null) cls+=(answers[i]===QS[i].c?' correct':' wrong');
+    d.className=cls;
+    d.textContent=i+1;
+    d.onclick=()=>goTo(i);
+    nav.appendChild(d);
+  });
+}
+
+function renderQ(){
+  const q=QS[cur];
+  const answered=answers[cur]!==null;
+  document.getElementById('q-label').textContent=`Pregunta ${cur+1} de ${QS.length}`;
+  document.getElementById('q-text').textContent=q.p;
+
+  const opts=document.getElementById('options'); opts.innerHTML='';
+  Object.entries(q.o).forEach(([k,v])=>{
+    const d=document.createElement('div');
+    let cls='opt';
+    if(answered){
+      cls+=' locked';
+      if(k===q.c) cls+=' show-correct';
+      if(k===answers[cur] && answers[cur]!==q.c) cls+=' sel-wrong';
+    }
+    d.className=cls;
+    d.innerHTML=`<span class="opt-key">${k.toUpperCase()})</span><span>${v}</span>`;
+    if(!answered) d.onclick=()=>selectAnswer(k);
+    opts.appendChild(d);
+  });
+
+  const fb=document.getElementById('feedback');
+  if(answered){
+    const isOk=answers[cur]===q.c;
+    fb.className='feedback show '+(isOk?'fb-ok':'fb-fail');
+    document.getElementById('fb-title').textContent=isOk?'✓ Respuesta correcta':'✗ Respuesta incorrecta';
+    document.getElementById('fb-body').textContent=q.exp;
+    document.getElementById('fb-ref').textContent='📖 Referencia: '+q.ref;
+  } else {
+    fb.className='feedback';
+  }
+  buildNav(); updateStats();
+}
+
+function selectAnswer(k){
+  answers[cur]=k;
+  renderQ();
+}
+
+function navigate(d){
+  const n=cur+d;
+  if(n>=0&&n<QS.length){cur=n; renderQ();}
+}
+
+function goTo(i){cur=i; renderQ();}
+
+function updateStats(){
+  const ans=answers.filter(a=>a!==null).length;
+  document.getElementById('s-ans').textContent=ans;
+  document.getElementById('s-blank').textContent=QS.length-ans;
+  document.getElementById('s-rem').textContent=QS.length-ans;
+}
+
+function startTimer(){
+  const el=document.getElementById('timer');
+  iv=setInterval(()=>{
+    secs--;
+    const m=Math.floor(secs/60),s=secs%60;
+    el.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    if(secs<=300) el.classList.add('warn');
+    if(secs<=0){clearInterval(iv); finish();}
+  },1000);
+}
+
+function finish(){
+  if(iv) clearInterval(iv);
+  document.getElementById('s-test').style.display='none';
+  document.getElementById('s-results').style.display='block';
+
+  let ok=0,fail=0,blank=0;
+  answers.forEach((a,i)=>{
+    if(a===null) blank++;
+    else if(a===QS[i].c) ok++;
+    else fail++;
+  });
+  const pena=fail*0.5, raw=ok-pena;
+  const s10=Math.max(0,(raw/QS.length)*10).toFixed(2);
+
+  document.getElementById('score-num').textContent=s10;
+  document.getElementById('score-detail').textContent=`${ok} correctas · ${fail} incorrectas · ${blank} en blanco · Penalización: −${pena.toFixed(1)} pts`;
+
+  const h160=parseFloat(s10)>=5, h426=parseFloat(s10)>=6;
+  document.getElementById('habilita-badges').innerHTML=
+    `<span class="habilita ${h160?'ok':'fail'}">Familia 0160: ${h160?'HABILITADO ✓':'NO HABILITADO ✗'}</span> `+
+    `<span class="habilita ${h426?'ok':'fail'}">Familia 0426: ${h426?'HABILITADO ✓':'NO HABILITADO ✗'}</span>`;
+
+  document.getElementById('r-ok').textContent=ok;
+  document.getElementById('r-fail').textContent=fail;
+  document.getElementById('r-blank').textContent=blank;
+  document.getElementById('r-pena').textContent='−'+pena.toFixed(1);
+
+  const list=document.getElementById('review-list');
+  list.innerHTML='';
+  const toReview=QS.map((q,i)=>({q,i,a:answers[i]})).filter(({a,q})=>a===null||a!==q.c);
+
+  if(toReview.length===0){
+    document.getElementById('rev-title').textContent='¡Enhorabuena! Todas las respuestas son correctas.';
+  } else {
+    document.getElementById('rev-title').textContent=`Revisión — ${toReview.length} pregunta${toReview.length>1?'s':''} para repasar:`;
+    toReview.forEach(({q,i,a})=>{
+      const isBlank=a===null;
+      const cls=isBlank?'blank':'fail';
+      const tag=isBlank?'<span class="tag tag-blank">En blanco</span>':'<span class="tag tag-fail">Incorrecta ✗</span>';
+      const ua=a?`Tu respuesta: <strong>${a.toUpperCase()}) ${q.o[a]}</strong>`:'No respondida.';
+      list.innerHTML+=`
+        <div class="rev-item ${cls}">
+          ${tag}
+          <div class="rev-q"><strong>${i+1}.</strong> ${q.p}</div>
+          <div class="rev-ans">${ua}<br>Respuesta correcta: <strong>${q.c.toUpperCase()}) ${q.o[q.c]}</strong></div>
+          <div class="rev-exp">${q.exp}</div>
+          <div class="rev-ref">📖 ${q.ref}</div>
+        </div>`;
+    });
+  }
+  window.scrollTo(0,0);
+}
+
+function restart(){
+  answers=new Array(QS.length).fill(null); cur=0; secs=90*60;
+  document.getElementById('s-results').style.display='none';
+  document.getElementById('s-test').style.display='block';
+  document.getElementById('timer').classList.remove('warn');
+  buildNav(); renderQ(); startTimer();
+}
+</script>
+</body>
+</html>
