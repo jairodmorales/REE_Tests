@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Test RD 614/2001</title>
+<style>
+:root{
+  --blue:#185FA5;--blue-l:#E6F1FB;--blue-m:#378ADD;
+  --green:#0F6E56;--green-l:#E1F5EE;--green-b:#1D9E75;
+  --red:#993C1D;--red-l:#FAECE7;--red-b:#D85A30;
+  --amber:#854F0B;--amber-l:#FAEEDA;
+  --gray:#5F5E5A;--gray-l:#F1EFE8;--gray-m:#D3D1C7;
+  --text:#2C2C2A;--muted:#888780;
+  --bg:#fff;--bg2:#F8F7F4;
+  --bd:rgba(0,0,0,0.12);--r:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Georgia',serif;background:var(--bg2);color:var(--text);min-height:100vh}
+#app{max-width:760px;margin:0 auto;padding:2rem 1rem}
+
+/* INICIO */
+#s-start{text-align:center;padding:3rem 1rem}
+#s-start h1{font-size:2rem;font-weight:normal;letter-spacing:-.5px;margin-bottom:.4rem}
+.subtitle{color:var(--muted);font-size:.95rem;margin-bottom:2.5rem}
+.info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
+.ic{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:1.2rem}
+.ic .n{font-size:2rem;font-weight:bold;color:var(--blue);font-family:monospace}
+.ic .l{font-size:.8rem;color:var(--muted);margin-top:.25rem}
+.rules{background:var(--amber-l);border:1px solid #FAC775;border-radius:var(--r);padding:1rem 1.25rem;text-align:left;margin-bottom:2rem;font-size:.85rem;line-height:1.7}
+.rules strong{color:var(--amber)}
+.btn-start{background:var(--blue);color:#fff;border:none;border-radius:var(--r);padding:.9rem 2.5rem;font-size:1rem;cursor:pointer;transition:background .2s}
+.btn-start:hover{background:var(--blue-m)}
+
+/* CABECERA */
+.t-header{display:flex;justify-content:space-between;align-items:center;background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:.9rem 1.25rem;margin-bottom:1rem}
+.t-header .lft{font-size:.85rem}
+.t-header .lft strong{font-size:1rem;display:block}
+#timer{font-size:1.5rem;font-weight:bold;font-family:monospace;color:var(--blue)}
+#timer.warn{color:var(--red-b)}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1rem}
+.stat{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:.6rem;text-align:center}
+.stat .sn{font-size:1.4rem;font-weight:bold}
+.stat .sl{font-size:.7rem;color:var(--muted);margin-top:1px}
+
+/* NAV DOTS */
+.q-nav{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:1rem}
+.q-dot{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--bd);font-size:.75rem;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);background:var(--bg);transition:all .15s;font-family:monospace}
+.q-dot:hover{border-color:var(--blue);color:var(--blue)}
+.q-dot.current{border:2px solid var(--blue);color:var(--blue);background:var(--blue-l)}
+.q-dot.correct{background:var(--green-b);color:#fff;border-color:var(--green-b)}
+.q-dot.wrong{background:var(--red-b);color:#fff;border-color:var(--red-b)}
+
+/* PREGUNTA */
+.q-box{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:1.5rem;margin-bottom:1rem}
+.q-label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.75rem}
+.q-text{font-size:1rem;line-height:1.65;margin-bottom:1.25rem}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:.85rem 1rem;border-radius:8px;border:1.5px solid var(--bd);margin-bottom:.5rem;transition:all .2s;font-size:.9rem;background:var(--bg2);cursor:pointer;user-select:none}
+.opt:hover:not(.locked){border-color:var(--blue-m);background:var(--blue-l)}
+.opt.locked{cursor:default}
+.opt.sel-ok{border-color:var(--green-b);background:var(--green-l);color:#085041}
+.opt.sel-fail{border-color:var(--red-b);background:var(--red-l);color:#712B13}
+.opt.show-ok{border-color:var(--green-b);background:var(--green-l);color:#085041}
+.opt-key{font-weight:bold;min-width:20px;font-family:monospace;font-size:1rem;flex-shrink:0;color:var(--muted)}
+.opt.sel-ok .opt-key,.opt.show-ok .opt-key{color:var(--green-b)}
+.opt.sel-fail .opt-key{color:var(--red-b)}
+
+/* FEEDBACK */
+.feedback{border-radius:8px;padding:.9rem 1.1rem;margin-top:1rem;font-size:.88rem;line-height:1.6;display:none}
+.feedback.show{display:block}
+.feedback.fb-ok{background:var(--green-l);border:1px solid var(--green-b);color:#085041}
+.feedback.fb-fail{background:var(--red-l);border:1px solid var(--red-b);color:#712B13}
+.fb-title{font-weight:bold;margin-bottom:.35rem}
+
+/* NAVEGACIÓN */
+.nav-row{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-top:1.25rem}
+.btn{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:.6rem 1.2rem;font-size:.85rem;cursor:pointer;color:var(--text);transition:all .15s}
+.btn:hover{border-color:var(--blue);color:var(--blue)}
+.btn-finish{background:var(--green);color:#fff;border:none;border-radius:8px;padding:.75rem 1.75rem;font-size:.9rem;cursor:pointer;display:block;margin:1rem auto 0;transition:opacity .2s}
+.btn-finish:hover{opacity:.88}
+
+/* RESULTADOS */
+#s-results{display:none}
+.score-banner{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:2rem;text-align:center;margin-bottom:1rem}
+.score-num{font-size:4rem;font-weight:bold;font-family:monospace}
+.stats-res{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:1rem}
+.rev-section-title{font-size:.8rem;color:var(--muted);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.5px}
+.rev-item{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:.6rem}
+.rev-item.fail{border-left:4px solid var(--red-b)}
+.rev-item.blank{border-left:4px solid var(--gray-m)}
+.rev-q{font-size:.9rem;line-height:1.5;margin-bottom:.5rem}
+.rev-ans{font-size:.82rem;margin-bottom:.4rem}
+.rev-exp{font-size:.82rem;line-height:1.55}
+.tag-pill{font-size:.7rem;padding:2px 8px;border-radius:12px;font-weight:bold;display:inline-block;margin-bottom:.4rem}
+.tag-fail{background:var(--red-l);color:var(--red)}
+.tag-blank{background:var(--gray-l);color:var(--gray)}
+.btn-restart{background:var(--blue);color:#fff;border:none;border-radius:8px;padding:.75rem 2rem;font-size:.9rem;cursor:pointer;display:block;margin:1.5rem auto 0}
+
+@media(max-width:500px){
+  .info-grid,.stats,.stats-res{grid-template-columns:repeat(2,1fr)}
+  .score-num{font-size:3rem}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- INICIO -->
+<div id="s-start">
+  <h1>Test RD 614/2001</h1>
+  <div class="subtitle">Disposiciones mínimas para la protección de la salud y seguridad frente al riesgo eléctrico</div>
+  <div class="info-grid">
+    <div class="ic"><div class="n">20</div><div class="l">Preguntas</div></div>
+    <div class="ic"><div class="n">90'</div><div class="l">Duración</div></div>
+    <div class="ic"><div class="n">−0.5</div><div class="l">Penalización error</div></div>
+  </div>
+  <div class="rules">
+    <strong>Puntuación dinámica:</strong> Correcta +0.500 pts · Incorrecta −0.250 pts · En blanco 0 pts<br>
+    El máximo es siempre <strong>10 puntos</strong>.<br><br>
+    <strong>Feedback:</strong> Al responder se muestra la corrección y explicación inmediatamente. La respuesta queda bloqueada.<br><br>
+    <strong>Navegación libre:</strong> Puedes avanzar y retroceder entre preguntas sin responder.
+  </div>
+  <button class="btn-start" onclick="startTest()">Comenzar test</button>
+</div>
+
+<!-- TEST -->
+<div id="s-test" style="display:none">
+  <div class="t-header">
+    <div class="lft"><strong>RD 614/2001</strong>Protección frente al riesgo eléctrico</div>
+    <div id="timer">90:00</div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="sn" id="s-ans" style="color:var(--blue)">0</div><div class="sl">Respondidas</div></div>
+    <div class="stat"><div class="sn" id="s-blank">20</div><div class="sl">En blanco</div></div>
+    <div class="stat"><div class="sn" id="s-rem" style="color:var(--amber)">20</div><div class="sl">Restantes</div></div>
+  </div>
+  <div class="q-nav" id="q-nav"></div>
+  <div class="q-box">
+    <div class="q-label" id="q-label">Pregunta 1 de 20</div>
+    <div class="q-text" id="q-text"></div>
+    <div id="options"></div>
+    <div class="feedback" id="feedback">
+      <div class="fb-title" id="fb-title"></div>
+      <div id="fb-body"></div>
+    </div>
+    <div class="nav-row">
+      <button class="btn" onclick="navigate(-1)">← Anterior</button>
+      <button class="btn" onclick="navigate(1)">Siguiente →</button>
+    </div>
+  </div>
+  <button class="btn-finish" onclick="finish()">Finalizar y ver resultados</button>
+</div>
+
+<!-- RESULTADOS -->
+<div id="s-results">
+  <div class="score-banner">
+    <div style="font-size:.85rem;color:var(--muted);margin-bottom:.5rem">Puntuación final (escala 0–10)</div>
+    <div class="score-num" id="score-num">—</div>
+    <div style="font-size:.8rem;color:var(--muted);margin-top:.25rem" id="score-detail"></div>
+  </div>
+  <div class="stats-res" style="margin-bottom:1rem">
+    <div class="stat"><div class="sn" id="r-ok" style="color:var(--green-b)"></div><div class="sl">Correctas</div></div>
+    <div class="stat"><div class="sn" id="r-fail" style="color:var(--red-b)"></div><div class="sl">Incorrectas</div></div>
+    <div class="stat"><div class="sn" id="r-blank"></div><div class="sl">En blanco</div></div>
+    <div class="stat"><div class="sn" id="r-pena" style="color:var(--red-b)"></div><div class="sl">Penalización</div></div>
+  </div>
+  <div class="rev-section-title" id="rev-title"></div>
+  <div id="review-list"></div>
+  <button class="btn-restart" onclick="restart()">Reiniciar test</button>
+</div>
+
+</div>
+<script>
+const QS=[{p:"¿Cuál es el objeto principal del Real Decreto 614/2001?",o:{a:"Regular las instalaciones eléctricas de alta tensión en industrias",b:"Definir los criterios técnicos del Reglamento Electrotécnico de Baja Tensión",c:"Establecer las disposiciones mínimas para la protección de la salud y seguridad frente al riesgo eléctrico",d:"Fijar las condiciones de mantenimiento de equipos eléctricos"},c:"c",exp:"El RD 614/2001 tiene por objeto el establecimiento de las disposiciones mínimas para la protección de la salud y seguridad de los trabajadores frente al riesgo eléctrico."},
+{p:"¿A qué trabajos se aplica el Real Decreto 614/2001?",o:{a:"A trabajos en instalaciones eléctricas y a trabajos en proximidad de dichas instalaciones",b:"Solo a trabajos en instalaciones de alta tensión",c:"Únicamente a trabajos de mantenimiento eléctrico",d:"Solo a obras de construcción con instalaciones eléctricas"},c:"a",exp:"El RD 614/2001 se aplica a los trabajos en instalaciones eléctricas y a los trabajos realizados en la proximidad de dichas instalaciones."},
+{p:"Según el RD 614/2001, ¿qué se entiende por 'zona de peligro' o 'zona de trabajo en tensión'?",o:{a:"La zona a más de 50 cm de cualquier conductor en tensión",b:"Todo el recinto donde se encuentre la instalación eléctrica",c:"El espacio alrededor de un punto de la instalación donde existan elementos en tensión al que puede llegar el trabajador",d:"El área delimitada por la señalización de seguridad eléctrica"},c:"c",exp:"La zona de peligro (o zona de trabajo en tensión) es el espacio alrededor de un punto de la instalación en tensión al que puede accidentalmente llegar el trabajador, directamente o a través de los objetos que manipule."},
+{p:"¿Qué obligación general establece el RD 614/2001 para el empresario respecto a las instalaciones eléctricas?",o:{a:"Realizar auditorías eléctricas anuales obligatorias",b:"Contratar a un técnico electricista a jornada completa",c:"Diseñar y construir las instalaciones eléctricas por su cuenta",d:"Adoptar las medidas necesarias para que los trabajadores estén protegidos adecuadamente contra el riesgo eléctrico"},c:"d",exp:"El empresario debe adoptar las medidas necesarias para que de los equipos de trabajo y de las instalaciones eléctricas no se derive ningún riesgo para la salud y seguridad de los trabajadores."},
+{p:"¿Qué método de trabajo se debe emplear preferentemente según el RD 614/2001 para eliminar el riesgo eléctrico?",o:{a:"El trabajo sin tensión, dejando la instalación sin energía eléctrica",b:"El uso de herramientas aisladas homologadas",c:"El trabajo a distancia mediante telecontrol",d:"El trabajo en tensión con los EPIs adecuados"},c:"a",exp:"El RD 614/2001 establece que, como principio fundamental, los trabajos en instalaciones eléctricas deben realizarse sin tensión. Solo cuando no sea posible, se podrá trabajar en tensión."},
+{p:"Las cinco reglas de oro para trabajar sin tensión incluyen varias etapas. ¿Cuál de las siguientes NO es una de ellas?",o:{a:"Prevenir cualquier posible realimentación",b:"Desconectar la instalación",c:"Instalar pantallas de separación física entre conductores",d:"Verificar la ausencia de tensión"},c:"c",exp:"Las cinco reglas de oro son: desconectar, prevenir realimentación, verificar ausencia de tensión, poner a tierra y en cortocircuito, y señalizar/delimitar la zona. La instalación de pantallas de separación física no forma parte de estas reglas."},
+{p:"¿Qué documento habilita la realización de un trabajo eléctrico según el RD 614/2001?",o:{a:"La autorización verbal del jefe de equipo",b:"El procedimiento de trabajo establecido por el empresario",c:"El certificado de aptitud médica del trabajador",d:"Un contrato firmado entre empresa y trabajador"},c:"b",exp:"El RD 614/2001 exige que los trabajos eléctricos se realicen siguiendo los procedimientos de trabajo establecidos por el empresario, que deben estar documentados."},
+{p:"¿A quién se denomina 'trabajador autorizado' según el RD 614/2001?",o:{a:"El trabajador que puede trabajar en instalaciones eléctricas por haber sido autorizado por el empresario para ello",b:"El técnico con titulación universitaria en ingeniería eléctrica",c:"El trabajador designado por el comité de seguridad y salud",d:"Todo trabajador que haya superado el curso básico de prevención de 60 horas"},c:"a",exp:"Un trabajador autorizado es aquel que ha sido autorizado por el empresario para realizar determinados trabajos con riesgo eléctrico, en base a su capacidad para hacerlos de forma correcta y segura."},
+{p:"¿Qué es un 'trabajador cualificado' según el RD 614/2001?",o:{a:"Trabajador que ha superado una prueba teórica sobre el reglamento eléctrico",b:"Trabajador con más de 10 años de experiencia en electricidad",c:"Trabajador autorizado que, además, posee conocimientos especializados en materia de instalaciones eléctricas",d:"Técnico con carnet profesional de electricista"},c:"c",exp:"El trabajador cualificado es el trabajador autorizado que, además, posee conocimientos especializados en materia de instalaciones eléctricas, debido a su formación acreditada, profesional o universitaria, o a su experiencia certificada."},
+{p:"¿Cuándo está permitido el trabajo en tensión según el RD 614/2001?",o:{a:"Solo en emergencias declaradas formalmente",b:"Cuando el procedimiento de trabajo lo contemple y en circunstancias especiales justificadas",c:"Únicamente en instalaciones de baja tensión",d:"Siempre que el trabajador disponga del EPI adecuado"},c:"b",exp:"El trabajo en tensión solo está permitido cuando lo exija el procedimiento de trabajo establecido, o cuando así lo requieran circunstancias especiales debidamente justificadas, y siempre adoptando las medidas de seguridad pertinentes."},
+{p:"¿Qué información debe recibir el trabajador antes de iniciar un trabajo eléctrico?",o:{a:"Solo el esquema de la instalación",b:"Las instrucciones sobre la tarea a realizar, los riesgos y las medidas preventivas",c:"El manual de usuario del equipo de protección individual",d:"El historial de accidentes previos en esa instalación"},c:"b",exp:"Antes de comenzar el trabajo, el empresario debe informar al trabajador sobre la tarea a realizar, los riesgos eléctricos existentes y las medidas de seguridad que debe adoptar."},
+{p:"¿Cuál es la distancia mínima de seguridad que establece el RD 614/2001 para trabajos en proximidad de instalaciones de hasta 1 kV?",o:{a:"1 metro",b:"50 cm",c:"3 metros",d:"No se especifica una distancia única; depende de las medidas preventivas adoptadas"},c:"d",exp:"El RD 614/2001 no establece una distancia fija universal, sino que remite a las distancias de seguridad en función de la tensión y las medidas preventivas adoptadas, definidas en su Anexo."},
+{p:"¿Qué establece el RD 614/2001 respecto a los equipos de protección individual (EPI) para trabajos eléctricos?",o:{a:"Los EPI son opcionales si el trabajador tiene experiencia",b:"El trabajador es responsable de adquirir sus propios EPI",c:"El empresario debe proporcionar y mantener los EPI adecuados a los riesgos",d:"Solo son obligatorios en alta tensión"},c:"c",exp:"El empresario está obligado a proporcionar a los trabajadores los equipos de protección individual adecuados para los trabajos con riesgo eléctrico, garantizando su correcto mantenimiento."},
+{p:"¿Cuál es el papel del 'jefe de trabajo' en el RD 614/2001?",o:{a:"Verificar el estado de las instalaciones antes de entregarlas a mantenimiento",b:"Redactar los procedimientos de trabajo eléctrico",c:"Asumir la responsabilidad inmediata de la realización de los trabajos y garantizar la seguridad durante su ejecución",d:"Supervisar económicamente el proyecto eléctrico"},c:"c",exp:"El jefe de trabajo es la persona responsable de la realización práctica y segura de los trabajos. Asume la responsabilidad inmediata de la ejecución y vela por la aplicación de las medidas de seguridad."},
+{p:"¿Qué obligación tienen los trabajadores según el RD 614/2001 en materia de riesgo eléctrico?",o:{a:"Diseñar sus propios métodos de trabajo seguros",b:"Utilizar correctamente los equipos de protección y los medios de trabajo, e informar de cualquier situación peligrosa",c:"Supervisar al resto de compañeros en materia de seguridad eléctrica",d:"Rechazar cualquier trabajo que implique riesgo eléctrico"},c:"b",exp:"Los trabajadores deben utilizar correctamente los equipos de protección y los medios de trabajo, y tienen la obligación de informar al empresario o al jefe de trabajo sobre cualquier situación que consideren peligrosa."},
+{p:"¿Qué son las 'operaciones elementales' en el contexto del RD 614/2001?",o:{a:"Trabajos de alta complejidad técnica realizados por trabajadores cualificados",b:"Maniobras de emergencia en caso de accidente eléctrico",c:"Las primeras fases del proceso de puesta en tensión de una instalación",d:"Operaciones sencillas en instalaciones eléctricas que pueden ser realizadas por trabajadores autorizados"},c:"d",exp:"Las operaciones elementales son trabajos o maniobras sencillas sobre instalaciones eléctricas que no requieren la condición de trabajador cualificado, aunque sí la de trabajador autorizado."},
+{p:"¿Qué exige el RD 614/2001 para que una instalación eléctrica pueda quedar puesta en servicio tras un trabajo?",o:{a:"Se deben retirar las medidas de seguridad establecidas y verificar que la zona está despejada y en condiciones seguras",b:"Requiere una inspección de la autoridad laboral competente",c:"Basta con la firma del jefe de obra",d:"Es necesario realizar una prueba de aislamiento completa"},c:"a",exp:"Para reponer la tensión, es necesario retirar todas las medidas de seguridad adoptadas (tierras, señalizaciones, bloqueos) y verificar que la zona de trabajo está despejada y en condiciones de seguridad."},
+{p:"¿El RD 614/2001 es de aplicación en todos los sectores de actividad?",o:{a:"Únicamente en empresas de más de 50 trabajadores",b:"Solo en el sector industrial y de la construcción",c:"Solo en los sectores regulados por el Reglamento Electrotécnico de Baja Tensión",d:"Sí, con carácter general, en todos los sectores de actividad"},c:"d",exp:"El RD 614/2001 tiene carácter general y se aplica en todos los sectores y actividades, siempre que existan trabajos en instalaciones eléctricas o en su proximidad."},
+{p:"¿Qué norma transpone el RD 614/2001 al ordenamiento jurídico español?",o:{a:"No transpone ninguna directiva; es una norma de iniciativa nacional",b:"La Directiva 92/57/CEE sobre obras de construcción temporales",c:"La Directiva 90/269/CEE sobre manipulación manual de cargas",d:"La Directiva 89/391/CEE sobre la aplicación de medidas para promover la mejora de la seguridad y salud de los trabajadores"},c:"d",exp:"El RD 614/2001 desarrolla y complementa la Ley 31/1995 de Prevención de Riesgos Laborales, que a su vez transpone la Directiva Marco 89/391/CEE, aplicando sus principios al riesgo eléctrico específicamente."},
+{p:"¿Qué debe contener el procedimiento de trabajo para trabajos en tensión según el RD 614/2001?",o:{a:"Únicamente la lista de los trabajadores autorizados",b:"Solo los pasos generales del trabajo a realizar",c:"La descripción detallada de las operaciones, los riesgos, las medidas preventivas y los EPIs necesarios",d:"El presupuesto y el plazo de ejecución del trabajo"},c:"c",exp:"Los procedimientos de trabajo para trabajos en tensión deben contener la descripción detallada de las operaciones, los riesgos inherentes, las medidas preventivas a adoptar y los equipos de protección individual requeridos."}];
+
+let cur=0, answers=new Array(QS.length).fill(null), iv=null, secs=90*60;
+
+function startTest(){
+  document.getElementById('s-start').style.display='none';
+  document.getElementById('s-test').style.display='block';
+  buildNav(); renderQ(); startTimer();
+}
+
+function buildNav(){
+  const nav=document.getElementById('q-nav'); nav.innerHTML='';
+  QS.forEach((_,i)=>{
+    const d=document.createElement('div');
+    let cls='q-dot';
+    if(i===cur) cls+=' current';
+    else if(answers[i]!==null) cls+=(answers[i]===QS[i].c?' correct':' wrong');
+    d.className=cls; d.textContent=i+1; d.onclick=()=>goTo(i);
+    nav.appendChild(d);
+  });
+}
+
+function renderQ(){
+  const q=QS[cur];
+  const answered=answers[cur]!==null;
+  document.getElementById('q-label').textContent=`Pregunta ${cur+1} de ${QS.length}`;
+  document.getElementById('q-text').textContent=q.p;
+
+  const opts=document.getElementById('options'); opts.innerHTML='';
+  Object.entries(q.o).forEach(([k,v])=>{
+    const d=document.createElement('div');
+    let cls='opt';
+    if(answered){
+      cls+=' locked';
+      if(k===q.c) cls+=' show-ok';
+      if(k===answers[cur]&&answers[cur]!==q.c) cls+=' sel-fail';
+    }
+    d.className=cls;
+    d.innerHTML=`<span class="opt-key">${k.toUpperCase()})</span><span>${v}</span>`;
+    if(!answered) d.onclick=()=>selectAnswer(k);
+    opts.appendChild(d);
+  });
+
+  const fb=document.getElementById('feedback');
+  if(answered){
+    const isOk=answers[cur]===q.c;
+    fb.className='feedback show '+(isOk?'fb-ok':'fb-fail');
+    document.getElementById('fb-title').textContent=isOk?'✓ Respuesta correcta':'✗ Respuesta incorrecta';
+    document.getElementById('fb-body').textContent=q.exp;
+  } else {
+    fb.className='feedback';
+  }
+  buildNav(); updateStats();
+}
+
+function selectAnswer(k){ answers[cur]=k; renderQ(); }
+function navigate(d){ const n=cur+d; if(n>=0&&n<QS.length){cur=n;renderQ();} }
+function goTo(i){ cur=i; renderQ(); }
+
+function updateStats(){
+  const ans=answers.filter(a=>a!==null).length;
+  document.getElementById('s-ans').textContent=ans;
+  document.getElementById('s-blank').textContent=QS.length-ans;
+  document.getElementById('s-rem').textContent=QS.length-ans;
+}
+
+function startTimer(){
+  const el=document.getElementById('timer');
+  iv=setInterval(()=>{
+    secs--;
+    const m=Math.floor(secs/60),s=secs%60;
+    el.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    if(secs<=300) el.classList.add('warn');
+    if(secs<=0){clearInterval(iv);finish();}
+  },1000);
+}
+
+function finish(){
+  if(iv) clearInterval(iv);
+  document.getElementById('s-test').style.display='none';
+  document.getElementById('s-results').style.display='block';
+
+  let ok=0,fail=0,blank=0;
+  answers.forEach((a,i)=>{ if(a===null)blank++; else if(a===QS[i].c)ok++; else fail++; });
+
+  const ptsPorPregunta=10/QS.length;
+  const pena=fail*(ptsPorPregunta/2);
+  const raw=ok*ptsPorPregunta-pena;
+  const s10=Math.max(0,raw).toFixed(2);
+
+  document.getElementById('score-num').textContent=s10;
+  document.getElementById('score-detail').textContent=
+    `${ok} correctas · ${fail} incorrectas · ${blank} en blanco · ${ptsPorPregunta.toFixed(3)} pts/correcta · Penalización: −${pena.toFixed(3)} pts`;
+  document.getElementById('r-ok').textContent=ok;
+  document.getElementById('r-fail').textContent=fail;
+  document.getElementById('r-blank').textContent=blank;
+  document.getElementById('r-pena').textContent='−'+pena.toFixed(3);
+
+  const list=document.getElementById('review-list');
+  list.innerHTML='';
+  const toReview=QS.map((q,i)=>({q,i,a:answers[i]})).filter(({a,q})=>a===null||a!==q.c);
+
+  if(toReview.length===0){
+    document.getElementById('rev-title').textContent='¡Enhorabuena! Todas las respuestas son correctas.';
+  } else {
+    document.getElementById('rev-title').textContent=`Revisión — ${toReview.length} pregunta${toReview.length>1?'s':''} para repasar:`;
+    toReview.forEach(({q,i,a})=>{
+      const isBlank=a===null;
+      const cls=isBlank?'blank':'fail';
+      const tag=isBlank?'<span class="tag-pill tag-blank">En blanco</span>':'<span class="tag-pill tag-fail">Incorrecta ✗</span>';
+      const ua=a?`Tu respuesta: <strong>${a.toUpperCase()}) ${q.o[a]}</strong>`:'No respondida.';
+      list.innerHTML+=`
+        <div class="rev-item ${cls}">
+          ${tag}
+          <div class="rev-q"><strong>${i+1}.</strong> ${q.p}</div>
+          <div class="rev-ans">${ua}<br>Correcta: <strong>${q.c.toUpperCase()}) ${q.o[q.c]}</strong></div>
+          <div class="rev-exp">${q.exp}</div>
+        </div>`;
+    });
+  }
+  window.scrollTo(0,0);
+}
+
+function restart(){
+  answers=new Array(QS.length).fill(null); cur=0; secs=90*60;
+  document.getElementById('s-results').style.display='none';
+  document.getElementById('s-test').style.display='block';
+  document.getElementById('timer').classList.remove('warn');
+  buildNav(); renderQ(); startTimer();
+}
+</script>
+</body>
+</html>

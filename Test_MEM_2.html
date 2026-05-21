@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Test Habilitación REE — Montaje Electromecánico</title>
+<title>Test REE — Montaje Electromecánico (Tipo 2)</title>
 <style>
   :root {
     --blue:#185FA5;--blue-l:#E6F1FB;--blue-m:#378ADD;
@@ -120,7 +120,7 @@
 <!-- INICIO -->
 <div id="s-start">
   <h1>Habilitación REE</h1>
-  <div class="subtitle">Especialidad Montaje Electromecánico — Familias 160 y 426</div>
+  <div class="subtitle">Montaje Electromecánico — Tipo 2 · Familias 160 y 426</div>
   <div class="info-grid">
     <div class="ic"><div class="n">35</div><div class="l">Preguntas</div></div>
     <div class="ic"><div class="n">90'</div><div class="l">Duración</div></div>
@@ -139,7 +139,7 @@
 <!-- TEST -->
 <div id="s-test" style="display:none">
   <div class="t-header">
-    <div class="lft"><strong>Montaje Electromecánico</strong>Habilitación REE · Familias 160 y 426</div>
+    <div class="lft"><strong>Montaje Electromecánico — Tipo 2</strong>Habilitación REE · Familias 160 y 426</div>
     <div id="timer">90:00</div>
   </div>
   <div class="stats">
@@ -321,11 +321,12 @@ function finish(){
     else if(a===QS[i].c) ok++;
     else fail++;
   });
-  const pena=fail*0.5, raw=ok-pena;
-  const s10=Math.max(0,(raw/QS.length)*10).toFixed(2);
+  const ptsPorPregunta=10/QS.length;
+  const pena=fail*(ptsPorPregunta/2), raw=ok*ptsPorPregunta-pena;
+  const s10=Math.max(0,raw).toFixed(2);
 
   document.getElementById('score-num').textContent=s10;
-  document.getElementById('score-detail').textContent=`${ok} correctas · ${fail} incorrectas · ${blank} en blanco · Penalización: −${pena.toFixed(1)} pts`;
+  document.getElementById('score-detail').textContent=`${ok} correctas · ${fail} incorrectas · ${blank} en blanco · ${(10/QS.length).toFixed(3)} pts/correcta · Penalización: −${pena.toFixed(3)} pts`;
 
   const h160=parseFloat(s10)>=5, h426=parseFloat(s10)>=6;
   document.getElementById('habilita-badges').innerHTML=
@@ -335,7 +336,7 @@ function finish(){
   document.getElementById('r-ok').textContent=ok;
   document.getElementById('r-fail').textContent=fail;
   document.getElementById('r-blank').textContent=blank;
-  document.getElementById('r-pena').textContent='−'+pena.toFixed(1);
+  document.getElementById('r-pena').textContent='−'+pena.toFixed(3);
 
   const list=document.getElementById('review-list');
   list.innerHTML='';

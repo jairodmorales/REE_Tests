@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Habilitación REE — Montaje Electromecánico (Tipo 3)</title>
+<style>
+  :root {
+    --blue:#185FA5;--blue-l:#E6F1FB;--blue-m:#378ADD;
+    --green:#0F6E56;--green-l:#E1F5EE;--green-b:#1D9E75;
+    --red:#993C1D;--red-l:#FAECE7;--red-b:#D85A30;
+    --amber:#854F0B;--amber-l:#FAEEDA;
+    --gray:#5F5E5A;--gray-l:#F1EFE8;--gray-m:#D3D1C7;
+    --text:#2C2C2A;--muted:#888780;
+    --bg:#ffffff;--bg2:#F8F7F4;
+    --bd:rgba(0,0,0,0.12);--r:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Georgia',serif;background:var(--bg2);color:var(--text);min-height:100vh}
+  #app{max-width:760px;margin:0 auto;padding:2rem 1rem}
+
+  /* INICIO */
+  #s-start{text-align:center;padding:3rem 1rem}
+  #s-start h1{font-size:2rem;font-weight:normal;letter-spacing:-.5px;margin-bottom:.4rem}
+  .subtitle{color:var(--muted);font-size:.95rem;margin-bottom:2.5rem}
+  .info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
+  .ic{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:1.2rem}
+  .ic .n{font-size:2rem;font-weight:bold;color:var(--blue);font-family:monospace}
+  .ic .l{font-size:.8rem;color:var(--muted);margin-top:.25rem}
+  .rules{background:var(--amber-l);border:1px solid #FAC775;border-radius:var(--r);padding:1rem 1.25rem;text-align:left;margin-bottom:2rem;font-size:.85rem;line-height:1.7}
+  .rules strong{color:var(--amber)}
+  .btn-start{background:var(--blue);color:#fff;border:none;border-radius:var(--r);padding:.9rem 2.5rem;font-size:1rem;cursor:pointer;transition:background .2s}
+  .btn-start:hover{background:var(--blue-m)}
+
+  /* CABECERA */
+  .t-header{display:flex;justify-content:space-between;align-items:center;background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:.9rem 1.25rem;margin-bottom:1rem}
+  .t-header .lft{font-size:.85rem}
+  .t-header .lft strong{font-size:1rem;display:block}
+  #timer{font-size:1.5rem;font-weight:bold;font-family:monospace;color:var(--blue)}
+  #timer.warn{color:var(--red-b)}
+
+  /* STATS */
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1rem}
+  .stat{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:.6rem;text-align:center}
+  .stat .sn{font-size:1.4rem;font-weight:bold}
+  .stat .sl{font-size:.7rem;color:var(--muted);margin-top:1px}
+
+  /* NAV PUNTOS */
+  .q-nav{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:1rem}
+  .q-dot{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--bd);font-size:.75rem;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);background:var(--bg);transition:all .15s;font-family:monospace}
+  .q-dot:hover{border-color:var(--blue);color:var(--blue)}
+  .q-dot.current{border:2px solid var(--blue);color:var(--blue);background:var(--blue-l)}
+  .q-dot.correct{background:var(--green-b);color:#fff;border-color:var(--green-b)}
+  .q-dot.wrong{background:var(--red-b);color:#fff;border-color:var(--red-b)}
+
+  /* PREGUNTA */
+  .q-box{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:1.5rem;margin-bottom:1rem}
+  .q-label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.75rem}
+  .q-text{font-size:1rem;line-height:1.65;margin-bottom:1.25rem}
+
+  /* OPCIONES */
+  .opt{display:flex;align-items:flex-start;gap:10px;padding:.85rem 1rem;border-radius:8px;border:1.5px solid var(--bd);margin-bottom:.5rem;transition:all .2s;font-size:.9rem;background:var(--bg2);cursor:pointer;user-select:none}
+  .opt:hover:not(.locked){border-color:var(--blue-m);background:var(--blue-l)}
+  .opt.locked{cursor:default}
+  .opt.sel-correct{border-color:var(--green-b);background:var(--green-l);color:#085041}
+  .opt.sel-wrong{border-color:var(--red-b);background:var(--red-l);color:#712B13}
+  .opt.show-correct{border-color:var(--green-b);background:var(--green-l);color:#085041}
+  .opt-key{font-weight:bold;min-width:20px;font-family:monospace;font-size:1rem;flex-shrink:0;color:var(--muted)}
+  .opt.sel-correct .opt-key,.opt.show-correct .opt-key{color:var(--green-b)}
+  .opt.sel-wrong .opt-key{color:var(--red-b)}
+
+  /* FEEDBACK */
+  .feedback{border-radius:8px;padding:.9rem 1.1rem;margin-top:1rem;font-size:.88rem;line-height:1.6;display:none}
+  .feedback.show{display:block}
+  .feedback.fb-ok{background:var(--green-l);border:1px solid var(--green-b);color:#085041}
+  .feedback.fb-fail{background:var(--red-l);border:1px solid var(--red-b);color:#712B13}
+  .fb-title{font-weight:bold;margin-bottom:.35rem}
+  .fb-ref{font-size:.75rem;margin-top:.5rem;opacity:.75;font-style:italic}
+
+  /* NAVEGACIÓN */
+  .nav-row{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-top:1.25rem}
+  .btn{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:.6rem 1.2rem;font-size:.85rem;cursor:pointer;color:var(--text);transition:all .15s}
+  .btn:hover{border-color:var(--blue);color:var(--blue)}
+  .btn-finish{background:var(--green);color:#fff;border:none;border-radius:8px;padding:.75rem 1.75rem;font-size:.9rem;cursor:pointer;display:block;margin:1rem auto 0;transition:opacity .2s}
+  .btn-finish:hover{opacity:.88}
+
+  /* RESULTADOS */
+  #s-results{display:none}
+  .score-banner{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:2rem;text-align:center;margin-bottom:1rem}
+  .score-num{font-size:4rem;font-weight:bold;font-family:monospace}
+  .habilita{display:inline-block;margin:.4rem .2rem 0;padding:.35rem .9rem;border-radius:20px;font-size:.8rem;font-weight:bold}
+  .habilita.ok{background:var(--green-l);color:var(--green)}
+  .habilita.fail{background:var(--red-l);color:var(--red)}
+  .rev-section-title{font-size:.8rem;color:var(--muted);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.5px}
+  .rev-item{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:.6rem}
+  .rev-item.fail{border-left:4px solid var(--red-b)}
+  .rev-item.blank{border-left:4px solid var(--gray-m)}
+  .rev-q{font-size:.9rem;line-height:1.5;margin-bottom:.5rem}
+  .rev-ans{font-size:.82rem;margin-bottom:.4rem}
+  .rev-exp{font-size:.82rem;line-height:1.55;margin-bottom:.35rem}
+  .rev-ref{font-size:.75rem;color:var(--muted);font-style:italic}
+  .tag{font-size:.7rem;padding:2px 8px;border-radius:20px;font-weight:bold;display:inline-block;margin-bottom:.4rem}
+  .tag-fail{background:var(--red-l);color:var(--red)}
+  .tag-blank{background:var(--gray-l);color:var(--gray)}
+  .btn-restart{background:var(--blue);color:#fff;border:none;border-radius:8px;padding:.75rem 2rem;font-size:.9rem;cursor:pointer;display:block;margin:1.5rem auto 0}
+
+  /* STATS RESULTADOS */
+  .stats-res{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:1rem}
+
+  @media(max-width:500px){
+    .info-grid{grid-template-columns:repeat(2,1fr)}
+    .stats,.stats-res{grid-template-columns:repeat(2,1fr)}
+    .score-num{font-size:3rem}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- INICIO -->
+<div id="s-start">
+  <h1>Habilitación REE</h1>
+  <div class="subtitle">Test Habilitación Montaje Electromecánico (excluyendo ITCs asociados a baja tensión, control y protección) — Familias 160 y 426</div>
+  <div class="info-grid">
+    <div class="ic"><div class="n">35</div><div class="l">Preguntas</div></div>
+    <div class="ic"><div class="n">90'</div><div class="l">Duración</div></div>
+    <div class="ic"><div class="n">−0.5</div><div class="l">Penalización error</div></div>
+  </div>
+  <div class="rules">
+    <strong>Criterios de superación:</strong><br>
+    Familia 0160: puntuación ≥ 5 / 10 &nbsp;|&nbsp; Familia 0426: puntuación ≥ 6 / 10<br><br>
+    <strong>Puntuación:</strong> Correcta +1 pt &nbsp;·&nbsp; Incorrecta −0,5 pt &nbsp;·&nbsp; En blanco 0 pt<br><br>
+    <strong>Feedback:</strong> Al responder, se muestra la corrección y explicación inmediatamente. La respuesta queda bloqueada.<br><br>
+    <strong>Material permitido (formato físico):</strong> RAT (ITC-RAT 01-23), RLAT (ITC-LAT-07), RD 614/2001, IEEE Std 80, UNE-EN IEC 61936-1, RUPM
+  </div>
+  <button class="btn-start" onclick="startTest()">Comenzar test</button>
+</div>
+
+<!-- TEST -->
+<div id="s-test" style="display:none">
+  <div class="t-header">
+    <div class="lft"><strong>Montaje Electromecánico — Tipo 3</strong>Habilitación REE · Familias 160 y 426</div>
+    <div id="timer">90:00</div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="sn" id="s-ans" style="color:var(--blue)">0</div><div class="sl">Respondidas</div></div>
+    <div class="stat"><div class="sn" id="s-blank">35</div><div class="sl">En blanco</div></div>
+    <div class="stat"><div class="sn" id="s-rem" style="color:var(--amber)">35</div><div class="sl">Restantes</div></div>
+  </div>
+  <div class="q-nav" id="q-nav"></div>
+  <div class="q-box">
+    <div class="q-label" id="q-label">Pregunta 1 de 35</div>
+    <div class="q-text" id="q-text"></div>
+    <div id="options"></div>
+    <div class="feedback" id="feedback">
+      <div class="fb-title" id="fb-title"></div>
+      <div id="fb-body"></div>
+      <div class="fb-ref" id="fb-ref"></div>
+    </div>
+    <div class="nav-row">
+      <button class="btn" onclick="navigate(-1)">← Anterior</button>
+      <button class="btn" onclick="navigate(1)">Siguiente →</button>
+    </div>
+  </div>
+  <button class="btn-finish" onclick="finish()">Finalizar y ver resultados</button>
+</div>
+
+<!-- RESULTADOS -->
+<div id="s-results">
+  <div class="score-banner">
+    <div style="font-size:.85rem;color:var(--muted);margin-bottom:.5rem">Puntuación final (escala 0–10)</div>
+    <div class="score-num" id="score-num">—</div>
+    <div style="font-size:.8rem;color:var(--muted);margin-top:.25rem" id="score-detail"></div>
+    <div id="habilita-badges" style="margin-top:.75rem"></div>
+  </div>
+  <div class="stats-res" style="margin-bottom:1.5rem">
+    <div class="stat"><div class="sn" id="r-ok" style="color:var(--green-b)"></div><div class="sl">Correctas</div></div>
+    <div class="stat"><div class="sn" id="r-fail" style="color:var(--red-b)"></div><div class="sl">Incorrectas</div></div>
+    <div class="stat"><div class="sn" id="r-blank"></div><div class="sl">En blanco</div></div>
+    <div class="stat"><div class="sn" id="r-pena" style="color:var(--red-b)"></div><div class="sl">Penalización</div></div>
+  </div>
+  <div class="rev-section-title" id="rev-title"></div>
+  <div id="review-list"></div>
+  <button class="btn-restart" onclick="restart()">Reiniciar test</button>
+</div>
+
+</div>
+<script>
+const QS=[
+  {p:"Al realizar la fijación de conductores rígidos de alta tensión mediante grampas o dispositivos de sujeción, ¿qué medida de diseño debe adoptarse para evitar pérdidas por calor y daños mecánicos?",o:{a:"Utilizar conductores con una sección transversal 50% superior a la de cálculo.",b:"Evitar el establecimiento de circuitos cerrados de materiales ferromagnéticos alrededor del conductor.",c:"Aumentar la tracción mecánica en los aisladores de apoyo para reducir vibraciones.",d:"Recubrir los conectores con una capa de pintura aislante de alta rigidez dieléctrica."},c:"b",ref:"ITC-RAT-05 / Apartado 4",exp:"El paso de corriente alterna por un conductor genera un campo magnético que, si es abrazado por un material ferromagnético cerrado, induce corrientes de Foucault e histéresis, provocando calentamientos peligrosos en la herrajería. Las opciones a, c y d no actúan sobre este fenómeno."},
+  {p:"En una subestación de exterior, ¿cuál es la altura mínima reglamentaria del vallado perimetral medida desde el exterior?",o:{a:"2,00 metros.",b:"2,20 metros.",c:"2,50 metros.",d:"3,00 metros."},c:"b",ref:"ITC-RAT-15 / Apartado 3.1",exp:"La normativa establece 2,20 m como mínimo para garantizar la seguridad frente a intrusiones. La opción a incumple el mínimo; c y d son superiores al valor base exigido."},
+  {p:"En el montaje de pasillos de servicio en instalaciones de interior, si el pasillo dispone de elementos en tensión a ambos lados, ¿cuál es el ancho mínimo libre que debe respetarse?",o:{a:"0,80 metros.",b:"1,00 metro.",c:"1,20 metros.",d:"1,50 metros."},c:"c",ref:"ITC-RAT-14 / Apartado 6.1",exp:"Para pasillos con tensión a ambos lados se exigen 1,20 m para movimiento seguro de operarios. Si solo hay tensión a un lado, el mínimo es 1,00 m. Las opciones a y d no corresponden a este caso."},
+  {p:"Al calcular la altura mínima de las partes en tensión sobre un pasillo de servicio en un parque de exterior (Dimensión H), ¿qué valor constante se suma a la distancia mínima de aislamiento 'd'?",o:{a:"220 cm.",b:"250 cm.",c:"300 cm.",d:"120 cm."},c:"b",ref:"ITC-RAT-15 / Apartado 4.1",exp:"La fórmula H = 250 + d considera la altura de alcance de un brazo levantado más el margen de seguridad sobre la distancia dieléctrica. Las demás opciones no corresponden a esta fórmula reglamentaria."},
+  {p:"Durante la excavación y tendido de la red de tierras, ¿qué requisito debe cumplir el material de los electrodos respecto a su durabilidad?",o:{a:"Debe ser obligatoriamente de cobre electrolítico de pureza 99%.",b:"Debe presentar una resistencia adecuada a la corrosión en el terreno de instalación.",c:"Debe estar recubierto de una vaina de PVC para evitar el contacto directo con el suelo.",d:"Debe ser de acero galvanizado con un espesor de zinc de 5 mm."},c:"b",ref:"ITC-RAT-13 / Apartado 4.1",exp:"La norma no impone un material único sino que exige resistencia a la agresividad química del suelo. Las opciones a, c y d son soluciones posibles pero no el requisito general exigido."},
+  {p:"Según la normativa técnica de Red Eléctrica para conexiones en fronteras, la tracción del último vano de la línea sobre el pórtico de entrada a la subestación se considerará como:",o:{a:"Vano de plena tracción de línea aérea.",b:"Vano flojo (o vano de subestación).",c:"Carga de rotura del aislador de cadena.",d:"Tracción nula gracias al uso de conductores flexibles."},c:"b",ref:"Criterios Fronteras / Apartado 6.2.1.1.b",exp:"El último vano se diseña con tracción reducida para no comprometer la estabilidad mecánica de los pórticos de la subestación. Las opciones a y c dimensionarían en exceso y la d es incorrecta técnicamente."},
+  {p:"Al instalar un transformador de intensidad (TI) toroidal para la medida oficial en una salida de cable de una GIS, ¿dónde debe situarse preferentemente por criterio general de REE?",o:{a:"En la parte superior del edificio, cerca de los terminales de línea.",b:"En el sótano del edificio de la subestación.",c:"En una arqueta exterior a más de 50 metros del edificio.",d:"Sumergido en el propio depósito de aceite del transformador de potencia."},c:"b",ref:"Criterios Fronteras / Apartado 6.2.2.d",exp:"Ubicarlos en el sótano facilita el montaje, la centralización del cableado y el acceso para verificaciones sin entrar en zonas de alta tensión. Las opciones a, c y d son inviables o contrarias a los criterios de REE."},
+  {p:"Para una subestación blindada (GIS), ¿dónde se establece físicamente el punto frontera de propiedad en una salida por bushing de intemperie?",o:{a:"En la borna del seccionador de barras de la GIS.",b:"En el terminal del bushing de intemperie (piezas de conexión de RE).",c:"En la conexión del cable de puesta a tierra de la pantalla.",d:"En el punto de tangencia de la línea con la valla perimetral."},c:"b",ref:"Criterios Fronteras / Apartado 6.2.2.e",exp:"El terminal de salida del bushing marca el límite de la aparamenta de RE; el conductor que parte de ahí es propiedad del Agente. Las demás opciones no definen el límite de propiedad."},
+  {p:"En el diseño de la red de tierras según el estándar IEEE Std 80, ¿qué representa el factor de reducción 'r'?",o:{a:"La reducción de la resistividad del suelo mediante sales químicas.",b:"La fracción de la corriente de defecto que fluye a través de la malla de tierra local.",c:"El factor de corrección por la rugosidad de los electrodos enterrados.",d:"El tiempo de despeje de la falta por la protección principal."},c:"b",ref:"IEEE Std 80 / ITC-RAT-13",exp:"El factor r permite descontar la corriente que retorna por otros caminos (cables de guarda, pantallas), calculando la corriente real que provoca la elevación de potencial. Las demás opciones son parámetros distintos."},
+  {p:"Al conectar circuitos secundarios de transformadores de medida a tierra, ¿cuál es la sección mínima de cobre exigida para el conductor si no está mecánicamente protegido?",o:{a:"1,5 mm².",b:"2,5 mm².",c:"4 mm².",d:"6 mm²."},c:"c",ref:"ITC-RAT-08 / Apartado 2",exp:"La norma exige 4 mm² sin protección mecánica para asegurar la integridad frente a roturas accidentales; se reduce a 2,5 mm² si está protegido. Las opciones a y b son insuficientes sin protección."},
+  {p:"De acuerdo con el Reglamento de Puntos de Medida (RUPM), ¿qué caída de tensión máxima se permite en el cableado secundario desde el TT hasta el contador?",o:{a:"1% de la tensión nominal.",b:"1 por 1.000 de la tensión nominal.",c:"3% de la tensión nominal.",d:"0,5 V constantes."},c:"b",ref:"ITC-RAT-08 / RUPM",exp:"La precisión en facturación exige que el cableado no introduzca un error superior al 0,1% (1/1.000). Las opciones a y c son demasiado permisivas y la d no está referida a la tensión nominal."},
+  {p:"En el montaje de una red de tierras, se considera que dos tomas de tierra son independientes si:",o:{a:"Están situadas a más de 5 metros de distancia entre ellas.",b:"Una no alcanza más de 50 V respecto a potencial cero cuando por la otra circula la máxima corriente de defecto.",c:"Están conectadas mediante un conductor de acero inoxidable de 50 mm².",d:"Pertenecen a distintas categorías de tensión nominal."},c:"b",ref:"ITC-RAT-01 / Definición 36",exp:"La independencia se define por el grado de acoplamiento galvánico y la transferencia de tensiones peligrosas, no por distancia geométrica. Las opciones a, c y d no garantizan la ausencia de acoplamiento."},
+  {p:"Se proyecta un pasillo de servicio en una subestación de interior sin piezas en tensión a los lados, destinado exclusivamente a inspección. ¿Cuál es el ancho libre mínimo permitido?",o:{a:"0,50 metros.",b:"0,80 metros.",c:"1,00 metro.",d:"0,60 metros."},c:"b",ref:"ITC-RAT-14 / Apartado 6.1",exp:"Para pasillos de inspección sin partes activas próximas, el ancho mínimo se reduce a 0,80 m. Las opciones a y d son insuficientes; la c es para pasillos con elementos en tensión a un lado."},
+  {p:"En la verificación de una instalación nueva antes de su puesta en servicio, ¿qué ensayo funcional relacionado con la seguridad mecánica de operación es obligatorio realizar en obra?",o:{a:"Medida de la resistencia de aislamiento de los conductores tendidos.",b:"Pruebas funcionales de los enclavamientos montados en obra.",c:"Ensayo de calentamiento a intensidad nominal durante 24 horas.",d:"Verificación de la rigidez dieléctrica de los aisladores de porcelana."},c:"b",ref:"ITC-RAT-23 / Apartado 3.2.1.e",exp:"Es crítico verificar que los enclavamientos impidan maniobras peligrosas antes de energizar la planta. Las opciones a, c y d son ensayos de tipo o de estado del material, no funcionales de los enclavamientos."},
+  {p:"Al trabajar en la proximidad de elementos en tensión de 66 kV, ¿cuál es la distancia de seguridad límite (Dprox) que no debe invadir un trabajador sin formación específica?",o:{a:"1,00 metro.",b:"3,00 metros.",c:"5,00 metros.",d:"0,85 metros."},c:"b",ref:"RD 614/2001 / Tabla 1",exp:"Para 66 kV la distancia de peligro (Dpel) es 0,85 m, pero la zona de proximidad que no debe invadir un trabajador sin formación específica se establece en 3,00 m según la tabla reglamentaria."},
+  {p:"En una subestación de interior integrada en un edificio, ¿cuál es la resistencia al fuego exigida para los sectores de incendio de los transformadores?",o:{a:"EI 60.",b:"EI 90.",c:"EI 120.",d:"EI 240."},c:"c",ref:"ITC-RAT-14 / Apartado 5.1.d",exp:"La sectorización en zonas críticas como transformadores en edificios debe garantizar 120 minutos. Las opciones a y b son insuficientes y la d es un requisito más extremo no exigido para este caso."},
+  {p:"Para la evacuación de gases en caso de defecto interno en celdas blindadas, el montaje debe asegurar que:",o:{a:"Los gases se acumulen en el falso techo para su posterior filtrado.",b:"Se respeten las distancias de escape indicadas por el fabricante para evitar daños a personas.",c:"La celda sea totalmente estanca y no permita ninguna salida de gas al exterior.",d:"Se inyecte nitrógeno automáticamente para sofocar la llama del arco."},c:"b",ref:"ITC-RAT-14 / Apartado 6.4",exp:"En caso de arco interno, la presión debe liberarse por zonas diseñadas para que los gases calientes no impacten sobre el personal. Las opciones a, c y d son incorrectas técnica o reglamentariamente."},
+  {p:"Al seleccionar la relación de transformación de un transformador de tensión (TT) para una instalación de 400 kV, la tensión asignada del primario debe estar:",o:{a:"Exactamente en 400 kV.",b:"Entre el 100% y el 120% de la tensión nominal del circuito.",c:"Igual a la tensión máxima fase-tierra de pico prevista.",d:"Entre 380 kV y 420 kV para compensar armónicos."},c:"b",ref:"ITC-RAT-08 / Apartado 2",exp:"El diseño exige este rango para asegurar que el TT opere en su zona de precisión incluso con sobretensiones de servicio. Las demás opciones no garantizan el funcionamiento en rango de precisión."},
+  {p:"En el modelo físico utilizado por el RAT e IEEE 80 para el cálculo de tierras, ¿qué valor se asume como resistencia del cuerpo humano?",o:{a:"500 Ω.",b:"1.000 Ω.",c:"2.500 Ω.",d:"2.000 Ω."},c:"b",ref:"ITC-RAT-01 / Definición 80",exp:"Se estandariza en 1.000 ohmios la resistencia del cuerpo de mano a pies para uniformizar los criterios de seguridad en los cálculos de tensiones de paso y contacto. Las demás opciones no son el valor reglamentario."},
+  {p:"Para instalaciones de tensión superior a 132 kV, el punto de medida principal RUPM debe situarse a una distancia de la frontera inferior a:",o:{a:"50 metros.",b:"150 metros.",c:"500 metros.",d:"1.000 metros."},c:"c",ref:"Criterios Fronteras / Definiciones",exp:"Para grandes potencias en transporte (>132 kV), se permite hasta 500 metros para considerar que la medida está 'en el mismo lugar' que la frontera. Las opciones a y b son límites de tensiones menores y la d excede el margen legal."},
+  {p:"Un conjunto prefabricado de aparamenta bajo envolvente metálica tiene limitada su presión de gas SF6 para ser considerado bajo la ITC-RAT 16 a:",o:{a:"1,2 bares relativos.",b:"3 bares relativos.",c:"5 bares absolutos.",d:"10 bares absolutos."},c:"b",ref:"ITC-RAT-16 / Apartado 2.2",exp:"Si la presión relativa supera los 3 bares se aplican los requisitos más estrictos de la ITC-RAT 18. Las opciones a, c y d no son el límite reglamentario de aplicación de la ITC-RAT 16."},
+  {p:"Al conectar conductores de materiales distintos (ej. cobre y aluminio), ¿qué precaución de montaje es obligatoria?",o:{a:"Soldar ambos conductores mediante plata.",b:"Utilizar dispositivos que eviten los efectos electrolíticos entre metales.",c:"Aumentar la sección del conductor de aluminio al doble de la del cobre.",d:"Instalar un aislador de cadena entre ambos materiales."},c:"b",ref:"ITC-RAT-05 / Apartado 4",exp:"La corrosión galvánica por par electrolítico destruiría la conexión con el tiempo; se deben usar bornes bimetálicos o interfaces tratadas. Las opciones a, c y d no resuelven el problema electrolítico."},
+  {p:"En instalaciones con tensiones de 400 kV, ¿cuál es el valor de la Tensión más elevada para el material (Um) que sirve de base para el diseño del aislamiento?",o:{a:"400 kV.",b:"420 kV.",c:"440 kV.",d:"550 kV."},c:"b",ref:"ITC-RAT-04 / Tabla 1",exp:"La tensión Um de 420 kV es el estándar para equipos de 400 kV nominales, permitiendo márgenes para la regulación y variaciones de red. Las demás opciones no son el valor normalizado para este nivel de tensión."},
+  {p:"Según la ITC-RAT 13, para realizar las mediciones de tensiones aplicadas en la recepción de la red de tierras, el voltímetro debe tener una resistencia interna de:",o:{a:"Superior a 1 MΩ.",b:"Exactamente 1.000 Ω.",c:"500 Ω.",d:"Inferior a 10 Ω."},c:"b",ref:"ITC-RAT-13 / Apartado 8.1",exp:"El voltímetro debe simular la carga del cuerpo humano (1.000 ohmios) para que la medida de tensión refleje el peligro real para una persona. Las demás opciones darían lecturas que no representan el riesgo real."},
+  {p:"Al montar una subestación blindada (GIS), REE establece que las piezas de conexión de la aparamenta:",o:{a:"Serán siempre propiedad del fabricante de la GIS.",b:"Serán propiedad del mismo titular que el de la aparamenta a la que pertenecen.",c:"Serán propiedad de REE independientemente del dueño de la GIS.",d:"Deben ser de material aislante flexible."},c:"b",ref:"Criterios Fronteras / Apartado 6.2.2.e",exp:"Las piezas de conexión forman parte de la unidad de suministro indivisible y siguen la propiedad del equipo principal. Las demás opciones no reflejan el criterio de propiedad de REE."},
+  {p:"En terrenos de naturaleza caliza compacta, ¿qué rango de resistividad típica (Ω·m) se asume para el estudio previo de tierras?",o:{a:"50 a 300.",b:"300 a 500.",c:"1.000 a 5.000.",d:"50.000 a 100.000."},c:"c",ref:"ITC-RAT-13 / Tabla Informativa",exp:"Las calizas compactas son terrenos de alta resistividad, requiriendo mallas más extensas o electrodos profundos. La opción a corresponde a terrenos pantanosos; b a gravas húmedas; d excede la variabilidad habitual."},
+  {p:"Al habilitarse en la categoría AT2 (superior a 30 kV), la empresa instaladora debe disponer obligatoriamente de:",o:{a:"Un camión grúa con cesta aislada.",b:"Un medidor de tiempos de cierre y apertura de interruptores automáticos.",c:"Un laboratorio de aceites acreditado.",d:"Un sistema de monitorización por satélite de la red."},c:"b",ref:"ITC-RAT-21 / Anexo 1",exp:"La coordinación de protecciones exige verificar la simultaneidad de polos y tiempos de maniobra mediante este equipo específico. Las opciones a, c y d no son el requisito diferencial de la categoría AT2."},
+  {p:"Un aparato mecánico de conexión con 'disparo libre' se caracteriza porque:",o:{a:"Puede cerrarse sin necesidad de energía externa (muelles).",b:"Sus contactos móviles vuelven a abierto si se ordena apertura, aunque se mantenga la orden de cierre.",c:"El interruptor dispara automáticamente cada 24 horas por prueba piloto.",d:"Permite el paso de corriente aunque los contactos no estén totalmente cerrados."},c:"b",ref:"ITC-RAT-01 / Definición 4",exp:"Esta función de seguridad mecánica garantiza que la apertura tenga prioridad absoluta sobre el cierre en caso de falta. Las opciones a, c y d describen características distintas no relacionadas con el disparo libre."},
+  {p:"En instalaciones de exterior situadas en zonas accesibles al público, si existe riesgo de escalada del vallado, este debe:",o:{a:"Disponer de una alarma sonora de 120 dB.",b:"Ser de diseño adecuado para disuadir de su escalada.",c:"Tener una inclinación de 45 grados hacia el exterior.",d:"Estar fabricado íntegramente en madera tratada."},c:"b",ref:"ITC-RAT-15 / Apartado 3.1",exp:"El diseño debe prevenir físicamente el acceso para evitar riesgos de electrocución. La opción a no impide físicamente el acceso; c puede ser una solución pero no el requisito general; d no ofrece resistencia mecánica adecuada."},
+  {p:"En el proyecto de una subestación, el Pliego de Condiciones Técnicas tiene como misión principal:",o:{a:"Justificar la necesidad económica de la instalación.",b:"Definir los materiales, aparatos y su correcto montaje para evitar interpretaciones erróneas.",c:"Calcular la corriente de cortocircuito de la red de transporte.",d:"Describir el impacto visual en el entorno natural."},c:"b",ref:"ITC-RAT-20 / Apartado 3.2.2",exp:"Es el documento contractual y técnico donde se fijan las calidades y procedimientos de ejecución. Las opciones a, c y d son contenidos de otros documentos del proyecto."},
+  {p:"Para asegurar el drenaje y evitar polvo, el terreno de los parques de exterior suele recubrirse con grava. ¿Qué beneficio adicional aporta esta medida al cálculo de tierras?",o:{a:"Reduce la resistencia de puesta a tierra de la malla.",b:"Aumenta la resistencia de contacto de los pies del operario con el suelo.",c:"Atrae los rayos hacia zonas alejadas de los equipos.",d:"Mantiene la temperatura del suelo constante a 20°C."},c:"b",ref:"IEEE Std 80 / ITC-RAT-13",exp:"La grava seca actúa como aislante elevando la tensión tolerable de contacto y paso al aumentar la resistencia total del camino de la corriente por el cuerpo. Las opciones a, c y d no describen el beneficio técnico de la grava en el cálculo de tierras."},
+  {p:"En una conexión de cable aislado en frontera, si REE requiere instalar puestas a tierra portátiles en lado línea, la conexión se realizará preferentemente sobre:",o:{a:"La propia pantalla del cable aislado.",b:"Los latiguillos de derivación a trafo de tensión o pararrayos.",c:"El embarrado principal de la subestación.",d:"Una pica clavada directamente en el sótano."},c:"b",ref:"Criterios Fronteras / Apartado 6.2.1.1.b",exp:"Se utilizan estos elementos de derivación para permitir la puesta a tierra de seguridad de forma independiente a las instalaciones del Agente conectado. Las demás opciones no garantizan la seguridad operativa requerida."},
+  {p:"De acuerdo con el RD 614/2001, las cinco reglas de oro para trabajos sin tensión deben aplicarse siguiendo un orden estricto. ¿Cuál es el cuarto paso?",o:{a:"Verificar ausencia de tensión.",b:"Prevenir cualquier posible realimentación.",c:"Poner a tierra y en cortocircuito.",d:"Proteger y señalizar."},c:"c",ref:"RD 614/2001 / Anexo II",exp:"El orden es: 1-Desconectar, 2-Enclavar, 3-Verificar, 4-Tierras/Cortocircuito, 5-Señalizar. Las opciones a y b son pasos anteriores; d es el quinto paso."},
+  {p:"La tensión nominal de una instalación (Un) se define como:",o:{a:"El valor máximo de cresta de la tensión fase-tierra.",b:"El valor convencional de la tensión con la que se denomina un sistema y para el que se prevé su funcionamiento.",c:"La media de las tensiones medidas en los bornes secundarios.",d:"La tensión que soporta el aislamiento durante el ensayo de frecuencia industrial."},c:"b",ref:"ITC-RAT-01 / Definición 89",exp:"Es el valor de referencia administrativo y técnico que clasifica la instalación en las categorías del reglamento. Las opciones a, c y d describen otros parámetros técnicos distintos."},
+  {p:"En el montaje de transformadores de medida de intensidad, la carga real del circuito secundario debe mantenerse entre:",o:{a:"0% y 100% de su potencia de precisión.",b:"25% y 100% de su potencia de precisión.",c:"80% y 120% de su potencia de precisión.",d:"10% y 50% para evitar saturación del hierro."},c:"b",ref:"ITC-RAT-08 / Apartado 2",exp:"Por debajo del 25% de carga, el transformador puede no garantizar la clase de precisión para la que fue diseñado. Las opciones a y d incluyen rangos fuera de los límites que garantizan la clase de precisión."}
+];
+
+let cur=0, answers=new Array(QS.length).fill(null), iv=null, secs=90*60;
+
+function startTest(){
+  document.getElementById('s-start').style.display='none';
+  document.getElementById('s-test').style.display='block';
+  buildNav(); renderQ(); startTimer();
+}
+
+function buildNav(){
+  const nav=document.getElementById('q-nav'); nav.innerHTML='';
+  QS.forEach((_,i)=>{
+    const d=document.createElement('div');
+    let cls='q-dot';
+    if(i===cur) cls+=' current';
+    else if(answers[i]!==null) cls+=(answers[i]===QS[i].c?' correct':' wrong');
+    d.className=cls;
+    d.textContent=i+1;
+    d.onclick=()=>goTo(i);
+    nav.appendChild(d);
+  });
+}
+
+function renderQ(){
+  const q=QS[cur];
+  const answered=answers[cur]!==null;
+  document.getElementById('q-label').textContent=`Pregunta ${cur+1} de ${QS.length}`;
+  document.getElementById('q-text').textContent=q.p;
+
+  const opts=document.getElementById('options'); opts.innerHTML='';
+  Object.entries(q.o).forEach(([k,v])=>{
+    const d=document.createElement('div');
+    let cls='opt';
+    if(answered){
+      cls+=' locked';
+      if(k===q.c) cls+=' show-correct';
+      if(k===answers[cur] && answers[cur]!==q.c) cls+=' sel-wrong';
+    }
+    d.className=cls;
+    d.innerHTML=`<span class="opt-key">${k.toUpperCase()})</span><span>${v}</span>`;
+    if(!answered) d.onclick=()=>selectAnswer(k);
+    opts.appendChild(d);
+  });
+
+  const fb=document.getElementById('feedback');
+  if(answered){
+    const isOk=answers[cur]===q.c;
+    fb.className='feedback show '+(isOk?'fb-ok':'fb-fail');
+    document.getElementById('fb-title').textContent=isOk?'✓ Respuesta correcta':'✗ Respuesta incorrecta';
+    document.getElementById('fb-body').textContent=q.exp;
+    document.getElementById('fb-ref').textContent='📖 Referencia: '+q.ref;
+  } else {
+    fb.className='feedback';
+  }
+  buildNav(); updateStats();
+}
+
+function selectAnswer(k){
+  answers[cur]=k;
+  renderQ();
+}
+
+function navigate(d){
+  const n=cur+d;
+  if(n>=0&&n<QS.length){cur=n; renderQ();}
+}
+
+function goTo(i){cur=i; renderQ();}
+
+function updateStats(){
+  const ans=answers.filter(a=>a!==null).length;
+  document.getElementById('s-ans').textContent=ans;
+  document.getElementById('s-blank').textContent=QS.length-ans;
+  document.getElementById('s-rem').textContent=QS.length-ans;
+}
+
+function startTimer(){
+  const el=document.getElementById('timer');
+  iv=setInterval(()=>{
+    secs--;
+    const m=Math.floor(secs/60),s=secs%60;
+    el.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    if(secs<=300) el.classList.add('warn');
+    if(secs<=0){clearInterval(iv); finish();}
+  },1000);
+}
+
+function finish(){
+  if(iv) clearInterval(iv);
+  document.getElementById('s-test').style.display='none';
+  document.getElementById('s-results').style.display='block';
+
+  let ok=0,fail=0,blank=0;
+  answers.forEach((a,i)=>{
+    if(a===null) blank++;
+    else if(a===QS[i].c) ok++;
+    else fail++;
+  });
+  const ptsPorPregunta=10/QS.length;
+  const pena=fail*(ptsPorPregunta/2), raw=ok*ptsPorPregunta-pena;
+  const s10=Math.max(0,raw).toFixed(2);
+
+  document.getElementById('score-num').textContent=s10;
+  document.getElementById('score-detail').textContent=`${ok} correctas · ${fail} incorrectas · ${blank} en blanco · ${(10/QS.length).toFixed(3)} pts/correcta · Penalización: −${pena.toFixed(3)} pts`;
+
+  const h160=parseFloat(s10)>=5, h426=parseFloat(s10)>=6;
+  document.getElementById('habilita-badges').innerHTML=
+    `<span class="habilita ${h160?'ok':'fail'}">Familia 0160: ${h160?'HABILITADO ✓':'NO HABILITADO ✗'}</span> `+
+    `<span class="habilita ${h426?'ok':'fail'}">Familia 0426: ${h426?'HABILITADO ✓':'NO HABILITADO ✗'}</span>`;
+
+  document.getElementById('r-ok').textContent=ok;
+  document.getElementById('r-fail').textContent=fail;
+  document.getElementById('r-blank').textContent=blank;
+  document.getElementById('r-pena').textContent='−'+pena.toFixed(3);
+
+  const list=document.getElementById('review-list');
+  list.innerHTML='';
+  const toReview=QS.map((q,i)=>({q,i,a:answers[i]})).filter(({a,q})=>a===null||a!==q.c);
+
+  if(toReview.length===0){
+    document.getElementById('rev-title').textContent='¡Enhorabuena! Todas las respuestas son correctas.';
+  } else {
+    document.getElementById('rev-title').textContent=`Revisión — ${toReview.length} pregunta${toReview.length>1?'s':''} para repasar:`;
+    toReview.forEach(({q,i,a})=>{
+      const isBlank=a===null;
+      const cls=isBlank?'blank':'fail';
+      const tag=isBlank?'<span class="tag tag-blank">En blanco</span>':'<span class="tag tag-fail">Incorrecta ✗</span>';
+      const ua=a?`Tu respuesta: <strong>${a.toUpperCase()}) ${q.o[a]}</strong>`:'No respondida.';
+      list.innerHTML+=`
+        <div class="rev-item ${cls}">
+          ${tag}
+          <div class="rev-q"><strong>${i+1}.</strong> ${q.p}</div>
+          <div class="rev-ans">${ua}<br>Respuesta correcta: <strong>${q.c.toUpperCase()}) ${q.o[q.c]}</strong></div>
+          <div class="rev-exp">${q.exp}</div>
+          <div class="rev-ref">📖 ${q.ref}</div>
+        </div>`;
+    });
+  }
+  window.scrollTo(0,0);
+}
+
+function restart(){
+  answers=new Array(QS.length).fill(null); cur=0; secs=90*60;
+  document.getElementById('s-results').style.display='none';
+  document.getElementById('s-test').style.display='block';
+  document.getElementById('timer').classList.remove('warn');
+  buildNav(); renderQ(); startTimer();
+}
+</script>
+</body>
+</html>

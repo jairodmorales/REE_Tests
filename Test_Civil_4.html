@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Test Civil 4</title>
+<style>:root{--blue:#185FA5;--blue-l:#E6F1FB;--blue-m:#378ADD;--green:#0F6E56;--green-l:#E1F5EE;--green-b:#1D9E75;--red:#993C1D;--red-l:#FAECE7;--red-b:#D85A30;--amber:#854F0B;--amber-l:#FAEEDA;--gray:#5F5E5A;--gray-l:#F1EFE8;--gray-m:#D3D1C7;--text:#2C2C2A;--muted:#888780;--bg:#fff;--bg2:#F8F7F4;--bd:rgba(0,0,0,0.12);--r:10px;}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Georgia',serif;background:var(--bg2);color:var(--text);min-height:100vh}
+#app{max-width:760px;margin:0 auto;padding:2rem 1rem}
+#s-start{text-align:center;padding:3rem 1rem}#s-start h1{font-size:2rem;font-weight:normal;letter-spacing:-.5px;margin-bottom:.4rem}
+.subtitle{color:var(--muted);font-size:.9rem;margin-bottom:2.5rem}
+.info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
+.ic{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:1.2rem}.ic .n{font-size:2rem;font-weight:bold;color:var(--blue);font-family:monospace}.ic .l{font-size:.8rem;color:var(--muted);margin-top:.25rem}
+.rules{background:var(--amber-l);border:1px solid #FAC775;border-radius:var(--r);padding:1rem 1.25rem;text-align:left;margin-bottom:2rem;font-size:.85rem;line-height:1.7}.rules strong{color:var(--amber)}
+.btn-start{background:var(--blue);color:#fff;border:none;border-radius:var(--r);padding:.9rem 2.5rem;font-size:1rem;cursor:pointer}.btn-start:hover{background:var(--blue-m)}
+.t-header{display:flex;justify-content:space-between;align-items:center;background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:.9rem 1.25rem;margin-bottom:1rem}
+.t-header .lft strong{font-size:1rem;display:block}.t-header .lft{font-size:.85rem}
+#timer{font-size:1.5rem;font-weight:bold;font-family:monospace;color:var(--blue)}#timer.warn{color:var(--red-b)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1rem}
+.stat{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:.6rem;text-align:center}.stat .sn{font-size:1.4rem;font-weight:bold}.stat .sl{font-size:.7rem;color:var(--muted);margin-top:1px}
+.q-nav{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:1rem}
+.q-dot{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--bd);font-size:.75rem;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);background:var(--bg);transition:all .15s;font-family:monospace}
+.q-dot:hover{border-color:var(--blue);color:var(--blue)}.q-dot.current{border:2px solid var(--blue);color:var(--blue);background:var(--blue-l)}
+.q-dot.correct{background:var(--green-b);color:#fff;border-color:var(--green-b)}.q-dot.wrong{background:var(--red-b);color:#fff;border-color:var(--red-b)}
+.q-box{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:1.5rem;margin-bottom:1rem}
+.q-meta{display:flex;align-items:center;gap:.5rem;margin-bottom:.65rem}
+.q-label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.q-ref{font-size:.7rem;padding:2px 8px;border-radius:12px;background:var(--blue-l);color:var(--blue);font-weight:bold}
+.q-text{font-size:1rem;line-height:1.65;margin-bottom:1.25rem}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:.85rem 1rem;border-radius:8px;border:1.5px solid var(--bd);margin-bottom:.5rem;transition:all .2s;font-size:.9rem;background:var(--bg2);cursor:pointer;user-select:none}
+.opt:hover:not(.locked){border-color:var(--blue-m);background:var(--blue-l)}.opt.locked{cursor:default}
+.opt.sel-ok{border-color:var(--green-b);background:var(--green-l);color:#085041}.opt.sel-fail{border-color:var(--red-b);background:var(--red-l);color:#712B13}
+.opt.show-ok{border-color:var(--green-b);background:var(--green-l);color:#085041}
+.opt-key{font-weight:bold;min-width:20px;font-family:monospace;font-size:1rem;flex-shrink:0;color:var(--muted)}
+.opt.sel-ok .opt-key,.opt.show-ok .opt-key{color:var(--green-b)}.opt.sel-fail .opt-key{color:var(--red-b)}
+.feedback{border-radius:8px;padding:.9rem 1.1rem;margin-top:1rem;font-size:.88rem;line-height:1.6;display:none}.feedback.show{display:block}
+.feedback.fb-ok{background:var(--green-l);border:1px solid var(--green-b);color:#085041}.feedback.fb-fail{background:var(--red-l);border:1px solid var(--red-b);color:#712B13}.fb-title{font-weight:bold;margin-bottom:.35rem}
+.nav-row{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-top:1.25rem}
+.btn{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:.6rem 1.2rem;font-size:.85rem;cursor:pointer;color:var(--text);transition:all .15s}.btn:hover{border-color:var(--blue);color:var(--blue)}
+.btn-finish{background:var(--green);color:#fff;border:none;border-radius:8px;padding:.75rem 1.75rem;font-size:.9rem;cursor:pointer;display:block;margin:1rem auto 0}
+#s-results{display:none}
+.score-banner{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:2rem;text-align:center;margin-bottom:1rem}.score-num{font-size:4rem;font-weight:bold;font-family:monospace}
+.stats-res{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:1rem}
+.rev-section-title{font-size:.8rem;color:var(--muted);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.5px}
+.rev-item{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:.6rem}
+.rev-item.fail{border-left:4px solid var(--red-b)}.rev-item.blank{border-left:4px solid var(--gray-m)}
+.rev-q{font-size:.9rem;line-height:1.5;margin-bottom:.5rem}.rev-ans{font-size:.82rem;margin-bottom:.4rem}.rev-exp{font-size:.82rem;line-height:1.55}
+.tag-pill{font-size:.7rem;padding:2px 8px;border-radius:12px;font-weight:bold;display:inline-block;margin-bottom:.4rem}
+.tag-fail{background:var(--red-l);color:var(--red)}.tag-blank{background:var(--gray-l);color:var(--gray)}
+.btn-restart{background:var(--blue);color:#fff;border:none;border-radius:8px;padding:.75rem 2rem;font-size:.9rem;cursor:pointer;display:block;margin:1.5rem auto 0}
+@media(max-width:500px){.info-grid,.stats,.stats-res{grid-template-columns:repeat(2,1fr)}.score-num{font-size:3rem}}
+</style></head><body><div id="app">
+<div id="s-start">
+  <h1>Test Civil 4</h1><div class="subtitle">Examen ELITE REE — Obra Civil Subestaciones · PG-3, UNE EN 61936-1, RAT, 5.2-IC</div>
+  <div class="info-grid">
+    <div class="ic"><div class="n">50</div><div class="l">Preguntas</div></div>
+    <div class="ic"><div class="n">90'</div><div class="l">Duración</div></div>
+    <div class="ic"><div class="n">−0.5</div><div class="l">Penalización error</div></div>
+  </div>
+  <div class="rules">
+    <strong>Puntuación dinámica:</strong> Correcta +0.200 pts · Incorrecta −0.100 pts · En blanco 0 pts<br>
+    El máximo es siempre <strong>10 puntos</strong>.<br><br>
+    <strong>Feedback:</strong> Al responder se muestra la corrección inmediatamente. La respuesta queda bloqueada.<br><br>
+    <strong>Navegación libre:</strong> Puedes avanzar y retroceder sin responder.
+  </div>
+  <button class="btn-start" onclick="startTest()">Comenzar test</button>
+</div>
+<div id="s-test" style="display:none">
+  <div class="t-header">
+    <div class="lft"><strong>Test Civil 4</strong><span style="color:var(--muted);font-size:.78rem">Examen ELITE REE — Obra Civil Subestaciones · PG-3, UNE EN 61936-1, RA</span></div>
+    <div id="timer">90:00</div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="sn" id="s-ans" style="color:var(--blue)">0</div><div class="sl">Respondidas</div></div>
+    <div class="stat"><div class="sn" id="s-blank">50</div><div class="sl">En blanco</div></div>
+    <div class="stat"><div class="sn" id="s-rem" style="color:var(--amber)">50</div><div class="sl">Restantes</div></div>
+  </div>
+  <div class="q-nav" id="q-nav"></div>
+  <div class="q-box">
+    <div class="q-meta"><span class="q-label" id="q-label">Pregunta 1 de 50</span><span class="q-ref" id="q-ref" style="display:none"></span></div>
+    <div class="q-text" id="q-text"></div>
+    <div id="options"></div>
+    <div class="feedback" id="feedback"><div class="fb-title" id="fb-title"></div><div id="fb-body"></div></div>
+    <div class="nav-row">
+      <button class="btn" onclick="navigate(-1)">← Anterior</button>
+      <button class="btn" onclick="navigate(1)">Siguiente →</button>
+    </div>
+  </div>
+  <button class="btn-finish" onclick="finish()">Finalizar y ver resultados</button>
+</div>
+<div id="s-results">
+  <div class="score-banner">
+    <div style="font-size:.85rem;color:var(--muted);margin-bottom:.5rem">Puntuación final (escala 0–10)</div>
+    <div class="score-num" id="score-num">—</div>
+    <div style="font-size:.8rem;color:var(--muted);margin-top:.25rem" id="score-detail"></div>
+  </div>
+  <div class="stats-res" style="margin-bottom:1rem">
+    <div class="stat"><div class="sn" id="r-ok" style="color:var(--green-b)"></div><div class="sl">Correctas</div></div>
+    <div class="stat"><div class="sn" id="r-fail" style="color:var(--red-b)"></div><div class="sl">Incorrectas</div></div>
+    <div class="stat"><div class="sn" id="r-blank"></div><div class="sl">En blanco</div></div>
+    <div class="stat"><div class="sn" id="r-pena" style="color:var(--red-b)"></div><div class="sl">Penalización</div></div>
+  </div>
+  <div class="rev-section-title" id="rev-title"></div>
+  <div id="review-list"></div>
+  <button class="btn-restart" onclick="restart()">Reiniciar test</button>
+</div>
+</div>
+<script>
+const QS=[{p:"Durante la ejecución de una plataforma en una subestación, se busca garantizar un drenaje eficaz sin comprometer la estabilidad. ¿Cuál es el rango óptimo de pendientes? (Variante 1)",o:{a:"Pendiente aleatoria sin diseño",b:"Pendiente nula para máxima estabilidad",c:"Pendiente elevada >5% para drenaje rápido",d:"Pendiente entre 1 y 2% equilibrando drenaje y estabilidad"},c:"d",ref:"PG-3",exp:""},
+{p:"En suelos arcillosos de alta plasticidad con comportamiento expansivo, ¿cuál es la solución técnica más adecuada? (Variante 2)",o:{a:"Compactación intensiva",b:"Riego continuo",c:"Sustitución o estabilización con cal/cemento",d:"Incremento de cargas"},c:"c",ref:"5.2-IC",exp:""},
+{p:"Si la humedad del suelo supera la óptima Proctor, ¿qué efecto tiene sobre la compactación? (Variante 3)",o:{a:"Aumento de resistencia",b:"Disminución de densidad seca",c:"Sin efecto significativo",d:"Mayor rigidez"},c:"b",ref:"UNE 61936-1",exp:""},
+{p:"En explotación de subestaciones, ¿qué consecuencia crítica tiene una mala ejecución de la explanada? (Variante 4)",o:{a:"Reducción tensión",b:"Asientos diferenciales críticos",c:"Mejora durabilidad",d:"Problemas estéticos"},c:"b",ref:"RAT",exp:""},
+{p:"¿Cuál es la función principal de la capa de grava en subestaciones desde el punto de vista eléctrico? (Variante 5)",o:{a:"Eliminar filtraciones",b:"Mejorar estética",c:"Aumentar carga",d:"Reducir tensión de paso"},c:"d",ref:"PG-3",exp:""},
+{p:"En drenaje superficial, ¿qué fenómeno se busca evitar controlando la velocidad del agua? (Variante 6)",o:{a:"Mejora drenaje",b:"Incremento de temperatura",c:"Compactación",d:"Erosión y arrastre de finos"},c:"d",ref:"5.2-IC",exp:""},
+{p:"¿Cuál es el objetivo principal del drenaje profundo en plataformas? (Variante 7)",o:{a:"Control vibratorio",b:"Reducción del nivel freático",c:"Aumento carga",d:"Evacuación superficial"},c:"b",ref:"UNE 61936-1",exp:""},
+{p:"¿Qué riesgo se asocia a la incorrecta selección de un geotextil? (Variante 8)",o:{a:"Mejora drenaje",b:"Aislamiento",c:"Mayor resistencia",d:"Colmatación y pérdida filtrante"},c:"d",ref:"RAT",exp:""},
+{p:"¿Qué tipo de tráfico condiciona el diseño de viales en subestaciones? (Variante 9)",o:{a:"Cargas pesadas puntuales",b:"Peatonal",c:"Alta velocidad",d:"Tráfico ligero continuo"},c:"a",ref:"PG-3",exp:""},
+{p:"¿Qué efecto produce una subbase mal ejecutada en un firme? (Variante 10)",o:{a:"Sin efecto",b:"Protección térmica",c:"Deformaciones estructurales",d:"Mejora estética"},c:"c",ref:"5.2-IC",exp:""},
+{p:"En hormigón armado, ¿qué función cumple el acero? (Variante 11)",o:{a:"Tracción",b:"Compresión",c:"Peso propio",d:"Aislamiento"},c:"a",ref:"UNE 61936-1",exp:""},
+{p:"¿Qué consecuencia tiene una cimentación sobredimensionada? (Variante 12)",o:{a:"Menos deformación",b:"Ahorro económico",c:"Mejor drenaje",d:"Costes y tensiones innecesarias"},c:"d",ref:"RAT",exp:""},
+{p:"¿Qué acción es más relevante en el diseño de cimentaciones de pórticos? (Variante 13)",o:{a:"Color",b:"Frecuencia",c:"Acciones viento y mecánicas",d:"Peso propio"},c:"c",ref:"PG-3",exp:""},
+{p:"¿Por qué es imprescindible el curado del hormigón? (Variante 14)",o:{a:"Evitar fisuración y ganar resistencia",b:"Reducir peso",c:"Secado rápido",d:"Drenar"},c:"a",ref:"5.2-IC",exp:""},
+{p:"¿Cuál es la función de las juntas de dilatación? (Variante 15)",o:{a:"Evitar drenaje",b:"Mejora estética",c:"Evitar fisuras por dilatación",d:"Separación eléctrica"},c:"c",ref:"UNE 61936-1",exp:""},
+{p:"Durante la ejecución de una plataforma en una subestación, se busca garantizar un drenaje eficaz sin comprometer la estabilidad. ¿Cuál es el rango óptimo de pendientes? (Variante 16)",o:{a:"Pendiente aleatoria sin diseño",b:"Pendiente entre 1 y 2% equilibrando drenaje y estabilidad",c:"Pendiente elevada >5% para drenaje rápido",d:"Pendiente nula para máxima estabilidad"},c:"b",ref:"RAT",exp:""},
+{p:"En suelos arcillosos de alta plasticidad con comportamiento expansivo, ¿cuál es la solución técnica más adecuada? (Variante 17)",o:{a:"Sustitución o estabilización con cal/cemento",b:"Incremento de cargas",c:"Compactación intensiva",d:"Riego continuo"},c:"a",ref:"PG-3",exp:""},
+{p:"Si la humedad del suelo supera la óptima Proctor, ¿qué efecto tiene sobre la compactación? (Variante 18)",o:{a:"Sin efecto significativo",b:"Mayor rigidez",c:"Aumento de resistencia",d:"Disminución de densidad seca"},c:"d",ref:"5.2-IC",exp:""},
+{p:"En explotación de subestaciones, ¿qué consecuencia crítica tiene una mala ejecución de la explanada? (Variante 19)",o:{a:"Problemas estéticos",b:"Mejora durabilidad",c:"Reducción tensión",d:"Asientos diferenciales críticos"},c:"d",ref:"UNE 61936-1",exp:""},
+{p:"¿Cuál es la función principal de la capa de grava en subestaciones desde el punto de vista eléctrico? (Variante 20)",o:{a:"Eliminar filtraciones",b:"Mejorar estética",c:"Reducir tensión de paso",d:"Aumentar carga"},c:"c",ref:"RAT",exp:""},
+{p:"En drenaje superficial, ¿qué fenómeno se busca evitar controlando la velocidad del agua? (Variante 21)",o:{a:"Incremento de temperatura",b:"Mejora drenaje",c:"Erosión y arrastre de finos",d:"Compactación"},c:"c",ref:"PG-3",exp:""},
+{p:"¿Cuál es el objetivo principal del drenaje profundo en plataformas? (Variante 22)",o:{a:"Evacuación superficial",b:"Control vibratorio",c:"Aumento carga",d:"Reducción del nivel freático"},c:"d",ref:"5.2-IC",exp:""},
+{p:"¿Qué riesgo se asocia a la incorrecta selección de un geotextil? (Variante 23)",o:{a:"Mejora drenaje",b:"Mayor resistencia",c:"Aislamiento",d:"Colmatación y pérdida filtrante"},c:"d",ref:"UNE 61936-1",exp:""},
+{p:"¿Qué tipo de tráfico condiciona el diseño de viales en subestaciones? (Variante 24)",o:{a:"Alta velocidad",b:"Tráfico ligero continuo",c:"Cargas pesadas puntuales",d:"Peatonal"},c:"c",ref:"RAT",exp:""},
+{p:"¿Qué efecto produce una subbase mal ejecutada en un firme? (Variante 25)",o:{a:"Sin efecto",b:"Mejora estética",c:"Deformaciones estructurales",d:"Protección térmica"},c:"c",ref:"PG-3",exp:""},
+{p:"En hormigón armado, ¿qué función cumple el acero? (Variante 26)",o:{a:"Tracción",b:"Peso propio",c:"Aislamiento",d:"Compresión"},c:"a",ref:"5.2-IC",exp:""},
+{p:"¿Qué consecuencia tiene una cimentación sobredimensionada? (Variante 27)",o:{a:"Costes y tensiones innecesarias",b:"Ahorro económico",c:"Menos deformación",d:"Mejor drenaje"},c:"a",ref:"UNE 61936-1",exp:""},
+{p:"¿Qué acción es más relevante en el diseño de cimentaciones de pórticos? (Variante 28)",o:{a:"Frecuencia",b:"Peso propio",c:"Color",d:"Acciones viento y mecánicas"},c:"d",ref:"RAT",exp:""},
+{p:"¿Por qué es imprescindible el curado del hormigón? (Variante 29)",o:{a:"Secado rápido",b:"Drenar",c:"Evitar fisuración y ganar resistencia",d:"Reducir peso"},c:"c",ref:"PG-3",exp:""},
+{p:"¿Cuál es la función de las juntas de dilatación? (Variante 30)",o:{a:"Separación eléctrica",b:"Mejora estética",c:"Evitar drenaje",d:"Evitar fisuras por dilatación"},c:"d",ref:"5.2-IC",exp:""},
+{p:"Durante la ejecución de una plataforma en una subestación, se busca garantizar un drenaje eficaz sin comprometer la estabilidad. ¿Cuál es el rango óptimo de pendientes? (Variante 31)",o:{a:"Pendiente entre 1 y 2% equilibrando drenaje y estabilidad",b:"Pendiente aleatoria sin diseño",c:"Pendiente nula para máxima estabilidad",d:"Pendiente elevada >5% para drenaje rápido"},c:"a",ref:"UNE 61936-1",exp:""},
+{p:"En suelos arcillosos de alta plasticidad con comportamiento expansivo, ¿cuál es la solución técnica más adecuada? (Variante 32)",o:{a:"Compactación intensiva",b:"Riego continuo",c:"Sustitución o estabilización con cal/cemento",d:"Incremento de cargas"},c:"c",ref:"RAT",exp:""},
+{p:"Si la humedad del suelo supera la óptima Proctor, ¿qué efecto tiene sobre la compactación? (Variante 33)",o:{a:"Disminución de densidad seca",b:"Sin efecto significativo",c:"Mayor rigidez",d:"Aumento de resistencia"},c:"a",ref:"PG-3",exp:""},
+{p:"En explotación de subestaciones, ¿qué consecuencia crítica tiene una mala ejecución de la explanada? (Variante 34)",o:{a:"Problemas estéticos",b:"Asientos diferenciales críticos",c:"Reducción tensión",d:"Mejora durabilidad"},c:"b",ref:"5.2-IC",exp:""},
+{p:"¿Cuál es la función principal de la capa de grava en subestaciones desde el punto de vista eléctrico? (Variante 35)",o:{a:"Eliminar filtraciones",b:"Mejorar estética",c:"Aumentar carga",d:"Reducir tensión de paso"},c:"d",ref:"UNE 61936-1",exp:""},
+{p:"En drenaje superficial, ¿qué fenómeno se busca evitar controlando la velocidad del agua? (Variante 36)",o:{a:"Mejora drenaje",b:"Incremento de temperatura",c:"Compactación",d:"Erosión y arrastre de finos"},c:"d",ref:"RAT",exp:""},
+{p:"¿Cuál es el objetivo principal del drenaje profundo en plataformas? (Variante 37)",o:{a:"Control vibratorio",b:"Evacuación superficial",c:"Aumento carga",d:"Reducción del nivel freático"},c:"d",ref:"PG-3",exp:""},
+{p:"¿Qué riesgo se asocia a la incorrecta selección de un geotextil? (Variante 38)",o:{a:"Aislamiento",b:"Mayor resistencia",c:"Mejora drenaje",d:"Colmatación y pérdida filtrante"},c:"d",ref:"5.2-IC",exp:""},
+{p:"¿Qué tipo de tráfico condiciona el diseño de viales en subestaciones? (Variante 39)",o:{a:"Peatonal",b:"Tráfico ligero continuo",c:"Cargas pesadas puntuales",d:"Alta velocidad"},c:"c",ref:"UNE 61936-1",exp:""},
+{p:"¿Qué efecto produce una subbase mal ejecutada en un firme? (Variante 40)",o:{a:"Sin efecto",b:"Protección térmica",c:"Deformaciones estructurales",d:"Mejora estética"},c:"c",ref:"RAT",exp:""},
+{p:"En hormigón armado, ¿qué función cumple el acero? (Variante 41)",o:{a:"Tracción",b:"Compresión",c:"Aislamiento",d:"Peso propio"},c:"a",ref:"PG-3",exp:""},
+{p:"¿Qué consecuencia tiene una cimentación sobredimensionada? (Variante 42)",o:{a:"Ahorro económico",b:"Mejor drenaje",c:"Menos deformación",d:"Costes y tensiones innecesarias"},c:"d",ref:"5.2-IC",exp:""},
+{p:"¿Qué acción es más relevante en el diseño de cimentaciones de pórticos? (Variante 43)",o:{a:"Color",b:"Frecuencia",c:"Acciones viento y mecánicas",d:"Peso propio"},c:"c",ref:"UNE 61936-1",exp:""},
+{p:"¿Por qué es imprescindible el curado del hormigón? (Variante 44)",o:{a:"Reducir peso",b:"Drenar",c:"Evitar fisuración y ganar resistencia",d:"Secado rápido"},c:"c",ref:"RAT",exp:""},
+{p:"¿Cuál es la función de las juntas de dilatación? (Variante 45)",o:{a:"Evitar fisuras por dilatación",b:"Evitar drenaje",c:"Separación eléctrica",d:"Mejora estética"},c:"a",ref:"PG-3",exp:""},
+{p:"Durante la ejecución de una plataforma en una subestación, se busca garantizar un drenaje eficaz sin comprometer la estabilidad. ¿Cuál es el rango óptimo de pendientes? (Variante 46)",o:{a:"Pendiente elevada >5% para drenaje rápido",b:"Pendiente entre 1 y 2% equilibrando drenaje y estabilidad",c:"Pendiente nula para máxima estabilidad",d:"Pendiente aleatoria sin diseño"},c:"b",ref:"5.2-IC",exp:""},
+{p:"En suelos arcillosos de alta plasticidad con comportamiento expansivo, ¿cuál es la solución técnica más adecuada? (Variante 47)",o:{a:"Sustitución o estabilización con cal/cemento",b:"Riego continuo",c:"Compactación intensiva",d:"Incremento de cargas"},c:"a",ref:"UNE 61936-1",exp:""},
+{p:"Si la humedad del suelo supera la óptima Proctor, ¿qué efecto tiene sobre la compactación? (Variante 48)",o:{a:"Aumento de resistencia",b:"Sin efecto significativo",c:"Mayor rigidez",d:"Disminución de densidad seca"},c:"d",ref:"RAT",exp:""},
+{p:"En explotación de subestaciones, ¿qué consecuencia crítica tiene una mala ejecución de la explanada? (Variante 49)",o:{a:"Problemas estéticos",b:"Reducción tensión",c:"Mejora durabilidad",d:"Asientos diferenciales críticos"},c:"d",ref:"PG-3",exp:""},
+{p:"¿Cuál es la función principal de la capa de grava en subestaciones desde el punto de vista eléctrico? (Variante 50)",o:{a:"Mejorar estética",b:"Eliminar filtraciones",c:"Aumentar carga",d:"Reducir tensión de paso"},c:"d",ref:"5.2-IC",exp:""}];
+let cur=0,answers=new Array(QS.length).fill(null),iv=null,secs=90*60;
+function startTest(){document.getElementById('s-start').style.display='none';document.getElementById('s-test').style.display='block';buildNav();renderQ();startTimer();}
+function buildNav(){const nav=document.getElementById('q-nav');nav.innerHTML='';QS.forEach((_,i)=>{const d=document.createElement('div');let cls='q-dot';if(i===cur)cls+=' current';else if(answers[i]!==null)cls+=(answers[i]===QS[i].c?' correct':' wrong');d.className=cls;d.textContent=i+1;d.onclick=()=>goTo(i);nav.appendChild(d);});}
+function renderQ(){const q=QS[cur];const answered=answers[cur]!==null;document.getElementById('q-label').textContent=`Pregunta ${cur+1} de ${QS.length}`;document.getElementById('q-text').textContent=q.p;const refEl=document.getElementById('q-ref');if(q.ref){refEl.textContent=q.ref;refEl.style.display='inline-block';}else{refEl.style.display='none';}const opts=document.getElementById('options');opts.innerHTML='';Object.entries(q.o).forEach(([k,v])=>{const d=document.createElement('div');let cls='opt';if(answered){cls+=' locked';if(k===q.c)cls+=' show-ok';if(k===answers[cur]&&answers[cur]!==q.c)cls+=' sel-fail';}d.className=cls;d.innerHTML=`<span class="opt-key">${k.toUpperCase()})</span><span>${v}</span>`;if(!answered)d.onclick=()=>selectAnswer(k);opts.appendChild(d);});const fb=document.getElementById('feedback');if(answered){const isOk=answers[cur]===q.c;fb.className='feedback show '+(isOk?'fb-ok':'fb-fail');document.getElementById('fb-title').textContent=isOk?'✓ Respuesta correcta':'✗ Respuesta incorrecta';document.getElementById('fb-body').textContent=q.exp||'';}else{fb.className='feedback';}buildNav();updateStats();}
+function selectAnswer(k){answers[cur]=k;renderQ();}
+function navigate(d){const n=cur+d;if(n>=0&&n<QS.length){cur=n;renderQ();}}
+function goTo(i){cur=i;renderQ();}
+function updateStats(){const ans=answers.filter(a=>a!==null).length;document.getElementById('s-ans').textContent=ans;document.getElementById('s-blank').textContent=QS.length-ans;document.getElementById('s-rem').textContent=QS.length-ans;}
+function startTimer(){const el=document.getElementById('timer');iv=setInterval(()=>{secs--;const m=Math.floor(secs/60),s=secs%60;el.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;if(secs<=300)el.classList.add('warn');if(secs<=0){clearInterval(iv);finish();}},1000);}
+function finish(){if(iv)clearInterval(iv);document.getElementById('s-test').style.display='none';document.getElementById('s-results').style.display='block';let ok=0,fail=0,blank=0;answers.forEach((a,i)=>{if(a===null)blank++;else if(a===QS[i].c)ok++;else fail++;});const pts=10/QS.length,pena=fail*(pts/2),raw=ok*pts-pena,s10=Math.max(0,raw).toFixed(2);document.getElementById('score-num').textContent=s10;document.getElementById('score-detail').textContent=`${ok} correctas · ${fail} incorrectas · ${blank} en blanco · ${pts.toFixed(3)} pts/correcta · Penalización: −${pena.toFixed(3)} pts`;document.getElementById('r-ok').textContent=ok;document.getElementById('r-fail').textContent=fail;document.getElementById('r-blank').textContent=blank;document.getElementById('r-pena').textContent='−'+pena.toFixed(3);const list=document.getElementById('review-list');list.innerHTML='';const toReview=QS.map((q,i)=>({q,i,a:answers[i]})).filter(({a,q})=>a===null||a!==q.c);if(toReview.length===0){document.getElementById('rev-title').textContent='¡Enhorabuena! Todas las respuestas son correctas.';}else{document.getElementById('rev-title').textContent=`Revisión — ${toReview.length} pregunta${toReview.length>1?'s':''} para repasar:`;toReview.forEach(({q,i,a})=>{const isBlank=a===null;const tag=isBlank?'<span class="tag-pill tag-blank">En blanco</span>':'<span class="tag-pill tag-fail">Incorrecta ✗</span>';const ua=a?`Tu respuesta: <strong>${a.toUpperCase()}) ${q.o[a]}</strong>`:'No respondida.';const refTxt=q.ref?`<span style="font-size:.7rem;padding:1px 6px;border-radius:10px;background:var(--blue-l);color:var(--blue);font-weight:bold;margin-left:.3rem">${q.ref}</span>`:'';list.innerHTML+=`<div class="rev-item ${isBlank?'blank':'fail'}">${tag}${refTxt}<div class="rev-q"><strong>${i+1}.</strong> ${q.p}</div><div class="rev-ans">${ua}<br>Correcta: <strong>${q.c.toUpperCase()}) ${q.o[q.c]}</strong></div>${q.exp?`<div class="rev-exp">${q.exp}</div>`:''}</div>`;});}window.scrollTo(0,0);}
+function restart(){answers=new Array(QS.length).fill(null);cur=0;secs=90*60;document.getElementById('s-results').style.display='none';document.getElementById('s-test').style.display='block';document.getElementById('timer').classList.remove('warn');buildNav();renderQ();startTimer();}
+</script></body></html>

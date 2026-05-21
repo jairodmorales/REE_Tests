@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Test Civil 1</title>
+<style>
+:root{
+  --blue:#185FA5;--blue-l:#E6F1FB;--blue-m:#378ADD;
+  --green:#0F6E56;--green-l:#E1F5EE;--green-b:#1D9E75;
+  --red:#993C1D;--red-l:#FAECE7;--red-b:#D85A30;
+  --amber:#854F0B;--amber-l:#FAEEDA;
+  --gray:#5F5E5A;--gray-l:#F1EFE8;--gray-m:#D3D1C7;
+  --text:#2C2C2A;--muted:#888780;
+  --bg:#fff;--bg2:#F8F7F4;
+  --bd:rgba(0,0,0,0.12);--r:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Georgia',serif;background:var(--bg2);color:var(--text);min-height:100vh}
+#app{max-width:760px;margin:0 auto;padding:2rem 1rem}
+#s-start{text-align:center;padding:3rem 1rem}
+#s-start h1{font-size:2rem;font-weight:normal;letter-spacing:-.5px;margin-bottom:.4rem}
+.subtitle{color:var(--muted);font-size:.9rem;margin-bottom:2.5rem}
+.info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
+.ic{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:1.2rem}
+.ic .n{font-size:2rem;font-weight:bold;color:var(--blue);font-family:monospace}
+.ic .l{font-size:.8rem;color:var(--muted);margin-top:.25rem}
+.rules{background:var(--amber-l);border:1px solid #FAC775;border-radius:var(--r);padding:1rem 1.25rem;text-align:left;margin-bottom:2rem;font-size:.85rem;line-height:1.7}
+.rules strong{color:var(--amber)}
+.btn-start{background:var(--blue);color:#fff;border:none;border-radius:var(--r);padding:.9rem 2.5rem;font-size:1rem;cursor:pointer;transition:background .2s}
+.btn-start:hover{background:var(--blue-m)}
+.t-header{display:flex;justify-content:space-between;align-items:center;background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:.9rem 1.25rem;margin-bottom:1rem}
+.t-header .lft{font-size:.85rem}
+.t-header .lft strong{font-size:1rem;display:block}
+#timer{font-size:1.5rem;font-weight:bold;font-family:monospace;color:var(--blue)}
+#timer.warn{color:var(--red-b)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1rem}
+.stat{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:.6rem;text-align:center}
+.stat .sn{font-size:1.4rem;font-weight:bold}
+.stat .sl{font-size:.7rem;color:var(--muted);margin-top:1px}
+.q-nav{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:1rem}
+.q-dot{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--bd);font-size:.75rem;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);background:var(--bg);transition:all .15s;font-family:monospace}
+.q-dot:hover{border-color:var(--blue);color:var(--blue)}
+.q-dot.current{border:2px solid var(--blue);color:var(--blue);background:var(--blue-l)}
+.q-dot.correct{background:var(--green-b);color:#fff;border-color:var(--green-b)}
+.q-dot.wrong{background:var(--red-b);color:#fff;border-color:var(--red-b)}
+.q-box{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:1.5rem;margin-bottom:1rem}
+.q-meta{display:flex;align-items:center;gap:.5rem;margin-bottom:.65rem}
+.q-label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.q-ref{font-size:.7rem;padding:2px 8px;border-radius:12px;background:var(--blue-l);color:var(--blue);font-weight:bold}
+.q-text{font-size:1rem;line-height:1.65;margin-bottom:1.25rem}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:.85rem 1rem;border-radius:8px;border:1.5px solid var(--bd);margin-bottom:.5rem;transition:all .2s;font-size:.9rem;background:var(--bg2);cursor:pointer;user-select:none}
+.opt:hover:not(.locked){border-color:var(--blue-m);background:var(--blue-l)}
+.opt.locked{cursor:default}
+.opt.sel-ok{border-color:var(--green-b);background:var(--green-l);color:#085041}
+.opt.sel-fail{border-color:var(--red-b);background:var(--red-l);color:#712B13}
+.opt.show-ok{border-color:var(--green-b);background:var(--green-l);color:#085041}
+.opt-key{font-weight:bold;min-width:20px;font-family:monospace;font-size:1rem;flex-shrink:0;color:var(--muted)}
+.opt.sel-ok .opt-key,.opt.show-ok .opt-key{color:var(--green-b)}
+.opt.sel-fail .opt-key{color:var(--red-b)}
+.feedback{border-radius:8px;padding:.9rem 1.1rem;margin-top:1rem;font-size:.88rem;line-height:1.6;display:none}
+.feedback.show{display:block}
+.feedback.fb-ok{background:var(--green-l);border:1px solid var(--green-b);color:#085041}
+.feedback.fb-fail{background:var(--red-l);border:1px solid var(--red-b);color:#712B13}
+.fb-title{font-weight:bold;margin-bottom:.35rem}
+.nav-row{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-top:1.25rem}
+.btn{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:.6rem 1.2rem;font-size:.85rem;cursor:pointer;color:var(--text);transition:all .15s}
+.btn:hover{border-color:var(--blue);color:var(--blue)}
+.btn-finish{background:var(--green);color:#fff;border:none;border-radius:8px;padding:.75rem 1.75rem;font-size:.9rem;cursor:pointer;display:block;margin:1rem auto 0;transition:opacity .2s}
+.btn-finish:hover{opacity:.88}
+#s-results{display:none}
+.score-banner{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:2rem;text-align:center;margin-bottom:1rem}
+.score-num{font-size:4rem;font-weight:bold;font-family:monospace}
+.stats-res{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:1rem}
+.rev-section-title{font-size:.8rem;color:var(--muted);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.5px}
+.rev-item{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:.6rem}
+.rev-item.fail{border-left:4px solid var(--red-b)}
+.rev-item.blank{border-left:4px solid var(--gray-m)}
+.rev-q{font-size:.9rem;line-height:1.5;margin-bottom:.5rem}
+.rev-ans{font-size:.82rem;margin-bottom:.4rem}
+.rev-exp{font-size:.82rem;line-height:1.55}
+.tag-pill{font-size:.7rem;padding:2px 8px;border-radius:12px;font-weight:bold;display:inline-block;margin-bottom:.4rem}
+.tag-fail{background:var(--red-l);color:var(--red)}
+.tag-blank{background:var(--gray-l);color:var(--gray)}
+.btn-restart{background:var(--blue);color:#fff;border:none;border-radius:8px;padding:.75rem 2rem;font-size:.9rem;cursor:pointer;display:block;margin:1.5rem auto 0}
+@media(max-width:500px){.info-grid,.stats,.stats-res{grid-template-columns:repeat(2,1fr)}.score-num{font-size:3rem}}
+</style>
+</head>
+<body>
+<div id="app">
+<div id="s-start">
+  <h1>Test Civil 1</h1>
+  <div class="subtitle">Especialidad Obras Civiles — Nivel Intermedio · UNE EN 61936-1, RAT, PG-3, Normas 5.2 IC y 6.1 IC</div>
+  <div class="info-grid">
+    <div class="ic"><div class="n">75</div><div class="l">Preguntas</div></div>
+    <div class="ic"><div class="n">90'</div><div class="l">Duración</div></div>
+    <div class="ic"><div class="n">−0.5</div><div class="l">Penalización error</div></div>
+  </div>
+  <div class="rules">
+    <strong>Puntuación dinámica:</strong> Correcta +0.133 pts · Incorrecta −0.067 pts · En blanco 0 pts<br>
+    El máximo es siempre <strong>10 puntos</strong>.<br><br>
+    <strong>Feedback:</strong> Al responder se muestra la corrección y explicación inmediatamente. La respuesta queda bloqueada.<br><br>
+    <strong>Navegación libre:</strong> Puedes avanzar y retroceder sin responder.
+  </div>
+  <button class="btn-start" onclick="startTest()">Comenzar test</button>
+</div>
+
+<div id="s-test" style="display:none">
+  <div class="t-header">
+    <div class="lft"><strong>Test Civil 1</strong><span style="color:var(--muted);font-size:.8rem">Especialidad Obras Civiles — Nivel Intermedio · UNE EN 61936</span></div>
+    <div id="timer">90:00</div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="sn" id="s-ans" style="color:var(--blue)">0</div><div class="sl">Respondidas</div></div>
+    <div class="stat"><div class="sn" id="s-blank">75</div><div class="sl">En blanco</div></div>
+    <div class="stat"><div class="sn" id="s-rem" style="color:var(--amber)">75</div><div class="sl">Restantes</div></div>
+  </div>
+  <div class="q-nav" id="q-nav"></div>
+  <div class="q-box">
+    <div class="q-meta"><span class="q-label" id="q-label">Pregunta 1 de 75</span><span class="q-ref" id="q-ref" style="display:none"></span></div>
+    <div class="q-text" id="q-text"></div>
+    <div id="options"></div>
+    <div class="feedback" id="feedback">
+      <div class="fb-title" id="fb-title"></div>
+      <div id="fb-body"></div>
+    </div>
+    <div class="nav-row">
+      <button class="btn" onclick="navigate(-1)">← Anterior</button>
+      <button class="btn" onclick="navigate(1)">Siguiente →</button>
+    </div>
+  </div>
+  <button class="btn-finish" onclick="finish()">Finalizar y ver resultados</button>
+</div>
+
+<div id="s-results">
+  <div class="score-banner">
+    <div style="font-size:.85rem;color:var(--muted);margin-bottom:.5rem">Puntuación final (escala 0–10)</div>
+    <div class="score-num" id="score-num">—</div>
+    <div style="font-size:.8rem;color:var(--muted);margin-top:.25rem" id="score-detail"></div>
+  </div>
+  <div class="stats-res" style="margin-bottom:1rem">
+    <div class="stat"><div class="sn" id="r-ok" style="color:var(--green-b)"></div><div class="sl">Correctas</div></div>
+    <div class="stat"><div class="sn" id="r-fail" style="color:var(--red-b)"></div><div class="sl">Incorrectas</div></div>
+    <div class="stat"><div class="sn" id="r-blank"></div><div class="sl">En blanco</div></div>
+    <div class="stat"><div class="sn" id="r-pena" style="color:var(--red-b)"></div><div class="sl">Penalización</div></div>
+  </div>
+  <div class="rev-section-title" id="rev-title"></div>
+  <div id="review-list"></div>
+  <button class="btn-restart" onclick="restart()">Reiniciar test</button>
+</div>
+</div>
+
+<script>
+const QS=[{p:"¿Cuál es la altura mínima reglamentaria recomendada para el cerramiento exterior de una subestación de intemperie?",o:{a:"1,80 metros sin requerimientos adicionales.",b:"3,00 metros de muro de hormigón macizo obligatorio.",c:"2,20 metros (incluyendo protecciones superiores si aplican).",d:"1,50 metros de malla simple sin espino."},c:"c",exp:""},
+{p:"En el diseño de cimentaciones para pórticos de subestación, ¿qué carga ambiental suele ser determinante para el cálculo a vuelco?",o:{a:"La acción del empuje del viento sobre las estructuras y los conductores.",b:"La presión hidrostática del nivel freático superficial.",c:"La acumulación de nieve estática en las bases.",d:"La radiación solar térmica sobre el hormigón."},c:"a",exp:""},
+{p:"Para la instalación de cables de alta tensión directamente enterrados, ¿cuál es la profundidad mínima general desde la rasante para protegerlos de cargas superficiales?",o:{a:"1,50 metros estrictos en todos los casos y terrenos.",b:"Entre 0,80 y 1,00 metros, dependiendo de la tensión nominal.",c:"0,50 metros sin necesidad de protección mecánica adicional.",d:"0,30 metros para facilitar el mantenimiento y la disipación térmica."},c:"b",exp:""},
+{p:"¿Qué material es el más adecuado y utilizado para el relleno directo (cama y recubrimiento) alrededor de cables enterrados?",o:{a:"Arcilla expansiva para sellar la entrada de humedad.",b:"Restos de demolición finamente triturados.",c:"Grava gruesa de machaqueo para mejorar el drenaje local.",d:"Arena lavada de río para facilitar la disipación térmica y evitar daños mecánicos."},c:"d",exp:""},
+{p:"Las estructuras soporte de aparellaje deben diseñarse para soportar esfuerzos dinámicos excepcionales. ¿Cuál es el origen principal de estos esfuerzos?",o:{a:"Los esfuerzos térmicos por dilatación estacional.",b:"El peso propio de los equipos de medida acumulado.",c:"Las fuerzas electromagnéticas generadas durante un cortocircuito.",d:"Las vibraciones inducidas por el tráfico pesado en viales cercanos."},c:"c",exp:""},
+{p:"En cimentaciones de hormigón armado situadas en terrenos con alta presencia de sulfatos, ¿qué medida de protección estructural se adopta?",o:{a:"Aplicar riegos asfálticos exclusivamente en la cara superior de la zapata.",b:"Utilizar cementos sulforresistentes (SR) y aumentar el recubrimiento de las armaduras.",c:"Disminuir la resistencia característica del hormigón para darle mayor flexibilidad.",d:"Reducir la cuantía de acero para minimizar la corrosión galvánica."},c:"b",exp:""},
+{p:"En canalizaciones subterráneas tubulares para cables de AT, ¿qué relación mínima debe existir entre el diámetro interior del tubo y el diámetro exterior del cable?",o:{a:"El diámetro interior debe ser un 10% mayor que el exterior del cable.",b:"El diámetro del tubo debe ser exactamente el doble en cualquier sección recta.",c:"Ambos diámetros deben ser prácticamente iguales para evitar el movimiento del cable.",d:"El diámetro interior del tubo debe ser al menos 1,5 veces el diámetro exterior del cable."},c:"d",exp:""},
+{p:"Para la formación de plataformas en el parque intemperie de una subestación, ¿qué función principal cumple la capa superficial de grava (balasto)?",o:{a:"Servir como capa de rodadura para vehículos de mantenimiento pesados.",b:"Aumentar la resistividad superficial para reducir las tensiones de paso y contacto.",c:"Proporcionar una superficie estética y evitar el crecimiento de malas hierbas.",d:"Acelerar la evaporación del agua de lluvia hacia la atmósfera."},c:"b",exp:""},
+{p:"¿Cuál es el espesor mínimo habitual recomendado para la capa de grava aislante (balasto) extendida sobre la plataforma del parque intemperie?",o:{a:"2 centímetros.",b:"Más de 1 metro para asegurar aislamiento total.",c:"50 centímetros.",d:"Entre 10 y 15 centímetros."},c:"d",exp:""},
+{p:"En las galerías o trincheras de cables, ¿cómo deben disponerse las canalizaciones para evitar interferencias electromagnéticas?",o:{a:"Es indiferente siempre que ambos estén protegidos por tubos de PVC.",b:"Los cables de energía y los de control deben ir en bandejas separadas, maximizando la distancia entre ellos.",c:"Deben trenzarse juntos para cancelar los campos magnéticos recíprocos.",d:"Los cables de control deben instalarse siempre por debajo de los de energía, tocándose."},c:"b",exp:""},
+{p:"Para cimentaciones de transformadores de potencia, ¿qué característica geométrica debe tener la losa superior?",o:{a:"Debe incluir canaletas perimetrales ciegas para almacenar temporalmente el vertido.",b:"Debe tener forma convexa para expulsar el aceite hacia los viales adyacentes.",c:"Debe tener una pendiente mínima hacia el foso colector para facilitar el rápido drenaje del aceite en caso de fuga.",d:"Debe ser perfectamente horizontal a 0% para evitar el deslizamiento del transformador."},c:"c",exp:""},
+{p:"En cerramientos perimetrales de malla metálica en instalaciones de AT, ¿por qué se exige la puesta a tierra del propio cerramiento?",o:{a:"Para garantizar la seguridad de las personas en el exterior frente a tensiones de contacto por derivaciones o inducciones.",b:"Para mejorar la resistencia mecánica frente a la corrosión galvánica.",c:"Para cerrar el circuito de neutro de las líneas de distribución.",d:"Para actuar como pararrayos principal de la instalación."},c:"a",exp:""},
+{p:"En la construcción de galerías de cables visitables subterráneas, ¿cuál es la altura mínima libre de paso generalmente requerida para facilitar el tránsito y mantenimiento?",o:{a:"Aproximadamente 2,00 metros.",b:"3,50 metros para permitir el paso de maquinaria pequeña.",c:"1,20 metros para obligar al personal a ir agachado.",d:"1,50 metros en todos los tramos rectos."},c:"a",exp:""},
+{p:"¿Qué ensayo in situ se emplea habitualmente para comprobar la resistencia mecánica y la calidad del hormigón de las cimentaciones ya ejecutadas?",o:{a:"Ensayo edométrico de consolidación sobre la superficie.",b:"Extracción de testigos (núcleos) y/o ensayos no destructivos con esclerómetro.",c:"Prueba de carga estática con placa de asiento de 30 cm.",d:"Ensayo de penetración estándar (SPT) sobre la zapata."},c:"b",exp:""},
+{p:"Para pórticos metálicos que soportan el aparellaje de intemperie, ¿cuál es el tipo de unión más común entre el fuste metálico y la cimentación de hormigón?",o:{a:"Soldadura directa de los perfiles metálicos a las armaduras principales de la zapata.",b:"Unión articulada mediante pasadores de madera tratada.",c:"Fijación mediante pernos de anclaje (esperas) embebidos en el hormigón durante su vertido.",d:"Apoyo simple por gravedad sin fijación mecánica."},c:"c",exp:""},
+{p:"Según el RAT, ¿qué capacidad mínima debe tener un foso de recogida de aceite para un transformador individual si NO está conectado a un depósito colector general?",o:{a:"Debe poder contener el 100% del volumen de aceite del transformador.",b:"El 50% del volumen, asumiendo que el resto se evapora o se limpia rápido.",c:"El 10% del volumen, ya que los relés de protección cortan la fuga a tiempo.",d:"Un volumen equivalente al caudal de las mangueras de bomberos durante 15 minutos."},c:"a",exp:""},
+{p:"En el fondo del foso del transformador, ¿qué elemento se dispone habitualmente para sofocar un posible incendio del líquido dieléctrico derramado?",o:{a:"Espuma de poliuretano inyectada bajo la rejilla.",b:"Un lecho de piedra triturada (grava/guijarros) de dimensiones específicas que actúa como apagallamas.",c:"Bandejas de agua destilada con aditivos químicos ignífugos.",d:"Una capa de arena fina compactada al 95% del Proctor."},c:"b",exp:""},
+{p:"Para evitar el encharcamiento en las plataformas del parque intemperie, ¿qué pendiente longitudinal mínima transversal se recomienda en el refino del terreno natural antes de echar la grava?",o:{a:"Un 5% hacia el centro geométrico de la instalación.",b:"Alrededor del 1% al 2% dirigida hacia la red de drenaje.",c:"Totalmente plana (0%) para garantizar la estabilidad de los apoyos.",d:"El 10% para asegurar la evacuación instántanea."},c:"b",exp:""},
+{p:"Las zanjas destinadas a canalizaciones eléctricas enterradas deben disponer de una cinta señalizadora. ¿A qué distancia aproximada por encima del cable se debe colocar?",o:{a:"Entre 10 y 30 centímetros por encima del cable o del tubo protector.",b:"A un metro por debajo del nivel del cable.",c:"A 5 centímetros de la rasante final del pavimento.",d:"Directamente adherida a la cubierta exterior del cable."},c:"a",exp:""},
+{p:"Las paredes y el fondo de los fosos de recogida de aceite deben garantizar la no contaminación del subsuelo. ¿Qué característica constructiva es obligatoria para este elemento?",o:{a:"Deben ser filtrantes para permitir la absorción gradual del aceite por el terreno.",b:"Deben estar construidos exclusivamente con chapa de acero inoxidable.",c:"Deben contar con aliviaderos directos a la red de alcantarillado público.",d:"Deben ser totalmente estancos e impermeables al aceite y al agua."},c:"d",exp:""},
+{p:"En cruces subterráneos de canalizaciones eléctricas de AT con viales sometidos a tráfico de vehículos pesados, ¿qué medida de obra civil se adopta obligatoriamente?",o:{a:"Se marcan en la calzada con pintura reflectante sin modificar la zanja estándar.",b:"Se reduce la sección del cable para ganar flexibilidad ante los impactos.",c:"Se instalan bajo tubos hormigonados o a una profundidad mayor con protección mecánica reforzada.",d:"Se elevan los cables sobre postes temporales en la zona del vial."},c:"c",exp:""},
+{p:"¿Qué características técnicas constructivas deben poseer las puertas de acceso al recinto de un centro de transformación situado en un edificio?",o:{a:"Deben ser de madera maciza para garantizar el aislamiento eléctrico y abrir hacia adentro.",b:"Deben abrir hacia el exterior, ser incombustibles y disponer de cerradura que se abra desde dentro sin llave.",c:"Deben estar enclavadas mecánicamente para no abrirse si el transformador está en carga.",d:"Deben ser correderas automáticas conectadas al sistema de alarma contraincendios."},c:"b",exp:""},
+{p:"Para las trincheras prefabricadas de hormigón utilizadas en canalizaciones, ¿qué requisito deben cumplir sus tapas si cruzan viales de circulación?",o:{a:"Estar selladas herméticamente con soldadura para evitar el robo de cables.",b:"Estar dimensionadas para soportar las cargas de tráfico pesado (e.g., clase D400 o superior).",c:"Tener perforaciones de gran diámetro para ventilar la trinchera continuamente.",d:"Ser de material plástico ligero para facilitar su levantamiento rápido."},c:"b",exp:""},
+{p:"¿Cuál es el propósito de la red de tierras inferior (malla profunda) que se instala en la obra civil de la plataforma de la subestación?",o:{a:"Conducir el agua subterránea hacia los colectores de drenaje profundo.",b:"Garantizar la equipotencialidad del terreno y dispersar corrientes de defecto a tierra de forma segura.",c:"Proveer una base estructural de refuerzo para el balasto superficial.",d:"Evitar el crecimiento de raíces profundas que afecten a las cimentaciones."},c:"b",exp:""},
+{p:"En locales o celdas de transformadores cerrados, la obra civil debe contemplar rejillas de ventilación. ¿Cuál es la disposición óptima para una refrigeración natural efectiva?",o:{a:"Rejillas únicamente a nivel del suelo para aprovechar la humedad de la calle.",b:"Ambas rejillas en la parte superior del techo para crear un efecto chimenea invertido.",c:"Una única rejilla de gran tamaño en el centro de la pared principal.",d:"Una rejilla de entrada de aire frío en la parte inferior y otra de salida de aire caliente en la parte superior, en paredes opuestas."},c:"d",exp:""},
+{p:"Para la cimentación de mástiles pararrayos en la subestación, el diseño debe verificar fundamentalmente la resistencia frente a:",o:{a:"El esfuerzo de torsión provocado por dilataciones térmicas.",b:"El momento flector generado por la acción del viento sobre la estructura esbelta.",c:"Las cargas verticales de compresión por el peso de los cables de AT.",d:"La vibración producida por la resonancia magnética del campo eléctrico."},c:"b",exp:""},
+{p:"En los cambios de dirección de las canalizaciones entubadas subterráneas, ¿cómo debe diseñarse la obra civil para proteger los cables de AT?",o:{a:"Respetando un radio de curvatura mínimo amplio, generalmente superior a 20 veces el diámetro del cable.",b:"Instalando poleas metálicas permanentes dentro del codo para tensar el cable.",c:"Utilizando arquetas ciegas en las que el cable pueda doblarse en ángulo vivo.",d:"Mediante codos ortogonales de 90 grados para minimizar el espacio excavado."},c:"a",exp:""},
+{p:"Cuando una canalización subterránea de Alta Tensión cruza con una de abastecimiento de agua, ¿qué separación mínima o precaución de obra civil se requiere habitualmente?",o:{a:"Adosar ambas canalizaciones con cinta adhesiva para unificar el trazado topográfico.",b:"Mantener una distancia mínima (ej. 0,20 - 0,30 m) y proteger mecánicamente el cruce, situando preferentemente el cable por encima del agua.",c:"Envolver el cable de alta tensión dentro de la tubería de agua para refrigerarlo.",d:"No existe ninguna restricción constructiva si ambas discurren en la misma zanja."},c:"b",exp:""},
+{p:"¿Qué función cumplen las 'arquetas de tiro' dispuestas a intervalos regulares en una canalización de tubos de gran longitud?",o:{a:"Permitir el tendido del cable, dividir los esfuerzos de tracción y albergar empalmes si es necesario.",b:"Servir de cimentación secundaria para los postes de iluminación del vial.",c:"Acumular el agua de condensación de los tubos para su evaporación.",d:"Reducir la sección del cable para adaptarlo a cambios de temperatura."},c:"a",exp:""},
+{p:"Durante la fase de obra civil, ¿qué tratamiento se da a los tubos de reserva o tubos vacíos de las canalizaciones subterráneas?",o:{a:"Se rellenan de arena fina para mantener su forma estructural a lo largo del tiempo.",b:"Se dejan abiertos para permitir la circulación de corrientes de aire subterráneo.",c:"Se conectan directamente a la red de alcantarillado pluvial local.",d:"Se taponan herméticamente en sus extremos para evitar la entrada de agua, barro o roedores."},c:"d",exp:""},
+{p:"Según el PG-3, ¿cómo se define la operación de construcción de un 'terraplén'?",o:{a:"Es la construcción de muros de contención mediante gaviones y mampostería.",b:"Es la excavación mecánica del terreno natural para alcanzar la rasante de diseño.",c:"Es la extensión y compactación de tierras por tongadas para elevar la cota del terreno hasta la plataforma de la carretera.",d:"Es la aplicación de una capa de rodadura bituminosa sobre una base estabilizada."},c:"c",exp:""},
+{p:"En la formación de plataformas, ¿qué ensayo de laboratorio es preceptivo para determinar la densidad máxima y la humedad óptima de compactación del suelo?",o:{a:"El ensayo de desgaste de Los Ángeles.",b:"El ensayo de compactación Proctor Normal o Modificado.",c:"El ensayo de penetración con cono de Abrams.",d:"El ensayo del equivalente de arena."},c:"b",exp:""},
+{p:"Para la ejecución de cimentaciones de estructuras o pórticos, ¿qué es el 'hormigón de limpieza' (hormigón no estructural)?",o:{a:"Un líquido desencofrante que se aplica a los moldes metálicos antes del vertido.",b:"Hormigón inyectado a presión para lavar los áridos contaminados en el subsuelo.",c:"Una lechada de cemento superficial para embellecer el acabado de los muros.",d:"Una capa de hormigón en masa (unos 10 cm) vertida en el fondo de la excavación para crear una superficie plana y limpia antes de armar la zapata."},c:"d",exp:""},
+{p:"En la clasificación de suelos del PG-3 para rellenos de plataforma, ¿qué porcentaje de materia orgánica excluye a un suelo y lo clasifica como 'inadecuado'?",o:{a:"Suelos arcillosos sin ninguna presencia vegetal.",b:"Suelos con un contenido de materia orgánica superior al 2%.",c:"Suelos con menos de un 1% de materia orgánica.",d:"Suelos con un índice de plasticidad nulo."},c:"b",exp:""},
+{p:"¿Cómo se denomina a la capa superior del terraplén o desmonte, de espesor determinado, sobre la que se asientan las capas del firme?",o:{a:"Subbase granular estabilizada.",b:"Capa de rodadura porosa.",c:"Cimiento profundo.",d:"Coronación o capa de forma de la explanada."},c:"d",exp:""},
+{p:"Para la ejecución de un 'pedraplén', ¿cuál es una restricción habitual respecto al tamaño de la piedra a utilizar?",o:{a:"Se deben usar bloques ciclópeos mayores a 1 metro de diámetro en todas las capas.",b:"Debe contener al menos un 50% de finos plásticos para lubricar las piedras.",c:"El tamaño máximo de la piedra no debe exceder los 2/3 del espesor de la tongada compactada.",d:"Todas las piedras deben estar trituradas a un diámetro máximo de 20 mm."},c:"c",exp:""},
+{p:"En la construcción de cimentaciones de hormigón armado, ¿qué proceso es crítico durante los primeros días tras el hormigonado para evitar fisuras por retracción plástica?",o:{a:"El desencofrado inmediato en las primeras 12 horas.",b:"El vibrado intensivo continuo de las esperas metálicas.",c:"La aplicación de cargas de prueba estáticas para acelerar el asentamiento.",d:"El curado del hormigón, manteniendo su humedad superficial mediante riegos o arpilleras húmedas."},c:"d",exp:""},
+{p:"Al ejecutar estructuras de soportes o fustes de hormigón, para evitar la segregación de los áridos durante el vertido, ¿cuál es la práctica correcta?",o:{a:"Añadir gran cantidad de agua a la mezcla para que fluya rápidamente desde cualquier altura.",b:"Verter todo el volumen en un único punto y extenderlo horizontalmente con vibradores.",c:"Lanzar el hormigón a presión mediante mangueras de aire comprimido contra los encofrados.",d:"Evitar la caída libre del hormigón desde alturas superiores a 1,5 - 2,0 metros, utilizando trompas o tubos (tremie)."},c:"d",exp:""},
+{p:"En la formación de la explanada con suelos tolerables o adecuados, ¿cuál es el espesor máximo de tongada (antes de compactar) típicamente recomendado para asegurar la densificación?",o:{a:"Menos de 5 centímetros para realizar un alisado fino.",b:"Más de 1 metro para acelerar el rendimiento constructivo.",c:"Entre 20 y 30 centímetros, dependiendo de la maquinaria de compactación.",d:"El espesor total del terraplén ejecutado en una sola fase."},c:"c",exp:""},
+{p:"¿Qué parámetro del hormigón determina su durabilidad en cimentaciones enterradas para garantizar la protección de las armaduras contra la corrosión?",o:{a:"El espesor del recubrimiento de hormigón sobre la armadura y la compacidad de la mezcla.",b:"La cantidad de plastificante añadida durante el amasado.",c:"La temperatura del aire exterior el día previo al hormigonado.",d:"El color del cemento empleado en la dosificación."},c:"a",exp:""},
+{p:"En la construcción de viales internos pavimentados, ¿qué función cumple el 'riego de imprimación'?",o:{a:"Se aplica sobre bases granulares para impermeabilizarlas y asegurar la adherencia con las capas asfálticas superiores.",b:"Se inyecta en el subsuelo para fracturar la roca madre de la plataforma.",c:"Se pulveriza sobre la capa de rodadura terminada para pintar la señalización horizontal.",d:"Se utiliza para limpiar el polvo de los neumáticos de los camiones de obra."},c:"a",exp:""},
+{p:"¿Qué ensayo de laboratorio es el estándar exigido por el PG-3 para medir la resistencia a la fragmentación de los áridos gruesos destinados a firmes y hormigones?",o:{a:"Ensayo de equivalente de arena.",b:"Ensayo de placa de carga estática.",c:"Ensayo CBR (California Bearing Ratio).",d:"Ensayo de Los Ángeles."},c:"d",exp:""},
+{p:"De acuerdo con el PG-3, ¿qué es la 'zahorra artificial' utilizada en las capas base de los viales?",o:{a:"Material granular de granulometría continua, constituido por partículas total o parcialmente trituradas de cantera.",b:"Una mezcla de arenas sueltas de dunas sin ninguna cohesión.",c:"Hormigón pobre reciclado mezclado con cenizas volantes de central térmica.",d:"Arcilla estabilizada con emulsiones bituminosas sintéticas."},c:"a",exp:""},
+{p:"Para alcanzar la densidad exigida en suelos granulares (gravas y arenas) durante la formación de la plataforma, ¿qué tipo de maquinaria de compactación es más eficaz?",o:{a:"Rodillos vibratorios lisos.",b:"Rodillos estáticos de patas de cabra.",c:"Camiones cisterna cargados de agua circulando a alta velocidad.",d:"Bandejas compactadoras ligeras exclusivamente."},c:"a",exp:""},
+{p:"En las especificaciones del PG-3 para el acero corrugado de las armaduras en cimentaciones, ¿qué indica la designación 'B 500 SD'?",o:{a:"Acero recubierto de brea asfáltica para ambientes altamente corrosivos.",b:"Acero liso para pretensado con carga de rotura de 500 kg.",c:"Acero soldable con límite elástico garantizado de 500 N/mm2 y características especiales de ductilidad.",d:"Varillas de diámetro nominal fijo de 500 milímetros para pórticos principales."},c:"c",exp:""},
+{p:"Según la Norma 6.1 IC, ¿cómo se define estructuralmente a la 'explanada'?",o:{a:"El estrato de roca madre inalterada que se encuentra a gran profundidad.",b:"La zanja perimetral que recoge las aguas de escorrentía superficial.",c:"El conjunto de capas de suelo adecuadamente preparadas que sirven de apoyo al firme de la carretera o vial.",d:"El tablero estructural de un puente metálico o viaducto."},c:"c",exp:""},
+{p:"En la catalogación de explanadas de la norma (E1, E2, E3), ¿qué característica principal exige una explanada de categoría E3, la de mayor capacidad portante?",o:{a:"Tener un módulo de compresibilidad en el segundo ciclo de carga (Ev2) superior o igual a 100 MPa o estabilización con cemento.",b:"Prescindir de la capa de forma y apoyar el asfalto directo sobre el terraplén original.",c:"Tener un espesor constante máximo de 10 centímetros de grava suelta.",d:"Estar compuesta exclusivamente por arcillas de alta plasticidad compactadas."},c:"a",exp:""},
+{p:"Para evaluar la capacidad de soporte de los suelos de la plataforma, ¿qué índice es el más utilizado internacionalmente y citado en la normativa?",o:{a:"El índice de esbeltez de Euler.",b:"El coeficiente de Poisson dinámico.",c:"El índice de fluidez de Melt.",d:"El índice CBR (California Bearing Ratio)."},c:"d",exp:""},
+{p:"La Norma 6.1 IC clasifica el tráfico pesado en categorías (T00 a T4). ¿Qué vehículo se considera 'pesado' a los efectos de dimensionar el firme apoyado en la explanada?",o:{a:"Vehículos cuya carga útil es superior a 3 toneladas, como camiones y autobuses grandes.",b:"Cualquier vehículo todoterreno 4x4, independientemente de su peso.",c:"Exclusivamente maquinaria de cadenas y tractores agrícolas.",d:"Motocicletas de alta cilindrada con sidecar acoplado."},c:"a",exp:""},
+{p:"En la formación de la plataforma, si el terreno natural está constituido por un 'suelo inadecuado' (muy plástico o expansivo), ¿qué tratamiento constructivo se aplica con mayor frecuencia?",o:{a:"La colocación de mallas de acero electrosoldadas sobre la superficie embarrada.",b:"La aplicación de un riego de adherencia bituminoso directamente sobre el fango.",c:"La estabilización in situ con cal para reducir su plasticidad y mejorar su capacidad portante.",d:"La inyección de resinas epoxi a alta presión a varios metros de profundidad."},c:"c",exp:""},
+{p:"¿Cuál de las siguientes es la función primordial de la 'capa de forma' dentro de la estructura de la explanada?",o:{a:"Proporcionar una superficie de apoyo uniforme, resistente e insensible al agua para asentar las capas del firme.",b:"Actuar como acuífero para almacenar aguas pluviales para uso futuro.",c:"Servir de elemento decorativo coloreado en los márgenes de los viales.",d:"Proporcionar resistencia a la fricción de los neumáticos de los vehículos."},c:"a",exp:""},
+{p:"Durante la recepción de la explanada terminada, se realiza el ensayo de placa de carga. ¿Qué parámetro se evalúa para dar por válida la ejecución?",o:{a:"La adherencia de la placa metálica a los neumáticos del vehículo tractor.",b:"La relación entre el módulo de compresibilidad del segundo y primer ciclo (Ev2/Ev1), que no debe ser excesivamente alta.",c:"La resistencia al deslizamiento transversal (CRT).",d:"La temperatura de fraguado de los materiales granulares."},c:"b",exp:""},
+{p:"En la coronación de la explanada, ¿qué grado de compactación se exige respecto a la densidad máxima obtenida en el ensayo Proctor Modificado?",o:{a:"Un 80% del Proctor Normal para permitir la respiración del suelo.",b:"Generalmente se exige alcanzar al menos el 100% del ensayo Proctor Modificado.",c:"No se exige grado de compactación si el material es visualmente rocoso.",d:"Un 50% para facilitar el hundimiento de las capas de firme posteriores."},c:"b",exp:""},
+{p:"Para que un suelo sea clasificado como 'Suelo Seleccionado' (S3) y ser óptimo para coronación de explanadas, debe cumplir que su índice CBR sea:",o:{a:"Menor que 3.",b:"Negativo, indicando alta cohesión.",c:"Superior a 20.",d:"Exactamente 100."},c:"c",exp:""},
+{p:"Cuando la rasante de la plataforma se encuentra sobre un desmonte en roca (explanada sobre roca), ¿qué actuación previa es necesaria antes de extender las capas de base del vial?",o:{a:"Regularizar la superficie mediante una capa de hormigón pobre o material granular fino para rellenar las oquedades y evitar punzonamiento.",b:"Pulir mecánicamente la roca con discos de diamante hasta conseguir brillo.",c:"Dinamitar los últimos 50 cm para que la roca quede totalmente suelta.",d:"Extender directamente el asfalto líquido en las grietas estructurales profundas."},c:"a",exp:""},
+{p:"¿Cuál de estos materiales está tajantemente excluido para formar parte de la capa superior de una explanada sin mediar un tratamiento especial?",o:{a:"Zahorra artificial de machaqueo de rocas calizas.",b:"Suelos orgánicos, turbas o lodos compresibles.",c:"Suelos granulares con gravas bien graduadas.",d:"Arena procedente de graveras lavadas."},c:"b",exp:""},
+{p:"Durante la fase de construcción de la explanada, ¿qué precaución geométrica es indispensable para proteger la plataforma de las lluvias?",o:{a:"Ejecutar los terraplenes formando canales centrales temporales para recoger el agua.",b:"Cubrir diariamente con lonas de plástico toda la superficie de la obra vial.",c:"Dejar la superficie dentada con un rodillo pata de cabra para retener el agua.",d:"Mantener en todo momento una pendiente transversal adecuada (bombeo) para que el agua de escorrentía fluya hacia los márgenes."},c:"d",exp:""},
+{p:"¿Cómo contribuye el uso de geomallas o geotextiles en la formación de explanadas sobre suelos blandos?",o:{a:"Calientan el suelo subyacente para acelerar el secado de humedades profundas.",b:"Actúan como una junta de dilatación térmica entre el terreno natural y el asfalto.",c:"Separan las capas de distinto material, evitan la mezcla (contaminación) y aportan resistencia a la tracción repartiendo las cargas.",d:"Funcionan como una capa de impermeabilización total que impide el drenaje descendente."},c:"c",exp:""},
+{p:"En la estabilización de explanadas con cemento (S-EST3), ¿qué característica adquiere el suelo tratado en comparación con el suelo natural?",o:{a:"Incrementa exponencialmente su permeabilidad, funcionando como sumidero continuo.",b:"Aumenta notablemente su capacidad portante, reduce su plasticidad y se vuelve más rígido e insensible al agua.",c:"Pierde densidad y se vuelve esponjoso para amortiguar impactos dinámicos.",d:"Se vuelve elástico y capaz de soportar deformaciones plásticas extremas sin fisurar."},c:"b",exp:""},
+{p:"¿Qué parámetro se mide in situ con el equipo deflexiómetro de impacto (FWD) o viga Benkelman sobre la explanada antes de asfaltar?",o:{a:"La deflexión o hundimiento elástico recuperable de la superficie al aplicar una carga pesada conocida.",b:"La cantidad de polvo emitido por rozamiento superficial.",c:"La resistencia al corte no drenado (ensayo de molinete).",d:"El contenido de humedad residual a 5 metros de profundidad."},c:"a",exp:""},
+{p:"En el cálculo hidrológico para el diseño de cunetas de carreteras (drenaje longitudinal), ¿qué periodo de retorno (T) recomienda generalmente la Norma 5.2 IC para la red principal?",o:{a:"Un periodo de retorno de 1 año, al considerarse obras temporales y baratas de reponer.",b:"Cualquier periodo de retorno, siempre que el área de la cuenca sea inferior a 1 hectárea.",c:"Un periodo de retorno de 25 años para cunetas revestidas y elementos longitudinales.",d:"Un periodo de retorno de 500 años para evitar cualquier mínimo riesgo de desbordamiento."},c:"c",exp:""},
+{p:"¿Cuál es la pendiente longitudinal mínima recomendada para una cuneta de tierras sin revestir para garantizar la circulación del agua y evitar estancamientos y proliferación de vegetación?",o:{a:"0,5% (cinco milésimas).",b:"10,0% (diez centésimas).",c:"0,0% (totalmente horizontal).",d:"5,0% (cinco centésimas)."},c:"a",exp:""},
+{p:"Cuando la pendiente de la cuneta es muy elevada y el agua alcanza velocidades erosivas, ¿qué elemento constructivo se implementa en el drenaje longitudinal?",o:{a:"Estanques de evaporación laterales sin desagüe.",b:"Bádenes, rápidos o cunetas escalonadas con resaltos disipadores de energía.",c:"Sifones cerrados bajo presión hidráulica inversa.",d:"Sumideros ciegos rellenos de arena fina compactada."},c:"b",exp:""},
+{p:"En la fórmula del Método Racional (Q = C·I·A) empleada para estimar caudales máximos en pequeñas cuencas, ¿qué representa el coeficiente 'C'?",o:{a:"El coeficiente de compacidad de la cuenca, relacionado con su forma perimetral.",b:"La cota altimétrica media de la zona de estudio en metros sobre el nivel del mar.",c:"El coeficiente de escorrentía, que indica la fracción de lluvia que no se infiltra y escurre superficialmente.",d:"La capacidad de almacenaje de las obras de paso transversales en litros."},c:"c",exp:""},
+{p:"Para la construcción de cunetas revestidas de hormigón vertido in situ (tipo V o trapecial), ¿cuál es el espesor mínimo recomendado por la normativa?",o:{a:"Alrededor de 10 a 15 centímetros de hormigón en masa.",b:"Un máximo de 3 centímetros aplicando mortero proyectado ligero.",c:"No existe espesor mínimo, basta con un enlucido superficial con brocha.",d:"Medio metro de hormigón fuertemente armado para soportar el impacto de camiones."},c:"a",exp:""},
+{p:"¿Qué elemento de drenaje se utiliza específicamente para conducir de forma controlada el agua desde una cuneta de guarda en la coronación de un desmonte hasta el pie del talud?",o:{a:"Un bordillo montable perforado a nivel de calzada.",b:"Un pozo de registro profundo excavado verticalmente en el terreno.",c:"Un caño metálico corrugado en voladizo desde lo alto del talud.",d:"Una bajante (generalmente escalonada o prefabricada) apoyada sobre el propio talud."},c:"d",exp:""},
+{p:"En el dimensionamiento hidráulico de obras de paso transversales (tubos o marcos), ¿qué condición se exige respecto al 'resguardo' bajo el caudal de diseño?",o:{a:"Que el agua inunde la plataforma de la carretera temporalmente para frenar a los vehículos.",b:"Que la velocidad del flujo interior sea igual a cero (agua estancada).",c:"Que el tubo trabaje a sección llena y sometido a presión constante como una tubería de abastecimiento.",d:"Que el nivel máximo de la lámina de agua no entre en carga y deje una cámara de aire (resguardo libre) hasta la clave de la bóveda."},c:"d",exp:""},
+{p:"Para cunetas de tierras sin protección (sin revestir), la velocidad del agua debe limitarse. ¿Qué problema principal surge si se supera la velocidad máxima admisible?",o:{a:"La erosión acelerada, socavación y descalce de los taludes y la plataforma adyacente.",b:"La congelación rápida de la lámina superficial en épocas invernales.",c:"La decantación masiva de limos finos taponando el cauce en el tramo de máxima pendiente.",d:"La evaporación instantánea del flujo por fricción térmica."},c:"a",exp:""},
+{p:"Aunque el drenaje profundo (subterráneo) no es el objeto principal de la 5.2 IC, está estrechamente ligado. ¿Qué elemento clásico se usa en los bordes de plataforma para abatir el nivel freático?",o:{a:"Muros pantalla de hormigón armado impermeables anclados a la roca.",b:"Zanjas drenantes rellenas de material filtrante (grava) con un tubo poroso o ranurado en su fondo.",c:"Inyecciones de bentonita para sellar la porosidad del terraplén.",d:"Cunetas aéreas colgadas de la superestructura del puente."},c:"b",exp:""},
+{p:"En el diseño hidrológico para drenaje, el 'tiempo de concentración' de una cuenca se define como:",o:{a:"El tiempo que tarda el hormigón de la cuneta en alcanzar su resistencia máxima característica.",b:"Las horas de sol necesarias para evaporar un episodio de lluvias torrenciales.",c:"El retardo horario de los sistemas de bombeo de achique para entrar en funcionamiento automático.",d:"El tiempo que tarda una gota de agua caída en el punto hidrológicamente más alejado en llegar a la sección de estudio."},c:"d",exp:""},
+{p:"Para el drenaje de plataformas de gran anchura (como en subestaciones o nudos viarios), se emplean colectores subterráneos. ¿Cuál es la separación máxima recomendada entre arquetas de registro/limpieza?",o:{a:"Cada 2 metros, colocándolas de forma continua y adosada.",b:"No se instalan arquetas si el diámetro del tubo es menor de 1 metro.",c:"Entre 40 y 50 metros para permitir el acceso de los equipos de mantenimiento y desatasco.",d:"Más de 200 metros para minimizar el impacto visual en el pavimento."},c:"c",exp:""},
+{p:"En las embocaduras (entrada) de las obras de paso transversal, especialmente en zonas boscosas, ¿qué elemento civil se diseña para prevenir obstrucciones?",o:{a:"Espejos reflectantes para iluminar el interior del conducto subterráneo.",b:"Rejillas o barreras de retención de flotantes y arrastres voluminosos (troncos, ramas).",c:"Turbinas hidroeléctricas en miniatura para aprovechar la energía de choque.",d:"Válvulas de compuerta automática herméticas que cierran con la lluvia."},c:"b",exp:""},
+{p:"Si la pendiente longitudinal de la plataforma es muy suave (casi nula), obligando a dar a la cuneta una pendiente independiente para evacuar aguas, esta disposición geométrica se denomina:",o:{a:"Sumidero continuo en lámina libre de resalto.",b:"Cuneta con pendiente en contrapendiente o cuneta de profundidad variable (falsa rasante).",c:"Cuneta en sifón isostático flotante.",d:"Cuneta de sección virtual infinita."},c:"b",exp:""},
+{p:"En las secciones en desmonte (trincheras), ¿dónde se ubican habitualmente las cunetas de guarda?",o:{a:"Suspendidas del viaducto mediante tirantes de acero inoxidable.",b:"En el eje central de la mediana de la autopista.",c:"En la parte superior (coronación) del talud, para interceptar el agua de las laderas y evitar que escurra por la cara del desmonte.",d:"Bajo la rasante del pavimento, mezclada con la zahorra base."},c:"c",exp:""},
+{p:"¿Qué parámetro geométrico caracteriza la sección transversal de una cuneta triangular (tipo V), facilitando la seguridad en caso de salida accidental de un vehículo de la calzada?",o:{a:"El talud interior (el más cercano al arcén) debe ser muy tendido (ej. 1:4 o 1:6) para que sea franqueable sin vuelco.",b:"Tener bordes cortantes en ángulo recto para obligar al vehículo a frenar por impacto.",c:"Contar con una profundidad de al menos 2 metros para atrapar las ruedas del eje delantero.",d:"Ser construida como una zanja vertical apuntalada con entibación de madera."},c:"a",exp:""}];
+let cur=0,answers=new Array(QS.length).fill(null),iv=null,secs=90*60;
+
+function startTest(){
+  document.getElementById('s-start').style.display='none';
+  document.getElementById('s-test').style.display='block';
+  buildNav();renderQ();startTimer();
+}
+function buildNav(){
+  const nav=document.getElementById('q-nav');nav.innerHTML='';
+  QS.forEach((_,i)=>{
+    const d=document.createElement('div');
+    let cls='q-dot';
+    if(i===cur)cls+=' current';
+    else if(answers[i]!==null)cls+=(answers[i]===QS[i].c?' correct':' wrong');
+    d.className=cls;d.textContent=i+1;d.onclick=()=>goTo(i);
+    nav.appendChild(d);
+  });
+}
+function renderQ(){
+  const q=QS[cur];const answered=answers[cur]!==null;
+  document.getElementById('q-label').textContent=`Pregunta ${cur+1} de ${QS.length}`;
+  document.getElementById('q-text').textContent=q.p;
+  const refEl=document.getElementById('q-ref');
+  if(q.ref){refEl.textContent=q.ref;refEl.style.display='inline-block';}
+  else{refEl.style.display='none';}
+  const opts=document.getElementById('options');opts.innerHTML='';
+  Object.entries(q.o).forEach(([k,v])=>{
+    const d=document.createElement('div');
+    let cls='opt';
+    if(answered){
+      cls+=' locked';
+      if(k===q.c)cls+=' show-ok';
+      if(k===answers[cur]&&answers[cur]!==q.c)cls+=' sel-fail';
+    }
+    d.className=cls;
+    d.innerHTML=`<span class="opt-key">${k.toUpperCase()})</span><span>${v}</span>`;
+    if(!answered)d.onclick=()=>selectAnswer(k);
+    opts.appendChild(d);
+  });
+  const fb=document.getElementById('feedback');
+  if(answered){
+    const isOk=answers[cur]===q.c;
+    fb.className='feedback show '+(isOk?'fb-ok':'fb-fail');
+    document.getElementById('fb-title').textContent=isOk?'✓ Respuesta correcta':'✗ Respuesta incorrecta';
+    document.getElementById('fb-body').textContent=q.exp||'';
+  }else{fb.className='feedback';}
+  buildNav();updateStats();
+}
+function selectAnswer(k){answers[cur]=k;renderQ();}
+function navigate(d){const n=cur+d;if(n>=0&&n<QS.length){cur=n;renderQ();}}
+function goTo(i){cur=i;renderQ();}
+function updateStats(){
+  const ans=answers.filter(a=>a!==null).length;
+  document.getElementById('s-ans').textContent=ans;
+  document.getElementById('s-blank').textContent=QS.length-ans;
+  document.getElementById('s-rem').textContent=QS.length-ans;
+}
+function startTimer(){
+  const el=document.getElementById('timer');
+  iv=setInterval(()=>{
+    secs--;
+    const m=Math.floor(secs/60),s=secs%60;
+    el.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    if(secs<=300)el.classList.add('warn');
+    if(secs<=0){clearInterval(iv);finish();}
+  },1000);
+}
+function finish(){
+  if(iv)clearInterval(iv);
+  document.getElementById('s-test').style.display='none';
+  document.getElementById('s-results').style.display='block';
+  let ok=0,fail=0,blank=0;
+  answers.forEach((a,i)=>{if(a===null)blank++;else if(a===QS[i].c)ok++;else fail++;});
+  const pts=10/QS.length,pena=fail*(pts/2),raw=ok*pts-pena,s10=Math.max(0,raw).toFixed(2);
+  document.getElementById('score-num').textContent=s10;
+  document.getElementById('score-detail').textContent=
+    `${ok} correctas · ${fail} incorrectas · ${blank} en blanco · ${pts.toFixed(3)} pts/correcta · Penalización: −${pena.toFixed(3)} pts`;
+  document.getElementById('r-ok').textContent=ok;
+  document.getElementById('r-fail').textContent=fail;
+  document.getElementById('r-blank').textContent=blank;
+  document.getElementById('r-pena').textContent='−'+pena.toFixed(3);
+  const list=document.getElementById('review-list');list.innerHTML='';
+  const toReview=QS.map((q,i)=>({q,i,a:answers[i]})).filter(({a,q})=>a===null||a!==q.c);
+  if(toReview.length===0){
+    document.getElementById('rev-title').textContent='¡Enhorabuena! Todas las respuestas son correctas.';
+  }else{
+    document.getElementById('rev-title').textContent=`Revisión — ${toReview.length} pregunta${toReview.length>1?'s':''} para repasar:`;
+    toReview.forEach(({q,i,a})=>{
+      const isBlank=a===null;
+      const tag=isBlank?'<span class="tag-pill tag-blank">En blanco</span>':'<span class="tag-pill tag-fail">Incorrecta ✗</span>';
+      const ua=a?`Tu respuesta: <strong>${a.toUpperCase()}) ${q.o[a]}</strong>`:'No respondida.';
+      const refTxt=q.ref?`<span class="q-ref" style="font-size:.7rem;padding:1px 6px;border-radius:10px;background:var(--blue-l);color:var(--blue);font-weight:bold;margin-left:.3rem">${q.ref}</span>`:'';
+      list.innerHTML+=`
+        <div class="rev-item ${isBlank?'blank':'fail'}">
+          ${tag}${refTxt}
+          <div class="rev-q"><strong>${i+1}.</strong> ${q.p}</div>
+          <div class="rev-ans">${ua}<br>Correcta: <strong>${q.c.toUpperCase()}) ${q.o[q.c]}</strong></div>
+          ${q.exp?`<div class="rev-exp">${q.exp}</div>`:''}
+        </div>`;
+    });
+  }
+  window.scrollTo(0,0);
+}
+function restart(){
+  answers=new Array(QS.length).fill(null);cur=0;secs=90*60;
+  document.getElementById('s-results').style.display='none';
+  document.getElementById('s-test').style.display='block';
+  document.getElementById('timer').classList.remove('warn');
+  buildNav();renderQ();startTimer();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Test UNE EN 61936-1</title>
+<style>
+:root{
+  --blue:#185FA5;--blue-l:#E6F1FB;--blue-m:#378ADD;
+  --green:#0F6E56;--green-l:#E1F5EE;--green-b:#1D9E75;
+  --red:#993C1D;--red-l:#FAECE7;--red-b:#D85A30;
+  --amber:#854F0B;--amber-l:#FAEEDA;
+  --gray:#5F5E5A;--gray-l:#F1EFE8;--gray-m:#D3D1C7;
+  --text:#2C2C2A;--muted:#888780;
+  --bg:#fff;--bg2:#F8F7F4;
+  --bd:rgba(0,0,0,0.12);--r:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Georgia',serif;background:var(--bg2);color:var(--text);min-height:100vh}
+#app{max-width:760px;margin:0 auto;padding:2rem 1rem}
+
+/* INICIO */
+#s-start{text-align:center;padding:3rem 1rem}
+#s-start h1{font-size:2rem;font-weight:normal;letter-spacing:-.5px;margin-bottom:.4rem}
+.subtitle{color:var(--muted);font-size:.95rem;margin-bottom:2.5rem}
+.info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
+.ic{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:1.2rem}
+.ic .n{font-size:2rem;font-weight:bold;color:var(--blue);font-family:monospace}
+.ic .l{font-size:.8rem;color:var(--muted);margin-top:.25rem}
+.bloques-info{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:2rem;text-align:left}
+.bloques-info .bi-title{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.65rem}
+.bloque-row{display:flex;align-items:center;gap:.65rem;padding:.3rem 0;font-size:.84rem}
+.bloque-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.rules{background:var(--amber-l);border:1px solid #FAC775;border-radius:var(--r);padding:1rem 1.25rem;text-align:left;margin-bottom:2rem;font-size:.85rem;line-height:1.7}
+.rules strong{color:var(--amber)}
+.btn-start{background:var(--blue);color:#fff;border:none;border-radius:var(--r);padding:.9rem 2.5rem;font-size:1rem;cursor:pointer;transition:background .2s}
+.btn-start:hover{background:var(--blue-m)}
+
+/* CABECERA TEST */
+.t-header{display:flex;justify-content:space-between;align-items:center;background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:.9rem 1.25rem;margin-bottom:1rem}
+.t-header .lft{font-size:.85rem}
+.t-header .lft strong{font-size:1rem;display:block}
+#timer{font-size:1.5rem;font-weight:bold;font-family:monospace;color:var(--blue)}
+#timer.warn{color:var(--red-b)}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1rem}
+.stat{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:.6rem;text-align:center}
+.stat .sn{font-size:1.4rem;font-weight:bold}
+.stat .sl{font-size:.7rem;color:var(--muted);margin-top:1px}
+
+/* NAV DOTS */
+.q-nav{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:1rem}
+.q-dot{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--bd);font-size:.75rem;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);background:var(--bg);transition:all .15s;font-family:monospace}
+.q-dot:hover{border-color:var(--blue);color:var(--blue)}
+.q-dot.current{border:2px solid var(--blue);color:var(--blue);background:var(--blue-l)}
+.q-dot.correct{background:var(--green-b);color:#fff;border-color:var(--green-b)}
+.q-dot.wrong{background:var(--red-b);color:#fff;border-color:var(--red-b)}
+
+/* PREGUNTA */
+.q-box{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:1.5rem;margin-bottom:1rem}
+.q-label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem}
+.q-tag{font-size:.72rem;font-weight:bold;padding:2px 9px;border-radius:12px}
+.q-text{font-size:1rem;line-height:1.65;margin-bottom:1.25rem}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:.85rem 1rem;border-radius:8px;border:1.5px solid var(--bd);margin-bottom:.5rem;transition:all .2s;font-size:.9rem;background:var(--bg2);cursor:pointer;user-select:none}
+.opt:hover:not(.locked){border-color:var(--blue-m);background:var(--blue-l)}
+.opt.locked{cursor:default}
+.opt.sel-ok{border-color:var(--green-b);background:var(--green-l);color:#085041}
+.opt.sel-fail{border-color:var(--red-b);background:var(--red-l);color:#712B13}
+.opt.show-ok{border-color:var(--green-b);background:var(--green-l);color:#085041}
+.opt-key{font-weight:bold;min-width:20px;font-family:monospace;font-size:1rem;flex-shrink:0;color:var(--muted)}
+.opt.sel-ok .opt-key,.opt.show-ok .opt-key{color:var(--green-b)}
+.opt.sel-fail .opt-key{color:var(--red-b)}
+
+/* FEEDBACK */
+.feedback{border-radius:8px;padding:.9rem 1.1rem;margin-top:1rem;font-size:.88rem;line-height:1.6;display:none}
+.feedback.show{display:block}
+.feedback.fb-ok{background:var(--green-l);border:1px solid var(--green-b);color:#085041}
+.feedback.fb-fail{background:var(--red-l);border:1px solid var(--red-b);color:#712B13}
+.fb-title{font-weight:bold;margin-bottom:.35rem}
+
+/* NAVEGACIÓN */
+.nav-row{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-top:1.25rem}
+.btn{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:.6rem 1.2rem;font-size:.85rem;cursor:pointer;color:var(--text);transition:all .15s}
+.btn:hover{border-color:var(--blue);color:var(--blue)}
+.btn-finish{background:var(--green);color:#fff;border:none;border-radius:8px;padding:.75rem 1.75rem;font-size:.9rem;cursor:pointer;display:block;margin:1rem auto 0;transition:opacity .2s}
+.btn-finish:hover{opacity:.88}
+
+/* RESULTADOS */
+#s-results{display:none}
+.score-banner{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:2rem;text-align:center;margin-bottom:1rem}
+.score-num{font-size:4rem;font-weight:bold;font-family:monospace}
+.stats-res{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:1rem}
+.bloques-res{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:1rem}
+.bres-title{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.65rem}
+.bres-row{display:flex;align-items:center;justify-content:space-between;padding:.4rem 0;border-bottom:.5px solid var(--bd)}
+.bres-row:last-child{border-bottom:none}
+.bres-nombre{font-size:.84rem;display:flex;align-items:center;gap:.6rem}
+.bres-pills{display:flex;gap:.4rem}
+.pill{font-size:.72rem;padding:2px 8px;border-radius:12px;font-weight:bold}
+.pill-ok{background:var(--green-l);color:var(--green)}
+.pill-fail{background:var(--red-l);color:var(--red)}
+.rev-section-title{font-size:.8rem;color:var(--muted);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.5px}
+.rev-item{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:.6rem}
+.rev-item.fail{border-left:4px solid var(--red-b)}
+.rev-item.blank{border-left:4px solid var(--gray-m)}
+.rev-q{font-size:.9rem;line-height:1.5;margin-bottom:.5rem}
+.rev-ans{font-size:.82rem;margin-bottom:.4rem}
+.rev-exp{font-size:.82rem;line-height:1.55;margin-bottom:.35rem}
+.tag-pill{font-size:.7rem;padding:2px 8px;border-radius:12px;font-weight:bold;display:inline-block;margin-bottom:.4rem}
+.tag-fail{background:var(--red-l);color:var(--red)}
+.tag-blank{background:var(--gray-l);color:var(--gray)}
+.btn-restart{background:var(--blue);color:#fff;border:none;border-radius:8px;padding:.75rem 2rem;font-size:.9rem;cursor:pointer;display:block;margin:1.5rem auto 0}
+
+@media(max-width:500px){
+  .info-grid,.stats,.stats-res{grid-template-columns:repeat(2,1fr)}
+  .score-num{font-size:3rem}
+  .bres-row{flex-direction:column;align-items:flex-start;gap:.3rem}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- INICIO -->
+<div id="s-start">
+  <h1>Test UNE EN 61936-1</h1>
+  <div class="subtitle">Instalaciones eléctricas de potencia de tensión superior a 1 kV en corriente alterna</div>
+  <div class="info-grid">
+    <div class="ic"><div class="n">35</div><div class="l">Preguntas</div></div>
+    <div class="ic"><div class="n">90'</div><div class="l">Duración</div></div>
+    <div class="ic"><div class="n">−0.5</div><div class="l">Penalización error</div></div>
+  </div>
+  <div class="bloques-info">
+    <div class="bi-title">Bloques temáticos</div>
+    <div class="bloque-row"><div class="bloque-dot" style="background:#7B2D8B"></div><span>A · Objeto, campo de aplicación y definiciones (6 preguntas)</span></div>
+    <div class="bloque-row"><div class="bloque-dot" style="background:#185FA5"></div><span>B · Protección eléctrica, tierras, operación y mantenimiento (13 preguntas)</span></div>
+    <div class="bloque-row"><div class="bloque-dot" style="background:#0F6E56"></div><span>C · Distancias de aislamiento y separación (6 preguntas)</span></div>
+    <div class="bloque-row"><div class="bloque-dot" style="background:#854F0B"></div><span>D · Sobretensiones y protección contra el rayo (5 preguntas)</span></div>
+    <div class="bloque-row"><div class="bloque-dot" style="background:#993C1D"></div><span>E · Construcción y diseño mecánico (5 preguntas)</span></div>
+  </div>
+  <div class="rules">
+    <strong>Puntuación dinámica:</strong> Correcta +0.286 pts · Incorrecta −0.143 pts · En blanco 0 pts<br>
+    El máximo es siempre <strong>10 puntos</strong>.<br><br>
+    <strong>Feedback:</strong> Al responder se muestra la corrección y explicación inmediatamente. La respuesta queda bloqueada.<br><br>
+    <strong>Navegación libre:</strong> Puedes avanzar y retroceder entre preguntas sin responder.
+  </div>
+  <button class="btn-start" onclick="startTest()">Comenzar test</button>
+</div>
+
+<!-- TEST -->
+<div id="s-test" style="display:none">
+  <div class="t-header">
+    <div class="lft"><strong>Test UNE EN 61936-1</strong>Instalaciones eléctricas &gt; 1 kV en corriente alterna</div>
+    <div id="timer">90:00</div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="sn" id="s-ans" style="color:var(--blue)">0</div><div class="sl">Respondidas</div></div>
+    <div class="stat"><div class="sn" id="s-blank">35</div><div class="sl">En blanco</div></div>
+    <div class="stat"><div class="sn" id="s-rem" style="color:var(--amber)">35</div><div class="sl">Restantes</div></div>
+  </div>
+  <div class="q-nav" id="q-nav"></div>
+  <div class="q-box">
+    <div class="q-label">
+      <span id="q-num">Pregunta 1 de 35</span>
+      <span class="q-tag" id="q-tag-badge"></span>
+    </div>
+    <div class="q-text" id="q-text"></div>
+    <div id="options"></div>
+    <div class="feedback" id="feedback">
+      <div class="fb-title" id="fb-title"></div>
+      <div id="fb-body"></div>
+    </div>
+    <div class="nav-row">
+      <button class="btn" onclick="navigate(-1)">← Anterior</button>
+      <button class="btn" onclick="navigate(1)">Siguiente →</button>
+    </div>
+  </div>
+  <button class="btn-finish" onclick="finish()">Finalizar y ver resultados</button>
+</div>
+
+<!-- RESULTADOS -->
+<div id="s-results">
+  <div class="score-banner">
+    <div style="font-size:.85rem;color:var(--muted);margin-bottom:.5rem">Puntuación final (escala 0–10)</div>
+    <div class="score-num" id="score-num">—</div>
+    <div style="font-size:.8rem;color:var(--muted);margin-top:.25rem" id="score-detail"></div>
+  </div>
+  <div class="stats-res" style="margin-bottom:1rem">
+    <div class="stat"><div class="sn" id="r-ok" style="color:var(--green-b)"></div><div class="sl">Correctas</div></div>
+    <div class="stat"><div class="sn" id="r-fail" style="color:var(--red-b)"></div><div class="sl">Incorrectas</div></div>
+    <div class="stat"><div class="sn" id="r-blank"></div><div class="sl">En blanco</div></div>
+    <div class="stat"><div class="sn" id="r-pena" style="color:var(--red-b)"></div><div class="sl">Penalización</div></div>
+  </div>
+  <div class="bloques-res">
+    <div class="bres-title">Resultado por bloque temático</div>
+    <div id="bloques-res-list"></div>
+  </div>
+  <div class="rev-section-title" id="rev-title"></div>
+  <div id="review-list"></div>
+  <button class="btn-restart" onclick="restart()">Reiniciar test</button>
+</div>
+
+</div>
+<script>
+const QS=[{tag:"a",tn:"Objeto, campo de aplicaci\u00f3n y definiciones",p:"¿Cuál es el campo de aplicación de la norma UNE-EN IEC 61936-1?",o:{a:"Instalaciones eléctricas de corriente continua superiores a 1,5 kV en centrales fotovoltaicas",b:"Instalaciones de baja tensión (hasta 1 kV) en edificios industriales y comerciales",c:"Equipos eléctricos individuales de alta tensión, como transformadores y disyuntores aislados",d:"Instalaciones eléctricas de potencia de tensión nominal superior a 1 kV en corriente alterna, incluyendo su diseño, construcción, puesta en servicio y mantenimiento"},c:"d",exp:"La UNE-EN IEC 61936-1 establece los requisitos para el diseño y la construcción de instalaciones eléctricas de potencia de tensión nominal superior a 1 kV en corriente alterna, con el fin de garantizar la seguridad de personas, animales domésticos y bienes, y el correcto funcionamiento de la instalación."},
+{tag:"a",tn:"Objeto, campo de aplicaci\u00f3n y definiciones",p:"Según la UNE-EN IEC 61936-1, ¿qué se entiende por 'instalación eléctrica de potencia'?",o:{a:"El conjunto de circuitos de control y protección de una subestación eléctrica",b:"La red de distribución de media tensión que alimenta a los consumidores finales",c:"Un conjunto de equipos eléctricos instalados en un lugar determinado para la generación, transmisión, transformación, distribución o utilización de la energía eléctrica",d:"Un único equipo de alta tensión (transformador o interruptor) instalado en una subestación"},c:"c",exp:"La norma define la instalación eléctrica de potencia como el conjunto de equipos eléctricos instalados en un lugar específico para la generación, transmisión, transformación, distribución o utilización de la energía eléctrica, incluyendo todos sus elementos asociados de maniobra, protección, medida y control."},
+{tag:"a",tn:"Objeto, campo de aplicaci\u00f3n y definiciones",p:"¿Qué se entiende por 'tensión nominal' de una instalación según la UNE-EN IEC 61936-1?",o:{a:"La tensión máxima que puede aparecer en la instalación en condiciones de vacío",b:"La tensión de servicio continua medida en los bornes de los transformadores de la instalación",c:"La tensión de ensayo a frecuencia industrial aplicada al equipo durante su fabricación",d:"La tensión de referencia asignada a la instalación que caracteriza su nivel de tensión y a la que se refieren determinadas características de funcionamiento"},c:"d",exp:"La tensión nominal (Un) es la tensión de referencia asignada a la instalación, utilizada para caracterizar su nivel de tensión y a la que se refieren determinadas características de funcionamiento de los equipos. No es necesariamente igual a la tensión de servicio real, que puede variar dentro de márgenes establecidos."},
+{tag:"a",tn:"Objeto, campo de aplicaci\u00f3n y definiciones",p:"Según la UNE-EN IEC 61936-1, ¿qué define la 'tensión más elevada para el material' (Um)?",o:{a:"La tensión de cortocircuito máxima que puede soportar el transformador de potencia",b:"La tensión de impulso de rayo de ensayo aplicada al equipo para verificar su nivel de aislamiento",c:"El valor eficaz más elevado de tensión entre fases para el que está diseñado el equipo, determinando su nivel de aislamiento",d:"La tensión de alimentación de los servicios auxiliares de la subestación"},c:"c",exp:"Um es el valor eficaz máximo de la tensión entre fases para el que está diseñado el equipo en cuanto a su aislamiento y a otras características. Es el parámetro que determina el nivel de aislamiento requerido y sirve de referencia para la selección de los equipos según su nivel de tensión de servicio."},
+{tag:"a",tn:"Objeto, campo de aplicaci\u00f3n y definiciones",p:"¿Cómo define la UNE-EN IEC 61936-1 el concepto de 'distancia de seguridad' (clearance)?",o:{a:"La distancia física entre dos subestaciones en una línea de transporte de alta tensión",b:"La separación mínima entre el vallado perimetral y los equipos de alta tensión de la subestación",c:"La distancia entre el operador y el equipo en tensión durante trabajos de mantenimiento",d:"La distancia mínima en el aire entre dos partes conductoras, o entre una parte conductora y tierra, necesaria para evitar una descarga disruptiva"},c:"d",exp:"La distancia de seguridad (clearance o distancia en el aire) es la distancia mínima entre dos partes conductoras, o entre una parte conductora y tierra, medida a través del aire, necesaria para evitar una descarga disruptiva bajo las condiciones de tensión más desfavorables, incluyendo sobretensiones temporales y de maniobra."},
+{tag:"a",tn:"Objeto, campo de aplicaci\u00f3n y definiciones",p:"Según la UNE-EN IEC 61936-1, ¿qué se entiende por 'zona de acceso restringido'?",o:{a:"Cualquier recinto cerrado perteneciente a la subestación, independientemente de la tensión de sus equipos",b:"El espacio delimitado por el vallado perimetral de la subestación",c:"La zona de exclusión alrededor de las celdas de media tensión durante su mantenimiento",d:"Espacio alrededor de partes activas en tensión al que solo puede acceder personal autorizado y cualificado, adoptando las medidas de seguridad pertinentes"},c:"d",exp:"La zona de acceso restringido es el espacio alrededor de partes activas en tensión al que solo puede acceder personal específicamente autorizado y cualificado, previa adopción de las medidas de seguridad adecuadas. La norma distingue entre zona de acceso restringido para personal cualificado y zona libre de acceso al público."},
+{tag:"b",tn:"Protecci\u00f3n el\u00e9ctrica, tierras, operaci\u00f3n y mantenimiento",p:"La UNE-EN IEC 61936-1 establece que la protección contra choques eléctricos debe garantizar límites seguros de tensión de paso y de contacto. ¿Cómo define la norma la 'tensión de paso'?",o:{a:"La tensión nominal del sistema entre fases que aparece en los conductores de la instalación",b:"La tensión entre una masa metálica de la subestación y el punto del suelo donde está parada la persona que la toca",c:"La diferencia de potencial entre dos puntos del suelo separados 1 metro, que puede circular por el cuerpo humano al desplazarse durante una falta a tierra",d:"La diferencia de potencial entre el neutro del transformador y tierra durante un defecto monofásico"},c:"c",exp:"La tensión de paso es la diferencia de potencial entre dos puntos del suelo separados 1 metro (distancia de zancada), que puede circular por el cuerpo humano al desplazarse en la zona afectada durante una falta a tierra. La UNE-EN IEC 61936-1 exige que esta tensión no supere los valores límite seguros para las personas."},
+{tag:"b",tn:"Protecci\u00f3n el\u00e9ctrica, tierras, operaci\u00f3n y mantenimiento",p:"¿Cómo define la UNE-EN IEC 61936-1 la 'tensión de contacto'?",o:{a:"La diferencia de potencial entre dos barras colectoras de diferente nivel de tensión en la subestación",b:"La tensión de servicio que aparece en los bornes de los equipos de la instalación",c:"La diferencia de potencial entre una masa metálica que ha adquirido potencial durante una falta y el punto del suelo donde está la persona que la toca",d:"La tensión aplicada al cuerpo humano entre mano y pie durante el ensayo de resistencia corporal"},c:"c",exp:"La tensión de contacto es la diferencia de potencial entre una masa metálica que ha adquirido potencial durante una falta a tierra y el punto del suelo donde está la persona que la toca. Junto con la tensión de paso, es el parámetro fundamental para evaluar el riesgo de electrocución en una instalación de AT."},
+{tag:"b",tn:"Protecci\u00f3n el\u00e9ctrica, tierras, operaci\u00f3n y mantenimiento",p:"Según la UNE-EN IEC 61936-1, ¿cuál es el objetivo principal del sistema de puesta a tierra de una instalación de AT?",o:{a:"Limitar las tensiones de paso y contacto a valores seguros para las personas y garantizar el correcto funcionamiento de las protecciones ante faltas a tierra",b:"Proteger los equipos de las sobretensiones de origen atmosférico",c:"Medir la resistencia del terreno para el dimensionamiento de la malla de tierra",d:"Equilibrar las corrientes entre las tres fases de la instalación durante el servicio normal"},c:"a",exp:"El sistema de puesta a tierra tiene como objetivo principal limitar las tensiones de paso y de contacto a valores seguros para las personas y los animales domésticos durante una falta a tierra, y garantizar que las corrientes de falta fluyan de forma controlada para permitir la actuación correcta de las protecciones y el despeje de la falta."},
+{tag:"b",tn:"Protecci\u00f3n el\u00e9ctrica, tierras, operaci\u00f3n y mantenimiento",p:"¿Qué elementos componen el sistema de puesta a tierra de una subestación de AT según la UNE-EN IEC 61936-1?",o:{a:"Solo los conductores de tierra de los pararrayos y las cubiertas de los cables de AT",b:"El cable de guarda de las líneas aéreas que acceden a la subestación y las picas de los apoyos",c:"La malla de conductores enterrados, las picas, los conductores de equipotencialidad y las conexiones de tierra de todas las masas metálicas y neutros",d:"Únicamente las picas de tierra verticales instaladas en el perímetro de la subestación"},c:"c",exp:"El sistema de puesta a tierra de una subestación comprende la malla de conductores enterrados (red de tierra), las picas verticales, los conductores de equipotencialidad que interconectan todas las masas metálicas (estructuras, apoyos, cubiertas de equipos) y las conexiones de tierra de los neutros de los transformadores. Todos estos elementos deben formar una red eléctrica continua y de baja impedancia."},
+{tag:"b",tn:"Protecci\u00f3n el\u00e9ctrica, tierras, operaci\u00f3n y mantenimiento",p:"Según la UNE-EN IEC 61936-1, ¿qué es la 'tensión de tierra global' (GPR, Ground Potential Rise)?",o:{a:"La tensión de paso máxima en el perímetro exterior de la subestación",b:"La tensión de servicio medida entre el neutro del transformador y la malla de tierra",c:"La tensión inducida en la malla de tierra por las líneas de alta tensión próximas",d:"La diferencia de potencial entre el sistema de tierra de la subestación y un punto de referencia de tierra remoto durante una falta a tierra"},c:"d",exp:"La tensión de tierra global (GPR) es la diferencia de potencial entre el sistema de tierra local de la subestación y un punto de tierra remoto (potencial de tierra de referencia) durante una falta a tierra. Su valor depende de la corriente de falta y de la resistencia de puesta a tierra de la instalación. El GPR determina la magnitud de las tensiones de paso y de contacto en el entorno de la subestación."},
+{tag:"b",tn:"Protecci\u00f3n el\u00e9ctrica, tierras, operaci\u00f3n y mantenimiento",p:"La UNE-EN IEC 61936-1 exige verificar los valores de tensión de paso y contacto frente a curvas de seguridad que dependen de la duración de la falta. ¿Por qué la duración de la falta es un factor determinante en la evaluación del riesgo?",o:{a:"Porque la malla de tierra se calienta progresivamente reduciendo su resistencia durante la falta",b:"Porque las protecciones tardan más en actuar cuanto mayor es la tensión de falta",c:"Porque la resistencia del suelo varía con el tiempo durante la circulación de la corriente de falta",d:"Porque la fibrilación ventricular depende tanto de la intensidad de la corriente como del tiempo de exposición; a mayor duración, menor corriente es necesaria para causar daño"},c:"d",exp:"La peligrosidad de una corriente eléctrica para el cuerpo humano depende tanto de su intensidad como del tiempo de exposición. La fibrilación ventricular puede producirse con corrientes tanto menores cuanto mayor sea el tiempo de circulación. Por eso la UNE-EN IEC 61936-1 relaciona los valores límite de tensión de paso y contacto con el tiempo de despeje de la falta por las protecciones."},
+{tag:"b",tn:"Protecci\u00f3n el\u00e9ctrica, tierras, operaci\u00f3n y mantenimiento",p:"¿Qué prescribe la UNE-EN IEC 61936-1 respecto a la equipotencialidad del recinto de una subestación de AT?",o:{a:"El vallado perimetral debe estar aislado de la malla de tierra para evitar que las personas en el exterior queden sometidas a tensiones de contacto",b:"Solo los equipos de alta tensión deben conectarse a la malla de tierra; los elementos de baja tensión se conectan de forma independiente",c:"Todas las masas metálicas (estructuras, carcasas de equipos, armaduras de cables, vallado) deben estar interconectadas y conectadas a la malla de tierra para garantizar la equipotencialidad",d:"La equipotencialidad solo es exigible en instalaciones de tensión nominal superior a 36 kV"},c:"c",exp:"La UNE-EN IEC 61936-1 exige que todas las masas metálicas del recinto (estructuras portantes de los equipos, carcasas, pantallas de cables, armaduras, vallado perimetral) estén interconectadas y conectadas a la malla de tierra, formando una red equipotencial. Esto minimiza las diferencias de potencial entre elementos accesibles y reduce el riesgo de electrocución por contacto indirecto."},
+{tag:"c",tn:"Distancias de aislamiento y separaci\u00f3n",p:"¿Qué diferencia establece la UNE-EN IEC 61936-1 entre 'distancia de aislamiento en el aire' (clearance) y 'distancia de fuga' (creepage distance)?",o:{a:"La distancia de aislamiento aplica a instalaciones interiores; la distancia de fuga, a instalaciones de intemperie",b:"La distancia de aislamiento se mide en mm y la de fuga en kV/m",c:"Son sinónimos; ambas expresan la separación mínima entre conductores en tensión",d:"La distancia de aislamiento es la distancia mínima en el aire entre conductores o entre conductor y tierra; la distancia de fuga es la longitud del camino más corto sobre la superficie sólida del aislante entre dos partes conductoras"},c:"d",exp:"La distancia de aislamiento (clearance) es la distancia mínima medida a través del aire entre dos partes conductoras o entre una parte conductora y tierra, necesaria para evitar descargas disruptivas. La distancia de fuga (creepage) es la longitud del camino más corto a lo largo de la superficie del material aislante entre dos partes conductoras, relevante para evitar corrientes de fuga superficiales, especialmente en ambientes contaminados."},
+{tag:"c",tn:"Distancias de aislamiento y separaci\u00f3n",p:"Según la UNE-EN IEC 61936-1, ¿de qué factores depende la distancia de aislamiento mínima en el aire en una instalación de AT?",o:{a:"De la tensión más elevada para el material (Um), el nivel de contaminación del entorno y las sobretensiones de maniobra y de origen atmosférico esperadas",b:"Solo de la tensión nominal del sistema y la altitud de la instalación sobre el nivel del mar",c:"De la temperatura ambiente y la humedad relativa del emplazamiento",d:"Únicamente de la corriente de cortocircuito máxima en el punto de instalación"},c:"a",exp:"La distancia de aislamiento mínima en el aire depende fundamentalmente de la tensión más elevada para el material (Um), que determina el nivel de aislamiento requerido, y de las sobretensiones esperadas (de maniobra y de origen atmosférico), que son las que más exigen a los aislamientos. La contaminación del entorno puede reducir la rigidez dieléctrica del aire húmedo, influyendo también en la distancia requerida."},
+{tag:"c",tn:"Distancias de aislamiento y separaci\u00f3n",p:"La UNE-EN IEC 61936-1 define distancias mínimas de seguridad para proteger al personal durante trabajos de operación y mantenimiento. ¿Qué representa la 'distancia límite de aproximación' (DLA)?",o:{a:"La distancia de fuga de los aisladores de soporte de las barras colectoras",b:"La distancia mínima que debe mantenerse entre cualquier parte del cuerpo del trabajador (o de los objetos que manipule) y las partes en tensión, por debajo de la cual existe riesgo de descarga",c:"La separación mínima entre dos fases de la instalación para evitar cortocircuitos bifásicos",d:"La distancia de seguridad entre el vallado perimetral y los equipos en tensión de la subestación"},c:"b",exp:"La distancia límite de aproximación (DLA) es la distancia mínima que debe mantenerse entre cualquier parte del cuerpo del trabajador, incluidos los objetos que manipule, y las partes activas en tensión. Por debajo de esa distancia existe riesgo de descarga disruptiva. La UNE-EN IEC 61936-1 establece estas distancias en función del nivel de tensión de la instalación."},
+{tag:"c",tn:"Distancias de aislamiento y separaci\u00f3n",p:"¿Cómo afecta la altitud del emplazamiento a las distancias de aislamiento en el aire según la UNE-EN IEC 61936-1?",o:{a:"A mayor altitud, el aire es más seco y la rigidez dieléctrica aumenta, permitiendo reducir las distancias de aislamiento",b:"Solo afecta a las distancias de fuga de los aisladores, no a las distancias en el aire",c:"La altitud no afecta a las distancias de aislamiento en el aire según la norma",d:"A mayor altitud, la densidad del aire disminuye y la rigidez dieléctrica se reduce, por lo que las distancias de aislamiento deben incrementarse mediante un factor de corrección"},c:"d",exp:"La rigidez dieléctrica del aire disminuye con la presión atmosférica. A mayor altitud, la presión y la densidad del aire son menores, lo que reduce la capacidad del aire para resistir las descargas eléctricas. La UNE-EN IEC 61936-1 establece factores de corrección de las distancias de aislamiento en función de la altitud para instalaciones emplazadas por encima de 1.000 m sobre el nivel del mar."},
+{tag:"c",tn:"Distancias de aislamiento y separaci\u00f3n",p:"En una instalación GIS (Gas Insulated Switchgear), ¿cómo se determina el nivel de aislamiento según la UNE-EN IEC 61936-1?",o:{a:"Las distancias de aislamiento en el interior de la GIS son iguales a las exigidas para instalaciones de aire convencionales",b:"En instalaciones GIS no se aplica la UNE-EN IEC 61936-1, sino exclusivamente la normativa del fabricante",c:"El aislamiento lo proporciona el gas SF₆ a presión en el interior de la envolvente metálica, y las distancias de aislamiento internas son mucho menores que en instalaciones de aire, fijándose según normas específicas del equipo (IEC 62271)",d:"El nivel de aislamiento de la GIS se determina exclusivamente por la distancia entre la envolvente y los equipos exteriores"},c:"c",exp:"En las instalaciones GIS, el aislamiento lo proporciona el SF₆ a presión en el interior de la envolvente metálica conectada a tierra. Las distancias internas son mucho menores que en instalaciones de aire equivalentes. La UNE-EN IEC 61936-1 remite a las normas de los equipos (IEC 62271-203 para GIS) para la determinación de las distancias de aislamiento internas, mientras que regula las interfases exteriores entre la GIS y el resto de la instalación."},
+{tag:"c",tn:"Distancias de aislamiento y separaci\u00f3n",p:"Según la UNE-EN IEC 61936-1, ¿qué es el 'nivel de aislamiento' (insulation level) de una instalación de AT?",o:{a:"La resistencia de aislamiento medida entre fase y tierra durante la puesta en servicio",b:"El espesor del aislamiento sólido de los cables y equipos de la instalación",c:"La tensión nominal de la instalación expresada en kilovoltios",d:"El conjunto de tensiones de ensayo (a frecuencia industrial y de impulso tipo rayo y/o maniobra) que los equipos de la instalación deben soportar sin avería dieléctrica"},c:"d",exp:"El nivel de aislamiento define la capacidad de los equipos para soportar las sobretensiones a las que pueden estar sometidos en servicio. Se especifica mediante la tensión soportada a frecuencia industrial (1 minuto) y la tensión soportada al impulso tipo rayo (1,2/50 µs) y, para niveles de tensión altos, también al impulso de maniobra. Está normalizado en función de Um según la UNE-EN IEC 61936-1."},
+{tag:"d",tn:"Sobretensiones y protecci\u00f3n contra el rayo",p:"¿Qué tipos de sobretensiones considera la UNE-EN IEC 61936-1 en el diseño de las instalaciones de AT?",o:{a:"Sobretensiones temporales (TOV), de maniobra y de origen atmosférico (rayo)",b:"Solo sobretensiones de origen atmosférico (rayo) y de maniobra",c:"Únicamente sobretensiones temporales durante faltas a tierra monofásicas",d:"Sobretensiones de frecuencia industrial y de impulso tipo rayo únicamente"},c:"a",exp:"La UNE-EN IEC 61936-1 distingue tres tipos de sobretensiones: temporales (TOV, a frecuencia industrial y de larga duración, debidas a faltas a tierra, rechazo de carga o ferroresonancia), de maniobra (transitorias de frente lento generadas por operaciones de apertura/cierre de interruptores) y de origen atmosférico (transitorias de frente rápido producidas por descargas de rayo directas o inducidas)."},
+{tag:"d",tn:"Sobretensiones y protecci\u00f3n contra el rayo",p:"Según la UNE-EN IEC 61936-1, ¿cuál es la función de los pararrayos (descargadores de óxido metálico) en una instalación de AT?",o:{a:"Limitar la amplitud de las sobretensiones que llegan a los equipos, protegiéndolos de la perforación dieléctrica al conducir la energía excedente a tierra",b:"Proteger al personal de los efectos del rayo en el interior de la subestación",c:"Medir la intensidad de las descargas atmosféricas para el registro de eventos",d:"Evitar que los rayos impacten directamente sobre los equipos de la instalación"},c:"a",exp:"Los pararrayos de óxido metálico (MOV) son dispositivos de protección no lineales que, cuando la sobretensión supera su nivel de protección, conducen la corriente de sobretensión a tierra, limitando la tensión en los bornes del equipo protegido a un valor seguro (nivel de protección). Se conectan entre fase y tierra junto a los equipos a proteger (transformadores, barras, cables)."},
+{tag:"d",tn:"Sobretensiones y protecci\u00f3n contra el rayo",p:"¿Qué es el 'margen de protección' de un pararrayos según la UNE-EN IEC 61936-1?",o:{a:"La diferencia entre la tensión soportada por el equipo (BIL) y el nivel de protección del pararrayos, que debe ser positiva y suficientemente amplia para garantizar la protección",b:"La corriente máxima de descarga que puede soportar el pararrayos sin deteriorarse",c:"La energía absorbida por el pararrayos durante una descarga de rayo expresada en kJ",d:"La distancia física entre el pararrayos y el equipo protegido medida en metros"},c:"a",exp:"El margen de protección es la diferencia entre la tensión soportada por el equipo (nivel básico de aislamiento al impulso, BIL) y el nivel de protección del pararrayos (tensión residual para la corriente de descarga de referencia). Debe ser suficientemente amplio (habitualmente ≥ 20%) para garantizar la protección del equipo incluso considerando las tolerancias y el envejecimiento del pararrayos."},
+{tag:"d",tn:"Sobretensiones y protecci\u00f3n contra el rayo",p:"¿Para qué sirven los cables de guarda (hilos de tierra) en las líneas aéreas que acceden a una subestación de AT, según los criterios de la UNE-EN IEC 61936-1?",o:{a:"Conducir la corriente de falta a tierra en caso de rotura de un conductor de fase",b:"Equilibrar las cargas entre las tres fases de la línea de acceso a la subestación",c:"Servir de referencia de potencial de tierra para los transformadores de intensidad de las líneas",d:"Interceptar las descargas directas de rayo antes de que alcancen los conductores de fase, desviando la corriente a tierra a través de los apoyos"},c:"d",exp:"Los cables de guarda se instalan en la cima de los apoyos de las líneas aéreas y tienen como función interceptar las descargas directas de rayo antes de que alcancen los conductores de fase activos. La corriente del rayo se descarga a tierra a través de la estructura del apoyo, protegiendo los conductores de fase y, por extensión, los equipos de la subestación a la que accede la línea."},
+{tag:"d",tn:"Sobretensiones y protecci\u00f3n contra el rayo",p:"Según la UNE-EN IEC 61936-1, ¿cómo se coordina el aislamiento en una instalación de AT?",o:{a:"Usando exclusivamente el aislamiento en aire sin pararrayos en instalaciones de tensión nominal inferior a 36 kV",b:"Igualando el nivel de aislamiento de todos los equipos al BIL más alto de la instalación",c:"Seleccionando el nivel de aislamiento de cada equipo de forma que soporte las sobretensiones esperadas en servicio con un margen de seguridad adecuado, teniendo en cuenta la protección proporcionada por los pararrayos",d:"Aplicando el mismo nivel de aislamiento a todos los equipos de la instalación independientemente de su ubicación"},c:"c",exp:"La coordinación del aislamiento consiste en seleccionar los niveles de aislamiento de los equipos de forma que soporten, con suficiente margen de seguridad, las sobretensiones que pueden aparecer en la instalación tras la limitación proporcionada por los pararrayos. El proceso tiene en cuenta el tipo de red, las sobretensiones de origen atmosférico y de maniobra, la protección de los pararrayos y la fiabilidad requerida de la instalación."},
+{tag:"e",tn:"Construcci\u00f3n y dise\u00f1o mec\u00e1nico",p:"¿Qué requisitos mecánicos exige la UNE-EN IEC 61936-1 a las estructuras portantes de los equipos de AT en una subestación?",o:{a:"La norma no regula los requisitos mecánicos de las estructuras; se aplica exclusivamente la normativa de construcción",b:"Deben soportar las cargas estáticas y dinámicas previstas (peso de equipos, viento, hielo, cortocircuito, sismo) con los coeficientes de seguridad establecidos en la norma",c:"Solo deben soportar el peso propio de los equipos en condiciones estáticas sin viento ni sismo",d:"Solo se exige resistencia al viento en instalaciones ubicadas en zonas costeras"},c:"b",exp:"Las estructuras portantes de los equipos (pórticos, soportes de barras, apoyos de equipos) deben diseñarse para soportar todas las cargas previstas: peso propio, peso de los conductores y equipos, acciones del viento, acumulación de hielo, esfuerzos electrodinámicos de cortocircuito y, en su caso, acciones sísmicas. La UNE-EN IEC 61936-1 exige aplicar los coeficientes de seguridad adecuados y cumplir con las normas de diseño estructural aplicables."},
+{tag:"e",tn:"Construcci\u00f3n y dise\u00f1o mec\u00e1nico",p:"Según la UNE-EN IEC 61936-1, ¿qué esfuerzos electrodinámicos deben considerarse en el diseño mecánico de las barras colectoras rígidas de una subestación de AT?",o:{a:"Solo el peso propio de las barras y los aisladores de soporte",b:"Las fuerzas de origen atmosférico (viento e hielo) que actúan sobre los conductores",c:"Los esfuerzos producidos por las corrientes de cortocircuito máximas, que generan fuerzas de atracción/repulsión entre conductores proporcionales al cuadrado de la corriente",d:"Los esfuerzos térmicos debidos al paso de la corriente nominal en servicio continuo"},c:"c",exp:"Durante un cortocircuito, por las barras circula una corriente muy superior a la nominal que genera fuerzas electrodinámicas de atracción o repulsión entre conductores proporcionales al cuadrado de la corriente instantánea de pico. La UNE-EN IEC 61936-1 exige dimensionar mecánicamente las barras, los aisladores de soporte y sus anclajes para soportar estos esfuerzos sin deformaciones permanentes ni daños."},
+{tag:"e",tn:"Construcci\u00f3n y dise\u00f1o mec\u00e1nico",p:"¿Qué prescribe la UNE-EN IEC 61936-1 sobre el diseño del cerramiento (vallado) perimetral de una subestación de AT de exterior?",o:{a:"La norma no regula el diseño del vallado perimetral de las subestaciones de AT",b:"El vallado no necesita conectarse a la malla de tierra si está fabricado con material no conductor",c:"Solo debe señalizarse con carteles de peligro sin requisito de altura mínima",d:"Debe impedir el acceso no autorizado, tener altura suficiente para prevenir la escalada y estar conectado a la malla de tierra para garantizar la equipotencialidad"},c:"d",exp:"La UNE-EN IEC 61936-1 establece que el cerramiento perimetral debe impedir el acceso no autorizado de personas y animales domésticos a la subestación. Debe tener la altura mínima para prevenir la escalada y estar conectado a la malla de tierra de la subestación para garantizar la equipotencialidad y controlar las tensiones de contacto en su superficie exterior durante una falta a tierra."},
+{tag:"e",tn:"Construcci\u00f3n y dise\u00f1o mec\u00e1nico",p:"Según la UNE-EN IEC 61936-1, ¿qué requisitos de protección contra incendios deben cumplirse en el diseño de una subestación de AT con transformadores de aceite?",o:{a:"La norma no establece requisitos de protección contra incendios para subestaciones de AT",b:"Los transformadores de aceite no requieren protección contra incendios si tienen menos de 1.000 kVA de potencia nominal",c:"Deben disponerse fosos de recogida de aceite bajo los transformadores, separaciones cortafuegos entre equipos y, si procede, sistemas de extinción automática de incendios",d:"Solo se exige la instalación de extintores portátiles junto a cada transformador de aceite"},c:"c",exp:"La UNE-EN IEC 61936-1 exige medidas de protección contra incendios para los transformadores de aceite: fosos de recogida de aceite con capacidad para el volumen total del aceite del transformador (o del mayor de los de un grupo), separaciones cortafuegos entre equipos adyacentes para evitar la propagación del incendio, y sistemas de extinción automática cuando el riesgo o la potencia del transformador así lo justifiquen."},
+{tag:"e",tn:"Construcci\u00f3n y dise\u00f1o mec\u00e1nico",p:"¿Qué establece la UNE-EN IEC 61936-1 sobre la iluminación de las instalaciones de AT?",o:{a:"La norma no regula la iluminación de las instalaciones de AT; se aplica exclusivamente el Reglamento de Baja Tensión",b:"La iluminación es opcional y queda a criterio del explotador de la instalación",c:"Debe proporcionarse iluminación suficiente para la operación y mantenimiento seguros de los equipos, incluyendo iluminación de emergencia en zonas críticas como el edificio de control y los accesos",d:"Solo se exige iluminación en el interior del edificio de control; el parque de intemperie no requiere iluminación artificial"},c:"c",exp:"La UNE-EN IEC 61936-1 establece que las instalaciones de AT deben disponer de iluminación artificial suficiente para permitir la operación y el mantenimiento seguros de todos los equipos, tanto en el parque de intemperie como en los edificios e instalaciones interiores. Además, exige iluminación de emergencia en zonas donde su fallo pueda suponer un riesgo para las personas (edificio de control, accesos, pasillos de celdas)."},
+{tag:"b",tn:"Protecci\u00f3n el\u00e9ctrica, tierras, operaci\u00f3n y mantenimiento",p:"¿Qué prescribe la UNE-EN IEC 61936-1 sobre la documentación técnica que debe existir para la operación de una instalación de AT?",o:{a:"Deben estar disponibles los planos actualizados de la instalación, los esquemas eléctricos, los procedimientos de maniobra y los registros de mantenimiento",b:"Solo es necesario disponer del manual de instrucciones del fabricante de cada equipo",c:"La documentación es opcional si el personal de operación conoce la instalación por experiencia",d:"Solo se exige documentación para instalaciones de tensión nominal superior a 110 kV"},c:"a",exp:"La UNE-EN IEC 61936-1 exige que para la operación segura de la instalación estén disponibles los planos y esquemas actualizados de la instalación (esquemas unifilares, de mando, de protecciones), los procedimientos de maniobra documentados, los registros de mantenimiento y los datos técnicos de los equipos. Esta documentación es esencial para garantizar la seguridad durante la operación y el mantenimiento."},
+{tag:"b",tn:"Protecci\u00f3n el\u00e9ctrica, tierras, operaci\u00f3n y mantenimiento",p:"Según la UNE-EN IEC 61936-1, ¿qué condiciones deben verificarse antes de la puesta en servicio de una instalación de AT de nueva construcción?",o:{a:"Únicamente que la resistencia de la malla de tierra cumple el valor máximo especificado",b:"Que la instalación ha sido construida conforme al proyecto, que los equipos han superado las pruebas de aceptación y que el sistema de tierras, las protecciones y los enclavamientos funcionan correctamente",c:"Que el personal de operación ha completado la formación básica en prevención de riesgos",d:"Solo que los equipos han sido instalados en las posiciones indicadas en los planos del proyecto"},c:"b",exp:"La UNE-EN IEC 61936-1 exige verificar antes de la puesta en servicio que la instalación ha sido construida conforme a los planos del proyecto, que todos los equipos han superado las pruebas de aceptación (funcionales, dieléctricas y mecánicas), y que el sistema de puesta a tierra, las protecciones, los enclavamientos y los sistemas de servicios auxiliares funcionan correctamente y según los ajustes de proyecto."},
+{tag:"b",tn:"Protecci\u00f3n el\u00e9ctrica, tierras, operaci\u00f3n y mantenimiento",p:"¿Qué establece la UNE-EN IEC 61936-1 sobre los enclavamientos en las subestaciones de AT?",o:{a:"Los enclavamientos deben impedir maniobras incorrectas o peligrosas (como cerrar un seccionador con el interruptor cerrado o poner a tierra un circuito en tensión), y deben ser verificados antes de la puesta en servicio",b:"La norma no regula los enclavamientos; se aplica exclusivamente la norma de los equipos",c:"Los enclavamientos solo son obligatorios en subestaciones de tensión nominal superior a 110 kV",d:"Los enclavamientos son opcionales si el personal de operación está suficientemente formado"},c:"a",exp:"La UNE-EN IEC 61936-1 exige que las instalaciones de AT dispongan de enclavamientos (lógicos, mecánicos o eléctricos) que impidan la realización de maniobras incorrectas o peligrosas, como el cierre de un seccionador con el interruptor en posición cerrada o la puesta a tierra de un circuito en tensión. Los enclavamientos deben verificarse durante las pruebas previas a la puesta en servicio."},
+{tag:"b",tn:"Protecci\u00f3n el\u00e9ctrica, tierras, operaci\u00f3n y mantenimiento",p:"Según la UNE-EN IEC 61936-1, ¿qué medidas de protección individual deben adoptarse al acceder a una zona de acceso restringido de una subestación de AT para trabajos de mantenimiento?",o:{a:"Usar los equipos de protección individual adecuados (guantes, pantallas, calzado aislante), seguir los procedimientos de trabajo establecidos y, si se trabaja sin tensión, aplicar las cinco reglas de oro",b:"Basta con llevar el casco de seguridad y calzado de seguridad convencional",c:"Solo es necesario el uso de guantes aislantes para tensiones superiores a 36 kV",d:"La norma no regula las medidas de protección individual; se aplica exclusivamente la normativa de prevención de riesgos laborales"},c:"a",exp:"La UNE-EN IEC 61936-1 establece que el acceso a zonas de acceso restringido para trabajos de mantenimiento requiere el uso de los EPIs adecuados al nivel de tensión (guantes, pantallas faciales, calzado aislante, ropa ignífuga) y el seguimiento estricto de los procedimientos de trabajo documentados. Para trabajos sin tensión, deben aplicarse las medidas de consignación (cinco reglas de oro): desconectar, prevenir realimentación, verificar ausencia de tensión, poner a tierra y señalizar."},
+{tag:"b",tn:"Protecci\u00f3n el\u00e9ctrica, tierras, operaci\u00f3n y mantenimiento",p:"¿Qué prescribe la UNE-EN IEC 61936-1 respecto al mantenimiento periódico de las instalaciones de AT?",o:{a:"El mantenimiento es responsabilidad exclusiva de los fabricantes de los equipos y no está regulado por la norma",b:"La norma establece que el mantenimiento debe realizarse cada 10 años como máximo",c:"Las instalaciones deben someterse a inspecciones y mantenimiento periódico para garantizar su estado de seguridad y correcto funcionamiento, con registros documentados de todas las intervenciones",d:"Solo se exige mantenimiento cuando se produzca una avería o un disparo no esperado de las protecciones"},c:"c",exp:"La UNE-EN IEC 61936-1 exige que las instalaciones de AT sean objeto de inspecciones y mantenimiento periódico para mantener su nivel de seguridad y correcto funcionamiento a lo largo de su vida útil. Todas las intervenciones deben quedar documentadas en registros de mantenimiento. La periodicidad y el alcance de las inspecciones deben definirse en función de las condiciones de servicio, el tipo de equipos y las recomendaciones de los fabricantes."},
+{tag:"b",tn:"Protecci\u00f3n el\u00e9ctrica, tierras, operaci\u00f3n y mantenimiento",p:"Según la UNE-EN IEC 61936-1, ¿qué requisito se establece para el personal que opera y mantiene instalaciones de AT?",o:{a:"Cualquier persona con carnet de conducir puede acceder a la subestación para realizar lecturas de contadores",b:"Solo se exige formación específica para el personal que realiza trabajos en tensión, no para el personal de operación en condiciones normales",c:"Debe ser personal cualificado, con la formación y la experiencia necesarias para conocer los riesgos eléctricos y las medidas de seguridad aplicables a la instalación",d:"La norma no regula los requisitos de cualificación del personal; se aplica exclusivamente la normativa laboral"},c:"c",exp:"La UNE-EN IEC 61936-1 establece que el personal que opera y mantiene instalaciones de AT debe ser personal cualificado: personas con la formación técnica, la experiencia y el conocimiento suficientes para evaluar los riesgos y adoptar las medidas de seguridad necesarias en cada situación. El acceso de personal no cualificado a las zonas de acceso restringido debe estar expresamente prohibido e impedido físicamente."}];
+
+const TAG_STYLE={
+  a:{color:'#7B2D8B',bg:'#F3E8F9',txt:'Bloque A'},
+  b:{color:'#185FA5',bg:'#E6F1FB',txt:'Bloque B'},
+  c:{color:'#0F6E56',bg:'#E1F5EE',txt:'Bloque C'},
+  d:{color:'#854F0B',bg:'#FAEEDA',txt:'Bloque D'},
+  e:{color:'#993C1D',bg:'#FAECE7',txt:'Bloque E'}
+};
+
+let cur=0, answers=new Array(QS.length).fill(null), iv=null, secs=90*60;
+
+function startTest(){
+  document.getElementById('s-start').style.display='none';
+  document.getElementById('s-test').style.display='block';
+  buildNav(); renderQ(); startTimer();
+}
+
+function buildNav(){
+  const nav=document.getElementById('q-nav'); nav.innerHTML='';
+  QS.forEach((_,i)=>{
+    const d=document.createElement('div');
+    let cls='q-dot';
+    if(i===cur) cls+=' current';
+    else if(answers[i]!==null) cls+=(answers[i]===QS[i].c?' correct':' wrong');
+    d.className=cls; d.textContent=i+1; d.onclick=()=>goTo(i);
+    nav.appendChild(d);
+  });
+}
+
+function renderQ(){
+  const q=QS[cur];
+  const answered=answers[cur]!==null;
+  const ts=TAG_STYLE[q.tag]||{color:'#888',bg:'#eee',txt:q.tag.toUpperCase()};
+
+  document.getElementById('q-num').textContent=`Pregunta ${cur+1} de ${QS.length}`;
+  const badge=document.getElementById('q-tag-badge');
+  badge.textContent=ts.txt+' · '+q.tn;
+  badge.style.background=ts.bg; badge.style.color=ts.color;
+  document.getElementById('q-text').textContent=q.p;
+
+  const opts=document.getElementById('options'); opts.innerHTML='';
+  Object.entries(q.o).forEach(([k,v])=>{
+    const d=document.createElement('div');
+    let cls='opt';
+    if(answered){
+      cls+=' locked';
+      if(k===q.c) cls+=' show-ok';
+      if(k===answers[cur]&&answers[cur]!==q.c) cls+=' sel-fail';
+    }
+    d.className=cls;
+    d.innerHTML=`<span class="opt-key">${k.toUpperCase()})</span><span>${v}</span>`;
+    if(!answered) d.onclick=()=>selectAnswer(k);
+    opts.appendChild(d);
+  });
+
+  const fb=document.getElementById('feedback');
+  if(answered){
+    const isOk=answers[cur]===q.c;
+    fb.className='feedback show '+(isOk?'fb-ok':'fb-fail');
+    document.getElementById('fb-title').textContent=isOk?'✓ Respuesta correcta':'✗ Respuesta incorrecta';
+    document.getElementById('fb-body').textContent=q.exp;
+  } else {
+    fb.className='feedback';
+  }
+  buildNav(); updateStats();
+}
+
+function selectAnswer(k){ answers[cur]=k; renderQ(); }
+function navigate(d){ const n=cur+d; if(n>=0&&n<QS.length){cur=n;renderQ();} }
+function goTo(i){ cur=i; renderQ(); }
+
+function updateStats(){
+  const ans=answers.filter(a=>a!==null).length;
+  document.getElementById('s-ans').textContent=ans;
+  document.getElementById('s-blank').textContent=QS.length-ans;
+  document.getElementById('s-rem').textContent=QS.length-ans;
+}
+
+function startTimer(){
+  const el=document.getElementById('timer');
+  iv=setInterval(()=>{
+    secs--;
+    const m=Math.floor(secs/60),s=secs%60;
+    el.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    if(secs<=300) el.classList.add('warn');
+    if(secs<=0){clearInterval(iv);finish();}
+  },1000);
+}
+
+function finish(){
+  if(iv) clearInterval(iv);
+  document.getElementById('s-test').style.display='none';
+  document.getElementById('s-results').style.display='block';
+
+  let ok=0,fail=0,blank=0;
+  answers.forEach((a,i)=>{ if(a===null)blank++; else if(a===QS[i].c)ok++; else fail++; });
+
+  const ptsPorPregunta=10/QS.length;
+  const pena=fail*(ptsPorPregunta/2);
+  const raw=ok*ptsPorPregunta-pena;
+  const s10=Math.max(0,raw).toFixed(2);
+
+  document.getElementById('score-num').textContent=s10;
+  document.getElementById('score-detail').textContent=
+    `${ok} correctas · ${fail} incorrectas · ${blank} en blanco · ${ptsPorPregunta.toFixed(3)} pts/correcta · Penalización: −${pena.toFixed(3)} pts`;
+  document.getElementById('r-ok').textContent=ok;
+  document.getElementById('r-fail').textContent=fail;
+  document.getElementById('r-blank').textContent=blank;
+  document.getElementById('r-pena').textContent='−'+pena.toFixed(3);
+
+  // Resultado por bloque
+  const bloqueStats={};
+  QS.forEach((q,i)=>{
+    const t=q.tag;
+    if(!bloqueStats[t]) bloqueStats[t]={ok:0,fail:0,blank:0,total:0,nombre:q.tn,tag:t};
+    bloqueStats[t].total++;
+    const a=answers[i];
+    if(a===null) bloqueStats[t].blank++;
+    else if(a===q.c) bloqueStats[t].ok++;
+    else bloqueStats[t].fail++;
+  });
+
+  const blRes=document.getElementById('bloques-res-list');
+  blRes.innerHTML='';
+  const ts=TAG_STYLE;
+  ['a','b','c','d','e'].forEach(tag=>{
+    const b=bloqueStats[tag]; if(!b) return;
+    const style=ts[tag]||{color:'#888',bg:'#eee',txt:tag.toUpperCase()};
+    blRes.innerHTML+=`
+      <div class="bres-row">
+        <div class="bres-nombre">
+          <div class="bloque-dot" style="background:${style.color};width:10px;height:10px;border-radius:50%;flex-shrink:0"></div>
+          <span style="font-size:.83rem">${style.txt} · ${b.nombre}</span>
+        </div>
+        <div class="bres-pills">
+          <span class="pill pill-ok">✓ ${b.ok}/${b.total}</span>
+          ${b.fail>0?`<span class="pill pill-fail">✗ ${b.fail}</span>`:''}
+          ${b.blank>0?`<span class="pill" style="background:var(--gray-l);color:var(--gray)">○ ${b.blank}</span>`:''}
+        </div>
+      </div>`;
+  });
+
+  // Revisión final: solo incorrectas y en blanco
+  const list=document.getElementById('review-list');
+  list.innerHTML='';
+  const toReview=QS.map((q,i)=>({q,i,a:answers[i]})).filter(({a,q})=>a===null||a!==q.c);
+
+  if(toReview.length===0){
+    document.getElementById('rev-title').textContent='¡Enhorabuena! Todas las respuestas son correctas.';
+  } else {
+    document.getElementById('rev-title').textContent=`Revisión — ${toReview.length} pregunta${toReview.length>1?'s':''} para repasar:`;
+    toReview.forEach(({q,i,a})=>{
+      const isBlank=a===null;
+      const cls=isBlank?'blank':'fail';
+      const tag=isBlank?'<span class="tag-pill tag-blank">En blanco</span>':'<span class="tag-pill tag-fail">Incorrecta ✗</span>';
+      const ua=a?`Tu respuesta: <strong>${a.toUpperCase()}) ${q.o[a]}</strong>`:'No respondida.';
+      const style=TAG_STYLE[q.tag]||{color:'#888',bg:'#eee',txt:q.tag.toUpperCase()};
+      list.innerHTML+=`
+        <div class="rev-item ${cls}">
+          ${tag}
+          <span class="tag-pill" style="background:${style.bg};color:${style.color};margin-left:.3rem">${style.txt}</span>
+          <div class="rev-q"><strong>${i+1}.</strong> ${q.p}</div>
+          <div class="rev-ans">${ua}<br>Correcta: <strong>${q.c.toUpperCase()}) ${q.o[q.c]}</strong></div>
+          <div class="rev-exp">${q.exp}</div>
+        </div>`;
+    });
+  }
+  window.scrollTo(0,0);
+}
+
+function restart(){
+  answers=new Array(QS.length).fill(null); cur=0; secs=90*60;
+  document.getElementById('s-results').style.display='none';
+  document.getElementById('s-test').style.display='block';
+  document.getElementById('timer').classList.remove('warn');
+  buildNav(); renderQ(); startTimer();
+}
+</script>
+</body>
+</html>
