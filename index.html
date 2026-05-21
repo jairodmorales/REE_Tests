@@ -4,153 +4,435 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tests Habilitación REE</title>
-
 <style>
   :root{
-    --blue:#185FA5;
-    --blue-l:#E6F1FB;
-    --text:#2C2C2A;
-    --muted:#666;
-    --bg:#F8F7F4;
-    --card:#ffffff;
-    --bd:rgba(0,0,0,0.12);
-    --r:14px;
+    --blue:#185FA5;--blue-l:#E6F1FB;--blue-m:#378ADD;
+    --green:#0F6E56;--green-l:#E1F5EE;
+    --amber:#854F0B;--amber-l:#FAEEDA;
+    --purple:#5A1A6B;--purple-l:#F3E8F9;
+    --text:#2C2C2A;--muted:#888780;
+    --bg:#F8F7F4;--card:#ffffff;
+    --bd:rgba(0,0,0,0.10);--r:12px;
   }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Georgia,serif;background:var(--bg);color:var(--text);min-height:100vh}
 
-  *{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-  }
-
-  body{
-    font-family:Georgia, serif;
-    background:var(--bg);
-    color:var(--text);
-    min-height:100vh;
-  }
-
-  .container{
-    max-width:900px;
-    margin:auto;
-    padding:3rem 1rem;
-  }
-
-  h1{
+  /* ── CABECERA ── */
+  .header{
+    background:var(--card);
+    border-bottom:1px solid var(--bd);
+    padding:2.5rem 1rem 2rem;
     text-align:center;
-    font-size:2.3rem;
-    margin-bottom:.5rem;
+  }
+  .header h1{font-size:2.2rem;font-weight:normal;letter-spacing:-.5px;margin-bottom:.4rem}
+  .header .sub{color:var(--muted);font-size:.95rem;margin-bottom:1.25rem}
+  .stats-bar{
+    display:inline-flex;gap:1.5rem;
+    background:var(--bg);border:1px solid var(--bd);border-radius:30px;
+    padding:.45rem 1.4rem;font-size:.82rem;color:var(--muted);
+  }
+  .stats-bar span b{color:var(--text)}
+
+  /* ── LAYOUT ── */
+  .container{max-width:980px;margin:auto;padding:2.5rem 1rem 4rem}
+
+  /* ── PARTE (sección principal) ── */
+  .parte{margin-bottom:3rem}
+  .parte-header{
+    display:flex;align-items:center;gap:.85rem;
+    margin-bottom:1.5rem;padding-bottom:.75rem;
+    border-bottom:2px solid var(--bd);
+  }
+  .parte-icon{
+    width:40px;height:40px;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.15rem;flex-shrink:0;
+  }
+  .parte-title{font-size:1.35rem;font-weight:normal}
+  .parte-count{margin-left:auto;font-size:.8rem;color:var(--muted);white-space:nowrap}
+
+  /* ── SUBPARTE ── */
+  .subparte{margin-bottom:1.6rem}
+  .subparte-header{
+    display:flex;align-items:center;gap:.6rem;
+    margin-bottom:.85rem;
+  }
+  .subparte-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  .subparte-label{font-size:.82rem;font-weight:bold;text-transform:uppercase;letter-spacing:.6px}
+  .subparte-autor{
+    font-size:.78rem;color:var(--muted);
+    background:var(--bg);border:1px solid var(--bd);
+    border-radius:20px;padding:2px 10px;margin-left:.3rem;
   }
 
-  .subtitle{
-    text-align:center;
-    color:var(--muted);
-    margin-bottom:3rem;
-  }
-
+  /* ── GRID DE CARDS ── */
   .grid{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-    gap:1rem;
+    grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+    gap:.75rem;
   }
 
+  /* ── CARD ── */
   .card{
-    background:var(--card);
-    border:1px solid var(--bd);
-    border-radius:var(--r);
-    padding:1.5rem;
-    transition:.2s;
-    text-decoration:none;
-    color:inherit;
+    background:var(--card);border:1px solid var(--bd);
+    border-radius:var(--r);padding:1.25rem 1.3rem;
+    text-decoration:none;color:inherit;
+    transition:transform .18s,border-color .18s,box-shadow .18s;
+    display:block;
   }
-
   .card:hover{
     transform:translateY(-3px);
-    border-color:var(--blue);
     box-shadow:0 6px 20px rgba(0,0,0,.08);
   }
-
-  .tag{
-    display:inline-block;
-    background:var(--blue-l);
-    color:var(--blue);
-    padding:.3rem .7rem;
-    border-radius:20px;
-    font-size:.75rem;
-    margin-bottom:1rem;
-    font-weight:bold;
+  .card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+  .card-tag{
+    font-size:.7rem;font-weight:bold;padding:3px 9px;border-radius:20px;
+    letter-spacing:.3px;
   }
+  .card-q{font-size:.75rem;color:var(--muted);font-family:monospace}
+  .card h3{font-size:1rem;font-weight:bold;margin-bottom:.3rem;line-height:1.35}
+  .card p{font-size:.84rem;color:var(--muted);line-height:1.5}
 
-  .card h2{
-    font-size:1.2rem;
-    margin-bottom:.5rem;
+  /* ── SEPARADOR ── */
+  .divider{height:1px;background:var(--bd);margin:2.5rem 0}
+
+  /* ── COLORES POR ESPECIALIDAD ── */
+  /* Control y Protecciones — azul */
+  .parte-cyp .parte-icon{background:var(--blue-l);color:var(--blue)}
+  .parte-cyp .parte-header{border-color:var(--blue)}
+  .cyp .subparte-dot{background:var(--blue)}
+  .cyp .subparte-label{color:var(--blue)}
+  .cyp .card:hover{border-color:var(--blue)}
+  .cyp .card-tag{background:var(--blue-l);color:var(--blue)}
+
+  /* Montaje Electromecánico — verde */
+  .parte-mem .parte-icon{background:var(--green-l);color:var(--green)}
+  .parte-mem .parte-header{border-color:var(--green)}
+  .mem .subparte-dot{background:var(--green)}
+  .mem .subparte-label{color:var(--green)}
+  .mem .card:hover{border-color:var(--green)}
+  .mem .card-tag{background:var(--green-l);color:var(--green)}
+
+  /* Obra Civil — ámbar */
+  .parte-civil .parte-icon{background:var(--amber-l);color:var(--amber)}
+  .parte-civil .parte-header{border-color:var(--amber)}
+  .civil .subparte-dot{background:var(--amber)}
+  .civil .subparte-label{color:var(--amber)}
+  .civil .card:hover{border-color:var(--amber)}
+  .civil .card-tag{background:var(--amber-l);color:var(--amber)}
+
+  /* ── NORMAS DE REFERENCIA / PIE ── */
+  .normas{
+    background:var(--card);border:1px solid var(--bd);border-radius:var(--r);
+    padding:1.1rem 1.4rem;margin-bottom:2rem;
+    font-size:.8rem;color:var(--muted);line-height:1.8;
   }
+  .normas b{color:var(--text)}
 
-  .card p{
-    font-size:.92rem;
-    color:var(--muted);
-    line-height:1.5;
-  }
+  footer{text-align:center;color:var(--muted);font-size:.78rem;padding-bottom:1rem}
 
-  footer{
-    text-align:center;
-    margin-top:3rem;
-    color:var(--muted);
-    font-size:.8rem;
+  @media(max-width:560px){
+    .header h1{font-size:1.7rem}
+    .stats-bar{flex-direction:column;gap:.4rem;text-align:left}
+    .parte-count{display:none}
   }
 </style>
 </head>
-
 <body>
+
+<!-- ══════════════ CABECERA ══════════════ -->
+<div class="header">
+  <h1>Habilitación REE</h1>
+  <div class="sub">Plataforma de preparación — Ingeniería de Subestaciones</div>
+  <div class="stats-bar">
+    <span><b>3</b> Especialidades</span>
+    <span><b>8</b> Autores</span>
+    <span><b>13</b> Tests</span>
+    <span><b>~600</b> Preguntas</span>
+  </div>
+</div>
 
 <div class="container">
 
-  <h1>Habilitación REE</h1>
-  <div class="subtitle">
-    Plataforma de tests de preparación
+  <div class="normas">
+    <b>Normativa de referencia:</b>
+    RAT (ITC-RAT 01–23) &nbsp;·&nbsp; RLAT ITC-LAT-07 &nbsp;·&nbsp; RD 614/2001 &nbsp;·&nbsp;
+    IEEE Std 80 &nbsp;·&nbsp; UNE-EN IEC 61936-1 &nbsp;·&nbsp; RUPM &nbsp;·&nbsp;
+    PG-3 &nbsp;·&nbsp; Norma 5.2-IC &nbsp;·&nbsp; Norma 6.1-IC
   </div>
 
-  <div class="grid">
+  <!-- ══════════════════════════════════════
+       PARTE 1 — CONTROL Y PROTECCIONES
+  ══════════════════════════════════════ -->
+  <div class="parte parte-cyp">
+    <div class="parte-header">
+      <div class="parte-icon">⚡</div>
+      <div>
+        <div class="parte-title">Control y Protecciones</div>
+        <div style="font-size:.8rem;color:var(--muted)">Familias 0160 · 0476 · 0425 — 40 preguntas · 90 min</div>
+      </div>
+      <div class="parte-count">2 tests disponibles</div>
+    </div>
 
-    <a class="card" href="Test_CyP_1.html">
-      <div class="tag">Test 1</div>
-      <h2>CyP — Nivel 1</h2>
-      <p>
-        Cuestionario de construcción y protección.
-      </p>
-    </a>
+    <!-- 1.1 Jairo Morales -->
+    <div class="subparte cyp">
+      <div class="subparte-header">
+        <div class="subparte-dot"></div>
+        <span class="subparte-label">Tests CyP</span>
+        <span class="subparte-autor">Jairo Morales</span>
+      </div>
+      <div class="grid">
 
-    <a class="card" href="Test_CyP_2.html">
-      <div class="tag">Test 2</div>
-      <h2>CyP — Nivel 2</h2>
-      <p>
-        Segunda batería de preguntas de construcción y protección.
-      </p>
-    </a>
+        <a class="card" href="Test_CyP_1.html">
+          <div class="card-top">
+            <span class="card-tag">CyP · Tipo 1</span>
+            <span class="card-q">40 preguntas</span>
+          </div>
+          <h3>Control y Protecciones — Tipo 1</h3>
+          <p>Electrotecnia básica, funciones de protección ANSI, control de interruptores y seccionadores.</p>
+        </a>
 
-    <a class="card" href="Test_MEM_1.html">
-      <div class="tag">Test 3</div>
-      <h2>Montaje Electromecánico — Nivel 1</h2>
-      <p>
-        Preparación para habilitación REE familias 160 y 426.
-      </p>
-    </a>
+        <a class="card" href="Test_CyP_2.html">
+          <div class="card-top">
+            <span class="card-tag">CyP · Tipo 2</span>
+            <span class="card-q">40 preguntas</span>
+          </div>
+          <h3>Control y Protecciones — Tipo 2</h3>
+          <p>Segunda batería: componentes simétricas, teleprotección, redundancia de disparo, IEC 61850.</p>
+        </a>
 
-    <a class="card" href="Test_MEM_2.html">
-      <div class="tag">Test 4</div>
-      <h2>Montaje Electromecánico — Nivel 2</h2>
-      <p>
-        Segunda batería de preguntas de montaje electromecánico.
-      </p>
-    </a>
+      </div>
+    </div>
+  </div><!-- /parte-cyp -->
 
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════
+       PARTE 2 — MONTAJE ELECTROMECÁNICO
+  ══════════════════════════════════════ -->
+  <div class="parte parte-mem">
+    <div class="parte-header">
+      <div class="parte-icon">🔧</div>
+      <div>
+        <div class="parte-title">Montaje Electromecánico</div>
+        <div style="font-size:.8rem;color:var(--muted)">Familias 0160 · 0426 — 35 preguntas · 90 min</div>
+      </div>
+      <div class="parte-count">4 tests disponibles</div>
+    </div>
+
+    <!-- 2.1 Jairo Morales -->
+    <div class="subparte mem">
+      <div class="subparte-header">
+        <div class="subparte-dot"></div>
+        <span class="subparte-label">Tests MEM</span>
+        <span class="subparte-autor">Jairo Morales</span>
+      </div>
+      <div class="grid">
+
+        <a class="card" href="Test_MEM_1.html">
+          <div class="card-top">
+            <span class="card-tag">MEM · Tipo 1</span>
+            <span class="card-q">35 preguntas</span>
+          </div>
+          <h3>Montaje Electromecánico — Tipo 1</h3>
+          <p>RAT, RLAT ITC-LAT-07, RD 614/2001, IEEE Std 80, UNE-EN IEC 61936-1 y RUPM.</p>
+        </a>
+
+        <a class="card" href="Test_MEM_2.html">
+          <div class="card-top">
+            <span class="card-tag">MEM · Tipo 2</span>
+            <span class="card-q">35 preguntas</span>
+          </div>
+          <h3>Montaje Electromecánico — Tipo 2</h3>
+          <p>Segunda batería: situaciones reales de proyecto, criterios de diseño y casuística normativa.</p>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- 2.2 Julian Quintero -->
+    <div class="subparte mem" style="margin-top:1.25rem">
+      <div class="subparte-header">
+        <div class="subparte-dot"></div>
+        <span class="subparte-label">Tests MEM · JQT</span>
+        <span class="subparte-autor">Julián Quintero</span>
+      </div>
+      <div class="grid">
+
+        <a class="card" href="Test_MEM_JQT.html">
+          <div class="card-top">
+            <span class="card-tag">MEM · JQT</span>
+            <span class="card-q">150 preguntas · 12 bloques</span>
+          </div>
+          <h3>Montaje Electromecánico — Banco JQT</h3>
+          <p>12 bloques temáticos: zonas climáticas, conductores, cables AT, embarrados, descargadores, tierras, apantallamiento y más.</p>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- 2.3 Jose Cuadron -->
+    <div class="subparte mem" style="margin-top:1.25rem">
+      <div class="subparte-header">
+        <div class="subparte-dot"></div>
+        <span class="subparte-label">Tests MEM</span>
+        <span class="subparte-autor">José Cuadrón</span>
+      </div>
+      <div class="grid">
+
+        <a class="card" href="Test_MEM_3.html">
+          <div class="card-top">
+            <span class="card-tag">MEM · Tipo 3</span>
+            <span class="card-q">35 preguntas</span>
+          </div>
+          <h3>Montaje Electromecánico — Tipo 3</h3>
+          <p>Enfocado en ITC-RAT, ITC-LAT-07, criterios de fronteras, puesta a tierra y puesta en servicio. Excluye ITCs de baja tensión.</p>
+        </a>
+
+      </div>
+    </div>
+
+  </div><!-- /parte-mem -->
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════
+       PARTE 3 — OBRA CIVIL
+  ══════════════════════════════════════ -->
+  <div class="parte parte-civil">
+    <div class="parte-header">
+      <div class="parte-icon">🏗️</div>
+      <div>
+        <div class="parte-title">Obra Civil</div>
+        <div style="font-size:.8rem;color:var(--muted)">PG-3 · Norma 5.2-IC · Norma 6.1-IC · UNE-EN IEC 61936-1 · RAT</div>
+      </div>
+      <div class="parte-count">5 tests disponibles</div>
+    </div>
+
+    <!-- 3.1 Luis Cobos -->
+    <div class="subparte civil">
+      <div class="subparte-header">
+        <div class="subparte-dot"></div>
+        <span class="subparte-label">Tests Civil</span>
+        <span class="subparte-autor">Luis Cobos</span>
+      </div>
+      <div class="grid">
+
+        <a class="card" href="Test_Civil_4.html">
+          <div class="card-top">
+            <span class="card-tag">Civil · 4</span>
+            <span class="card-q">50 preguntas</span>
+          </div>
+          <h3>Obra Civil — Examen ELITE REE</h3>
+          <p>Plataformas, drenaje, firmes, cimentaciones, canalizaciones y estructuras. Nivel avanzado.</p>
+        </a>
+
+        <a class="card" href="Test_Civil_5.html">
+          <div class="card-top">
+            <span class="card-tag">Civil · 5</span>
+            <span class="card-q">50 preguntas</span>
+          </div>
+          <h3>Obra Civil — Examen REE PRO</h3>
+          <p>Explanadas, firmes, drenaje profundo, cimentaciones, hormigón y canalizaciones eléctricas.</p>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- 3.2 Jose Cuadron -->
+    <div class="subparte civil" style="margin-top:1.25rem">
+      <div class="subparte-header">
+        <div class="subparte-dot"></div>
+        <span class="subparte-label">Tests Civil</span>
+        <span class="subparte-autor">José Cuadrón</span>
+      </div>
+      <div class="grid">
+
+        <a class="card" href="Test_Civil_3.html">
+          <div class="card-top">
+            <span class="card-tag">Civil · 3</span>
+            <span class="card-q">48 preguntas</span>
+          </div>
+          <h3>Obra Civil Subestaciones AT — v2</h3>
+          <p>Norma 5.2-IC (drenaje superficial), Norma 6.1-IC (secciones de firme) y PG-3 (explanaciones).</p>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- 3.3 Adolfo Marín -->
+    <div class="subparte civil" style="margin-top:1.25rem">
+      <div class="subparte-header">
+        <div class="subparte-dot"></div>
+        <span class="subparte-label">Tests Civil</span>
+        <span class="subparte-autor">Adolfo Marín</span>
+      </div>
+      <div class="grid">
+
+        <a class="card" href="Test_Civil_1.html">
+          <div class="card-top">
+            <span class="card-tag">Civil · 1</span>
+            <span class="card-q">75 preguntas</span>
+          </div>
+          <h3>Especialidad Obras Civiles</h3>
+          <p>Nivel intermedio: plataformas, drenajes, viales, cerramientos, cimentaciones y canalizaciones.</p>
+        </a>
+
+        <a class="card" href="Test_Civil_2.html">
+          <div class="card-top">
+            <span class="card-tag">Civil · 2</span>
+            <span class="card-q">75 preguntas</span>
+          </div>
+          <h3>Especialidad Obras Civiles — Avanzado</h3>
+          <p>Nivel ALTO/EXPERTO: parámetros normativos exactos, fórmulas, excepciones y casos límite.</p>
+        </a>
+
+      </div>
+    </div>
+
+  </div><!-- /parte-civil -->
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════
+       NORMATIVA COMPLEMENTARIA
+  ══════════════════════════════════════ -->
+  <div class="parte">
+    <div class="parte-header" style="border-color:var(--bd)">
+      <div class="parte-icon" style="background:#F1EFE8;color:#5F5E5A">📖</div>
+      <div>
+        <div class="parte-title">Normativa Complementaria</div>
+        <div style="font-size:.8rem;color:var(--muted)">Tests basados en reglamentos específicos</div>
+      </div>
+      <div class="parte-count">2 tests disponibles</div>
+    </div>
+
+    <div class="grid">
+
+      <a class="card" href="Test_UNE_EN_61936-1.html" style="--hover-bd:#7B2D8B">
+        <div class="card-top">
+          <span class="card-tag" style="background:#F3E8F9;color:#5A1A6B">Normativa</span>
+          <span class="card-q">35 preguntas</span>
+        </div>
+        <h3>UNE-EN IEC 61936-1</h3>
+        <p>Instalaciones eléctricas de potencia &gt;1 kV en CA. 5 bloques: definiciones, protección, aislamiento, rayo y construcción mecánica.</p>
+      </a>
+
+      <a class="card" href="Test_RD614_2001.html">
+        <div class="card-top">
+          <span class="card-tag" style="background:#F3E8F9;color:#5A1A6B">Normativa</span>
+          <span class="card-q">20 preguntas</span>
+        </div>
+        <h3>RD 614/2001</h3>
+        <p>Disposiciones mínimas para la protección de la salud y seguridad de los trabajadores frente al riesgo eléctrico.</p>
+      </a>
+
+    </div>
   </div>
 
-  <footer>
-    © Plataforma interna de formación
-  </footer>
+</div><!-- /container -->
 
-</div>
+<footer>© Plataforma interna de formación — Preparación Habilitación REE 2026</footer>
 
 </body>
 </html>
